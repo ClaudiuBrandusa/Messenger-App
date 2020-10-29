@@ -11,7 +11,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Messenger_Mobile_App.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>Messenger_Mobile_App.iOS</AssemblyName>
+    <AssemblyName>Messenger-Mobile-App.iOS</AssemblyName>
     <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
     <ProvisioningType>automatic</ProvisioningType>
