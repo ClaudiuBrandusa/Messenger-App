@@ -12,7 +12,8 @@ namespace Messenger_Mobile_App.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
-        public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
+        public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>(); 
+        public IDataStore<Contact> DataContacts => DependencyService.Get<IDataStore<Contact>>();
 
         bool isBusy = false;
         public bool IsBusy

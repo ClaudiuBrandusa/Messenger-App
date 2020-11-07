@@ -25,7 +25,7 @@
                             LineBreakMode="NoWrap" 
                             Style="{DynamicResource ListItemTextStyle}" 
                             FontSize="16" />
-                        <Label Text="{Binding Description}" 
+                        <!--<Label Text="{Binding Description}" 
                             LineBreakMode="NoWrap"
                             Style="{DynamicResource ListItemDetailTextStyle}"
                             FontSize="13" />
@@ -35,7 +35,7 @@
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type local:ItemsViewModel}}, Path=ItemTapped}"		
                                 CommandParameter="{Binding .}">
                             </TapGestureRecognizer>
-                        </StackLayout.GestureRecognizers>
+                        </StackLayout.GestureRecognizers>-->
                     </StackLayout>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

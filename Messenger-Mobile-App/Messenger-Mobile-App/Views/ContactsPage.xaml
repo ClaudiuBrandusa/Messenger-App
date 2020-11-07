@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Messenger_Mobile_App.Views.ContactsPage"
+             xmlns:local="clr-namespace:Messenger_Mobile_App.ViewModels" 
+             xmlns:model="clr-namespace:Messenger_Mobile_App.Models"  
+             Title="{Binding Title}">
+    
+    <ContentPage.BindingContext>
+        <local:ContactsViewModel />
+    </ContentPage.BindingContext>
+    
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Accent">#96d1ff</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add Contact" Command="{Binding AddContactCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <!--<Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ScrollView Grid.Row="0">
+            <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
+                
+            </StackLayout>
+        </ScrollView>
+    </Grid>-->
+
+    <RefreshView Command="{Binding LoadContactsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+        <CollectionView x:Name="ContactsListView" ItemsSource="{Binding Contacts}" SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Padding="10" x:DataType="model:Contact">
+                        <Label Text="{Binding Name}" Style="{DynamicResource ListItemTextStyle}" FontSize="20"/>
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
+
+</ContentPage>
