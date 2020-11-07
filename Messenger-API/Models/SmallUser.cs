@@ -7,12 +7,12 @@ namespace Messenger_API.Models
 {
     public class SmallUser
     {
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public string UserName { get; set; }
 
         public ICollection<FriendName> FriendNames { get; set; }
         public ICollection<MessageContent> MessageContents { get; set; }
         public ICollection<Conversation> Conversations { get; set; }
-        public ICollection<ConversationAdmin> ConversationAdmins { get; set; }
+        //public ICollection<ConversationAdmin> ConversationAdmins { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Messenger_API.Migrations.MessagesDB
 {
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -25,8 +25,7 @@ namespace Messenger_API.Migrations.MessagesDB
                 name: "SmallUsers",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(nullable: false),
                     UserName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -38,13 +37,14 @@ namespace Messenger_API.Migrations.MessagesDB
                 name: "Conversations",
                 columns: table => new
                 {
-                    ConversationId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(nullable: false)
+                    ConversationId = table.Column<int>(nullable: false),
+                    UserId = table.Column<string>(nullable: false),
+                    IsAdmin = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Conversations", x => x.ConversationId);
+                    table.PrimaryKey("PK_Conversations", x => new { x.ConversationId, x.UserId });
+                    table.UniqueConstraint("AK_Conversations_ConversationId", x => x.ConversationId);
                     table.ForeignKey(
                         name: "FK_Conversations_SmallUsers_UserId",
                         column: x => x.UserId,
@@ -58,7 +58,7 @@ namespace Messenger_API.Migrations.MessagesDB
                 columns: table => new
                 {
                     FriendId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    UserId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,7 +84,7 @@ namespace Messenger_API.Migrations.MessagesDB
                     MessageId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Content = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: false),
+                    UserId = table.Column<string>(nullable: true),
                     SentDate = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -92,30 +92,6 @@ namespace Messenger_API.Migrations.MessagesDB
                     table.PrimaryKey("PK_MessageContents", x => x.MessageId);
                     table.ForeignKey(
                         name: "FK_MessageContents_SmallUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "SmallUsers",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ConversationAdmins",
-                columns: table => new
-                {
-                    ConversationId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ConversationAdmins", x => new { x.ConversationId, x.UserId });
-                    table.ForeignKey(
-                        name: "FK_ConversationAdmins_Conversations_ConversationId",
-                        column: x => x.ConversationId,
-                        principalTable: "Conversations",
-                        principalColumn: "ConversationId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ConversationAdmins_SmallUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "SmallUsers",
                         principalColumn: "UserId",
@@ -167,11 +143,6 @@ namespace Messenger_API.Migrations.MessagesDB
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ConversationAdmins_UserId",
-                table: "ConversationAdmins",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Conversations_UserId",
                 table: "Conversations",
                 column: "UserId");
@@ -199,9 +170,6 @@ namespace Messenger_API.Migrations.MessagesDB
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ConversationAdmins");
-
             migrationBuilder.DropTable(
                 name: "FriendNames");
 

@@ -10,7 +10,7 @@ namespace Messenger_API.Models
     {
         public int MessageId { get; set; }
         public string Content { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public DateTime SentDate { get; set; }
 
         public SmallUser SmallUser { get; set; }

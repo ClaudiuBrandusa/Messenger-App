@@ -14,7 +14,7 @@ namespace Messenger_API.Data
         { }
 
         public DbSet<Conversation>  Conversations{ get; set; }
-        public DbSet<ConversationAdmin> ConversationAdmins { get; set; }
+        //public DbSet<ConversationAdmin> ConversationAdmins { get; set; }
         public DbSet<Friend> Friends { get; set; }
         public DbSet<FriendName> FriendNames { get; set; }
         public DbSet<MessageContent> MessageContents { get; set; }
@@ -81,7 +81,7 @@ namespace Messenger_API.Data
                 .HasForeignKey(p => p.PacketId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
+            /*
             //SmallUser & ConversationAdmin (many to one)
             modelBuilder.Entity<ConversationAdmin>()
                 .HasKey(p => new { p.ConversationId, p.UserId });
@@ -90,26 +90,26 @@ namespace Messenger_API.Data
                 .HasOne(s => s.SmallUser)
                 .WithMany(a => a.ConversationAdmins)
                 .HasForeignKey(s => s.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict);*/
 
 
             //SmallUser & Conversation (many to one)
             modelBuilder.Entity<Conversation>()
-                .HasKey(p => p.ConversationId);
+                .HasKey(p => new { p.ConversationId, p.UserId });
 
             modelBuilder.Entity<Conversation>()
                 .HasOne(s => s.SmallUser)
                 .WithMany(c => c.Conversations)
                 .HasForeignKey(s => s.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict);       
 
 
-            //Conversation & ConversationAdmin (many to one)
+            /*//Conversation & ConversationAdmin (many to one)
             modelBuilder.Entity<ConversationAdmin>()
                 .HasOne(c => c.Conversation)
                 .WithMany(a => a.ConversationAdmins)
                 .HasForeignKey(c => c.ConversationId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict);*/
 
 
             //Conversation & Packet (many to one)
@@ -117,6 +117,7 @@ namespace Messenger_API.Data
                 .HasOne(c => c.Conversation)
                 .WithMany(p => p.Packets)
                 .HasForeignKey(c => c.ConversationId)
+                .HasPrincipalKey(c => c.ConversationId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
