@@ -11,7 +11,7 @@ using Xamarin.Forms.Xaml;
 
 namespace Messenger_Mobile_App.Views
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
+	//[XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class NewContactPage : ContentPage
     {
         public Contact Contact { get; set; }

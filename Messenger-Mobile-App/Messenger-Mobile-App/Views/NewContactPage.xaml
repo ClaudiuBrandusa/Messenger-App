@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Messenger_Mobile_App.Views.NewContactPage"
+             Shell.PresentationMode="ModalAnimated"
              Title="Add new Contact">
     <ContentPage.Content>
         <StackLayout Spacing="3" Padding="15">

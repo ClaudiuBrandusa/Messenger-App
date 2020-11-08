@@ -31,14 +31,18 @@ namespace Messenger_Mobile_App.ViewModels
             AddContactCommand = new Command(OnAddContact);
         }
 
-        Task ExecuteLoadContactsCommand()
+        async Task ExecuteLoadContactsCommand()
         {
             IsBusy = true;
 
             try
             {
                 Contacts.Clear();
-                Contacts.Add(new Contact { Name = "Test", IsActive = true });
+                var contacts = await DataContacts.GetItemsAsync(true);
+                foreach(var contact in contacts)
+                {
+                    Contacts.Add(contact);
+                }
             }
             catch (Exception ex)
             {
@@ -48,8 +52,6 @@ namespace Messenger_Mobile_App.ViewModels
             {
                 IsBusy = false;
             }
-
-            return Task.CompletedTask;
         }
 
         public void OnAppearing()
@@ -60,7 +62,7 @@ namespace Messenger_Mobile_App.ViewModels
 
         async void OnAddContact(object obj)
         {
-            await Shell.Current.GoToAsync(nameof(NewContactPage)); // I do get wrong uri after accessing this route
+            await Shell.Current.GoToAsync(nameof(NewContactPage));
         }
     }
 }
