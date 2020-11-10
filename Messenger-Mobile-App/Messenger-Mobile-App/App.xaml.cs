@@ -15,6 +15,7 @@ namespace Messenger_Mobile_App
 
             DependencyService.Register<MockDataStore>();
             DependencyService.Register<ContactsDataStore>();
+            DependencyService.Register<ConversationsDataStore>();
             MainPage = new AppShell();
         }
 

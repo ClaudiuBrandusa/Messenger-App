@@ -1,4 +1,5 @@
 ﻿using Messenger_Mobile_App.Models;
+using Messenger_Mobile_App.Services;
 using Messenger_Mobile_App.ViewModels;
 using Messenger_Mobile_App.Views;
 using System;
@@ -14,13 +15,23 @@ namespace Messenger_Mobile_App.ViewModels
     public class ContactsViewModel : BaseViewModel
     {
         Contact _selectedContact;
-        public Contact SelectedContact { get { return _selectedContact; } }
+        public Contact SelectedContact 
+        {
+            get => _selectedContact;
+            set
+            {
+                SetProperty(ref _selectedContact, value);
+                OnContactSelected(value);
+            }
+        }
 
         public ObservableCollection<Contact> Contacts { get; }
 
         public Command LoadContactsCommand { get; }
         
         public Command AddContactCommand { get; }
+
+        public Command<Contact> ContactTappedCommand { get; }
 
         public ContactsViewModel()
         {
@@ -29,6 +40,7 @@ namespace Messenger_Mobile_App.ViewModels
             Contacts = new ObservableCollection<Contact>();
             LoadContactsCommand = new Command(async () => await ExecuteLoadContactsCommand());
             AddContactCommand = new Command(OnAddContact);
+            ContactTappedCommand = new Command<Contact>(OnContactSelected);
         }
 
         async Task ExecuteLoadContactsCommand()
@@ -57,12 +69,29 @@ namespace Messenger_Mobile_App.ViewModels
         public void OnAppearing()
         {
             IsBusy = true;
-            _selectedContact = null;
+            SelectedContact = null;
         }
 
         async void OnAddContact(object obj)
         {
             await Shell.Current.GoToAsync(nameof(NewContactPage));
+        }
+
+        async void OnContactSelected(Contact contact)
+        {
+            if(contact == null)
+            {
+                return;
+            }
+
+            var conversation = await DataConversations.GetItemAsync(contact.Name);
+
+            if(conversation == null || conversation == default)
+            {
+                return;
+            }
+
+            await Shell.Current.GoToAsync($"{nameof(ConversationPage)}?{nameof(ConversationViewModel.Name)}={conversation.Id}");
         }
     }
 }

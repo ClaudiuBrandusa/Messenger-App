@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Messenger_Mobile_App.ViewModels" 
+             xmlns:model="clr-namespace:Messenger_Mobile_App.Models" 
+             Title="{Binding Title}"
+             x:Class="Messenger_Mobile_App.Views.ConversationPage">
+
+    <ContentPage.BindingContext>
+        <local:ConversationViewModel/>
+    </ContentPage.BindingContext>
+    
+    <StackLayout>
+        <Label Text="{Binding Name, Mode=TwoWay}"/>
+    </StackLayout>
+
+</ContentPage>

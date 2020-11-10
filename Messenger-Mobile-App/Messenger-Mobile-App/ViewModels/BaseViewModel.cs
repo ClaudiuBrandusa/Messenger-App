@@ -14,6 +14,7 @@ namespace Messenger_Mobile_App.ViewModels
     {
         public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>(); 
         public IDataStore<Contact> DataContacts => DependencyService.Get<IDataStore<Contact>>();
+        public IDataStore<Conversation> DataConversations => DependencyService.Get<IDataStore<Conversation>>();
 
         bool isBusy = false;
         public bool IsBusy

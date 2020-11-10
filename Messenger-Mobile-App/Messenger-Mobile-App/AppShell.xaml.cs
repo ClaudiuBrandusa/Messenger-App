@@ -12,6 +12,7 @@ namespace Messenger_Mobile_App
         {
             InitializeComponent();
             Routing.RegisterRoute(nameof(ItemDetailPage), typeof(ItemDetailPage));
+            Routing.RegisterRoute(nameof(ConversationPage), typeof(ConversationPage));
             Routing.RegisterRoute(nameof(NewItemPage), typeof(NewItemPage));
             Routing.RegisterRoute(nameof(NewContactPage), typeof(NewContactPage));
         }
