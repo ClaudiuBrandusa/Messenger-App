@@ -9,7 +9,7 @@
     <ContentPage.BindingContext>
         <local:ContactsViewModel />
     </ContentPage.BindingContext>
-    
+
     <ContentPage.Resources>
         <ResourceDictionary>
             <Color x:Key="Accent">#96d1ff</Color>

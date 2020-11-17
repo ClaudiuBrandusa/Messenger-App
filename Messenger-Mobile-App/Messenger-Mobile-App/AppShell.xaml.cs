@@ -11,10 +11,10 @@ namespace Messenger_Mobile_App
         public AppShell()
         {
             InitializeComponent();
-            Routing.RegisterRoute(nameof(ItemDetailPage), typeof(ItemDetailPage));
+            Routing.RegisterRoute(nameof(ConversationsPage), typeof(ConversationsPage));
             Routing.RegisterRoute(nameof(ConversationPage), typeof(ConversationPage));
-            Routing.RegisterRoute(nameof(NewItemPage), typeof(NewItemPage));
             Routing.RegisterRoute(nameof(NewContactPage), typeof(NewContactPage));
+            Routing.RegisterRoute(nameof(NewConversationPage), typeof(NewConversationPage));
         }
 
         private async void OnMenuItemClicked(object sender, EventArgs e)

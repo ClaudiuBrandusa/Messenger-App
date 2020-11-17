@@ -5,12 +5,6 @@
        Title="Messenger_Mobile_App"
        x:Class="Messenger_Mobile_App.AppShell">
 
-    <!--
-        The overall app visual hierarchy is defined here, along with navigation.
-    
-        https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/
-    -->
-
     <Shell.Resources>
         <ResourceDictionary>
             <Style x:Key="BaseStyle" TargetType="Element">
@@ -80,7 +74,7 @@
         https://docs.microsoft.com/dotnet/api/xamarin.forms.shellgroupitem.flyoutdisplayoptions?view=xamarin-forms
     -->
     <TabBar> <!--Remember to implement the flyout layout for the Status, Settings, Log out-->
-        <ShellContent Title="Conversations" Icon="tab_about.png" Route="AboutPage" ContentTemplate="{DataTemplate local:ItemsPage}" />
+        <ShellContent Title="Conversations" Icon="tab_about.png" ContentTemplate="{DataTemplate local:ConversationsPage}" />
         <ShellContent Title="Contacts" Icon="tab_feed.png" ContentTemplate="{DataTemplate local:ContactsPage}" />
     </TabBar>
 

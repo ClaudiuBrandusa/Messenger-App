@@ -14,12 +14,12 @@ namespace Messenger_Mobile_App.Services
         {
             items = new List<Item>()
             {
-                new Item { Id = Guid.NewGuid().ToString(), Text = "First item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Second item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Third item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Fourth item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Fifth item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Sixth item", Description="This is an item description." }
+                new Item { Id = Guid.NewGuid().ToString(), Text = "Contact 1", Description="This is an item description." },
+                new Item { Id = Guid.NewGuid().ToString(), Text = "Contact 2", Description="This is an item description." },
+                new Item { Id = Guid.NewGuid().ToString(), Text = "Contact 3", Description="This is an item description." },
+                new Item { Id = Guid.NewGuid().ToString(), Text = "Contact 4", Description="This is an item description." },
+                new Item { Id = Guid.NewGuid().ToString(), Text = "Contact 5", Description="This is an item description." },
+                new Item { Id = Guid.NewGuid().ToString(), Text = "Contact 6", Description="This is an item description." }
             };
         }
 

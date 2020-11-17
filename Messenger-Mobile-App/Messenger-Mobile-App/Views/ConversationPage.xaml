@@ -10,8 +10,11 @@
         <local:ConversationViewModel/>
     </ContentPage.BindingContext>
     
-    <StackLayout>
-        <Label Text="{Binding Name, Mode=TwoWay}"/>
+    <StackLayout x:DataType="local:ConversationViewModel">
+        <Label Text="{Binding Test, Mode=TwoWay}"/>
+        <StackLayout x:DataType="model:Conversation">
+            <Label Text="{Binding Id}"/>
+        </StackLayout>
     </StackLayout>
 
 </ContentPage>

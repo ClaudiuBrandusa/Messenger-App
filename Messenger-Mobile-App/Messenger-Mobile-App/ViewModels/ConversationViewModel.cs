@@ -13,6 +13,11 @@ namespace Messenger_Mobile_App.ViewModels
     {
         Conversation conversation;
 
+        public string Test
+        {
+            get => conversation != null ? conversation.Id : "no";
+        }
+
         string name;
         public string Name
         {
@@ -20,11 +25,10 @@ namespace Messenger_Mobile_App.ViewModels
             set
             {
                 name = value;
-                LoadConversation();
             }
         }
-
-        public async void LoadConversation()
+        public Command LoadConversationCommand;
+        public async Task LoadConversation()
         {
             try
             {
@@ -34,14 +38,18 @@ namespace Messenger_Mobile_App.ViewModels
                 Debug.WriteLine(ex);
             }
             IsBusy = false;
-            Console.WriteLine("here 2");
         }
 
         public void OnAppearing()
         {
-            Console.WriteLine("here 1");
-            IsBusy = true;
             LoadConversation();
+        }
+
+        public ConversationViewModel()
+        {
+            IsBusy = true;
+
+            LoadConversationCommand = new Command(async () => await LoadConversation());
         }
     }
 }
