@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Messenger_API.Authentication
 {
-    public class RegisterModel
+    public class Register
     {
         [Required(ErrorMessage = "User Name is required.")]
         public string UserName { get; set; }
@@ -14,5 +14,6 @@ namespace Messenger_API.Authentication
         public string Email { get; set; }
         [Required(ErrorMessage = "Password is required.")]
         public string Password { get; set; }
+        public string ConfirmPassword { get; set; }
     }
 }
