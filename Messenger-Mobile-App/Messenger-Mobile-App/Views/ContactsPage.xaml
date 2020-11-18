@@ -9,7 +9,7 @@
     <ContentPage.BindingContext>
         <local:ContactsViewModel />
     </ContentPage.BindingContext>
-    
+
     <ContentPage.Resources>
         <ResourceDictionary>
             <Color x:Key="Accent">#96d1ff</Color>
@@ -33,11 +33,17 @@
     </Grid>-->
 
     <RefreshView Command="{Binding LoadContactsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
-        <CollectionView x:Name="ContactsListView" ItemsSource="{Binding Contacts}" SelectionMode="Single">
+        <CollectionView x:Name="ContactsListView" ItemsSource="{Binding Contacts}" SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <StackLayout Padding="10" x:DataType="model:Contact">
                         <Label Text="{Binding Name}" Style="{DynamicResource ListItemTextStyle}" FontSize="20"/>
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                NumberOfTapsRequired="1"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:ContactsViewModel}}, Path=ContactTappedCommand}"
+                                CommandParameter="{Binding .}" />
+                        </StackLayout.GestureRecognizers>
                     </StackLayout>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
