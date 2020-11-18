@@ -1,0 +1,70 @@
+﻿body {
+    background-image: url('../images/background.jpg');
+    background-size: cover;
+}
+
+.contactbox {
+    min-width: 300px;
+    max-width: 400px;
+    min-width: 300px;
+    height: 85vh;
+    background: #0048AA;
+    border-radius: 10px;
+    margin-top: -8px;
+    margin-left: 32%;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+form.example input[type=text] {
+    padding: 10px;
+    font-size: 17px;
+    border: 1px solid grey;
+    float: left;
+    width: 80%;
+    background: #f1f1f1;
+}
+
+form.example button {
+    float: left;
+    width: 20%;
+    padding: 10px;
+    background: #2196F3;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none;
+    cursor: pointer;
+}
+
+form.example button:hover {
+    background: #0b7dda;
+}
+
+form.example::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 50%;
+    margin-left: 20%;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    margin-left: 20%;
+}
+
+.container2 {
+    padding: 2px 16px;
+    background-color: #0048AA;
+    color: white;
+    margin-top: -40%;
+    height: 10px;
+}
