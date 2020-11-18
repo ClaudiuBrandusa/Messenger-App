@@ -16,8 +16,8 @@ namespace Messenger_Mobile_App.ViewModels
         public Command LoadConversationsCommand { get; }
 
         public Command AddContactCommand { get; }
-
-        public Command<Contact> ContactTappedCommand { get; }
+        public Command<Conversation> ConversationTappedCommand { get; }
+        
         public ConversationsViewModel()
         {
             Title = "Conversations";
@@ -25,7 +25,7 @@ namespace Messenger_Mobile_App.ViewModels
             Conversations = new ObservableCollection<Conversation>();
             LoadConversationsCommand = new Command(async () => await ExecuteLoadConversationsCommand());
             AddContactCommand = new Command(OnAddConversation);
-            ContactTappedCommand = new Command<Contact>(OnConversationSelected);
+            ConversationTappedCommand = new Command<Conversation>(OnConversationClicked);
         }
 
         async Task ExecuteLoadConversationsCommand()
@@ -56,22 +56,15 @@ namespace Messenger_Mobile_App.ViewModels
             await Shell.Current.GoToAsync(nameof(NewConversationPage));
         }
 
-        async void OnConversationSelected(Contact contact)
+        async void OnConversationClicked(Conversation conversation)
         {
             await Task.CompletedTask;
-            /*if (contact == null)
-            {
-                return;
-            }
+        }
 
-            var conversation = await DataConversations.GetItemAsync(contact.Name);
-
-            if (conversation == null || conversation == default)
-            {
-                return;
-            }
-
-            await Shell.Current.GoToAsync($"{nameof(ConversationPage)}?{nameof(ConversationViewModel.Name)}={conversation.Id}");*/
+        public void OnAppearing()
+        {
+            IsBusy = true;
+            ExecuteLoadConversationsCommand();
         }
     }
 }

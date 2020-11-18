@@ -4,6 +4,7 @@
              Title="{Binding Title}"
              xmlns:local="clr-namespace:Messenger_Mobile_App.ViewModels"  
              xmlns:model="clr-namespace:Messenger_Mobile_App.Models"  
+             xmlns:behaviorsPack="clr-namespace:Xamarin.Forms.BehaviorsPack;assembly=Xamarin.Forms.BehaviorsPack"
              x:Class="Messenger_Mobile_App.Views.ConversationsPage">
 
     <ContentPage.BindingContext>
@@ -15,7 +16,10 @@
     </ContentPage.ToolbarItems>
 
     <StackLayout>
-        <ListView x:Name="ConversationsListView" HasUnevenRows="True" ItemsSource="{Binding Conversations}" ItemTapped="OnListViewItemTapped" SelectionMode="None">
+        <ListView x:Name="ConversationsListView" HasUnevenRows="True" ItemsSource="{Binding Conversations}" SelectionMode="None" IsPullToRefreshEnabled="True" RefreshCommand="{Binding LoadConversationsCommand}" IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+            <ListView.Behaviors>
+                <behaviorsPack:EventToCommandBehavior EventName="ItemTapped" Command="{Binding ConversationTappedCommand}"/>
+            </ListView.Behaviors>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
@@ -29,17 +33,17 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Image Grid.RowSpan="2" 
-                                   Source="{Binding Contact.ImageUrl}"
-                                   Aspect="AspectFill"
-                                   HeightRequest="60"
-                                   WidthRequest="60"/>
+                                        Source="{Binding Contact.ImageUrl}"
+                                        Aspect="AspectFill"
+                                        HeightRequest="60"
+                                        WidthRequest="60"/>
                             <Label Grid.Row="0"
-                                   Grid.Column="1"
-                                   Text="{Binding Contact.Name}"
-                                   FontAttributes="Bold" />
+                                        Grid.Column="1"
+                                        Text="{Binding Contact.Name}"
+                                        FontAttributes="Bold" />
                             <Label Grid.Row="1"
-                                   Grid.Column="1"
-                                   Text="{Binding Messages}"/>
+                                        Grid.Column="1"
+                                        Text="{Binding Messages}"/>
                         </Grid>
                     </ViewCell>
                 </DataTemplate>

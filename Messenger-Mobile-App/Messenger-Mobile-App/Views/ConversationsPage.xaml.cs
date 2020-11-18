@@ -24,28 +24,15 @@ namespace Messenger_Mobile_App.Views
             //BindingContext = this;//_viewModel = new ConversationsViewModel();
 
             Conversations = new List<Conversation>();
-            Conversations.Add(new Conversation 
-            {
-                Id = "a",
-                Contact = new Contact { Name = "Gicu", IsActive = false, ImageUrl="https://d.newsweek.com/en/full/1585616/google-meet-logo.jpg?w=1600&h=1600&q=88&f=24975ba158fe3f926e521f5b86227d7a"},
-                Messages = "Sal kf?"
-            });
 
-            Conversations.Add(new Conversation
-            {
-                Id = "b",
-                Contact = new Contact { Name = "Radu", IsActive = false, ImageUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/1200px-Google_Chrome_icon_%28September_2014%29.svg.png" },
-                Messages = "Sunt interese la mijloc.."
-            });
 
-            BindingContext = this;
+            BindingContext = _viewModel = new ConversationsViewModel();
         }
 
-        // Keep in mind that the sender is the ListView
-
-        void OnListViewItemTapped(object sender, ItemTappedEventArgs e)
+        protected override void OnAppearing()
         {
-            Conversation tappedItem = e.Item as Conversation;
+            base.OnAppearing();
+            _viewModel.OnAppearing();
         }
     }
 }
