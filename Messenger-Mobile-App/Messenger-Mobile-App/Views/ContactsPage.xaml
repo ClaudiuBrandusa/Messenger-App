@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Messenger_Mobile_App.Views.ContactsPage"
+             xmlns:behaviorsPack="clr-namespace:Xamarin.Forms.BehaviorsPack;assembly=Xamarin.Forms.BehaviorsPack"
              xmlns:local="clr-namespace:Messenger_Mobile_App.ViewModels" 
              xmlns:model="clr-namespace:Messenger_Mobile_App.Models"  
              Title="{Binding Title}">
@@ -20,34 +21,44 @@
         <ToolbarItem Text="Add Contact" Command="{Binding AddContactCommand}" />
     </ContentPage.ToolbarItems>
 
-    <!--<Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <ScrollView Grid.Row="0">
-            <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
-                
-            </StackLayout>
-        </ScrollView>
-    </Grid>-->
-
-    <RefreshView Command="{Binding LoadContactsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
-        <CollectionView x:Name="ContactsListView" ItemsSource="{Binding Contacts}" SelectionMode="None">
-            <CollectionView.ItemTemplate>
+    <StackLayout>
+        <ListView x:Name="ContactsListView" HasUnevenRows="True" ItemsSource="{Binding Contacts}" SelectionMode="None" IsPullToRefreshEnabled="True" RefreshCommand="{Binding LoadContactsCommand}" IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+            <ListView.Behaviors>
+                <behaviorsPack:EventToCommandBehavior EventName="ItemTapped" Command="{Binding ContactTappedCommand}"/>
+            </ListView.Behaviors>
+            <ListView.ItemTemplate>
                 <DataTemplate>
-                    <StackLayout Padding="10" x:DataType="model:Contact">
-                        <Label Text="{Binding Name}" Style="{DynamicResource ListItemTextStyle}" FontSize="20"/>
-                        <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer 
-                                NumberOfTapsRequired="1"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:ContactsViewModel}}, Path=ContactTappedCommand}"
-                                CommandParameter="{Binding .}" />
-                        </StackLayout.GestureRecognizers>
-                    </StackLayout>
+                    <ViewCell>
+                        <Grid Padding="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.RowSpan="2" 
+                                        Source="{Binding ImageUrl}"
+                                        Aspect="AspectFill"
+                                        HeightRequest="60"
+                                        WidthRequest="60"/>
+                            <Label Grid.Row="0"
+                                        Grid.Column="1"
+                                        Text="{Binding Name}"
+                                        FontAttributes="Bold" />
+                            <Label Grid.Row="1"
+                                        Grid.Column="1"
+                                        Text="Is active:"/>
+                            <Label Grid.Row="1"
+                                        Grid.Column="2"
+                                        Text="{Binding IsActive}"/>
+                        </Grid>
+                    </ViewCell>
                 </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </RefreshView>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
 
 </ContentPage>

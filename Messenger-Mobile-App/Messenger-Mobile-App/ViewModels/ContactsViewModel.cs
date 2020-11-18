@@ -38,12 +38,12 @@ namespace Messenger_Mobile_App.ViewModels
             Title = "Contacts";
 
             Contacts = new ObservableCollection<Contact>();
-            LoadContactsCommand = new Command(async () => await ExecuteLoadContactsCommand());
+            LoadContactsCommand = new Command(async () => await ExecuteLoadContacts());
             AddContactCommand = new Command(OnAddContact);
             ContactTappedCommand = new Command<Contact>(OnContactSelected);
         }
 
-        async Task ExecuteLoadContactsCommand()
+        async Task ExecuteLoadContacts()
         {
             IsBusy = true;
 
@@ -70,6 +70,7 @@ namespace Messenger_Mobile_App.ViewModels
         {
             IsBusy = true;
             SelectedContact = null;
+            ExecuteLoadContacts();
         }
 
         async void OnAddContact(object obj)
