@@ -12,5 +12,10 @@ namespace Messenger_Web_App.Controllers
         {
             return View();
         }
+
+        public IActionResult ChatBox2()
+        {
+            return View();
+        }
     }
 }
