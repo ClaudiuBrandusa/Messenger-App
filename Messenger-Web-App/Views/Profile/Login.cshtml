@@ -1,0 +1,27 @@
+﻿@{
+    Layout = "_Layout"; ViewBag.Title = "Login";
+}
+
+@model Messenger_API.Authentication.Login
+
+
+<div class="loginbox">
+    <form asp-action="Login">
+        <img src="~/images/user.png" class="avatar" />
+        <h1>Login Here</h1>
+        <div class="form-group">
+            <label asp-for="Username" class="label-control"></label>
+            <input type="text" asp-for="Username" placeholder="Enter Username" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Password" class="label-control"></label>
+            <input type="password" asp-for="Password" placeholder="Enter Password" class="form-control" />
+        </div>
+        <div>
+            <input type="submit" name="" value="Login" />
+            <a href="#">Lost you password?</a><br />
+            <a href='/Profile/Register'>Don`t have an account?</a>
+        </div>
+        <div class="validation-login" asp-validation-summary="All"></div>
+    </form>
+</div>

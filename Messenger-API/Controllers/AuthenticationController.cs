@@ -11,9 +11,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Messenger_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/authentication")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController : Controller 
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IConfiguration _configuration;
@@ -28,7 +28,7 @@ namespace Messenger_API.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        public async Task<IActionResult> Register([FromBody] Register model)
         {
             var userExist = await userManager.FindByNameAsync(model.UserName);
             if (userExist != null)
