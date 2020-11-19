@@ -34,5 +34,11 @@ namespace Messenger_Mobile_App.Views
             base.OnAppearing();
             _viewModel.OnAppearing();
         }
+
+        public void OnItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            Conversation conversation = e.Item as Conversation;
+            _viewModel.ConversationTappedCommand.Execute(conversation);
+        }
     }
 }

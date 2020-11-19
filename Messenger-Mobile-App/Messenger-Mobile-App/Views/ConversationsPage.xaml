@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              Title="{Binding Title}"
              xmlns:local="clr-namespace:Messenger_Mobile_App.ViewModels"  
-             xmlns:model="clr-namespace:Messenger_Mobile_App.Models"  
-             xmlns:behaviorsPack="clr-namespace:Xamarin.Forms.BehaviorsPack;assembly=Xamarin.Forms.BehaviorsPack"
+             xmlns:model="clr-namespace:Messenger_Mobile_App.Models"
              x:Class="Messenger_Mobile_App.Views.ConversationsPage">
 
     <ContentPage.BindingContext>
@@ -16,10 +15,7 @@
     </ContentPage.ToolbarItems>
 
     <StackLayout>
-        <ListView x:Name="ConversationsListView" HasUnevenRows="True" ItemsSource="{Binding Conversations}" SelectionMode="None" IsPullToRefreshEnabled="True" RefreshCommand="{Binding LoadConversationsCommand}" IsRefreshing="{Binding IsBusy, Mode=OneWay}">
-            <ListView.Behaviors>
-                <behaviorsPack:EventToCommandBehavior EventName="ItemTapped" Command="{Binding ConversationTappedCommand}"/>
-            </ListView.Behaviors>
+        <ListView x:Name="ConversationsListView" HasUnevenRows="True" ItemsSource="{Binding Conversations}" SelectionMode="None" IsPullToRefreshEnabled="True" RefreshCommand="{Binding LoadConversationsCommand}" IsRefreshing="{Binding IsBusy, Mode=OneWay}" ItemTapped="OnItemTapped">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>

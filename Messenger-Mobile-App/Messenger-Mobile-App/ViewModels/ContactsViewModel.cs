@@ -14,17 +14,6 @@ namespace Messenger_Mobile_App.ViewModels
 {
     public class ContactsViewModel : BaseViewModel
     {
-        Contact _selectedContact;
-        public Contact SelectedContact 
-        {
-            get => _selectedContact;
-            set
-            {
-                SetProperty(ref _selectedContact, value);
-                OnContactSelected(value);
-            }
-        }
-
         public ObservableCollection<Contact> Contacts { get; }
 
         public Command LoadContactsCommand { get; }
@@ -69,7 +58,6 @@ namespace Messenger_Mobile_App.ViewModels
         public void OnAppearing()
         {
             IsBusy = true;
-            SelectedContact = null;
             ExecuteLoadContacts();
         }
 
@@ -92,7 +80,7 @@ namespace Messenger_Mobile_App.ViewModels
                 return;
             }
 
-            await Shell.Current.GoToAsync($"{nameof(ConversationPage)}?{nameof(ConversationViewModel.Name)}={conversation.Id}");
+            await Shell.Current.GoToAsync($"{nameof(ConversationPage)}?{nameof(ConversationViewModel.Name)}={conversation.Contact.Name}");
         }
     }
 }

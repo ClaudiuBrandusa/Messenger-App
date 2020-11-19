@@ -1,20 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:services="clr-namespace:Messenger_Mobile_App.Services" 
              xmlns:local="clr-namespace:Messenger_Mobile_App.ViewModels" 
              xmlns:model="clr-namespace:Messenger_Mobile_App.Models" 
              Title="{Binding Title}"
              x:Class="Messenger_Mobile_App.Views.ConversationPage">
 
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <services:IsMyMessageConverter x:Key="IsMyMessage" />
+            <services:IsMyMessageContentConverter x:Key="IsMyMessageContent" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <ContentPage.BindingContext>
         <local:ConversationViewModel/>
     </ContentPage.BindingContext>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="{Binding ContactImage}" />
+        <ToolbarItem Text="{Binding Name}" />
+        <ToolbarItem Text="Settings" />
+    </ContentPage.ToolbarItems>
     
-    <StackLayout x:DataType="local:ConversationViewModel">
-        <Label Text="{Binding Test, Mode=TwoWay}"/>
-        <StackLayout x:DataType="model:Conversation">
-            <Label Text="{Binding Id}"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="8*"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+        <ListView Grid.Row="0" ItemsSource="{Binding Messages}" SelectionMode="None" RefreshCommand="{Binding ReloadMessagesCommand}" IsPullToRefreshEnabled="True" IsRefreshing="{Binding IsBusy, Mode=OneWay}" SeparatorVisibility="None">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Frame Padding="0" HeightRequest="100" BackgroundColor="{Binding Sender, Converter={StaticResource IsMyMessage}}" HorizontalOptions="{Binding Alignment}">
+                            <StackLayout  Margin="10,5,10,5">
+                                <Label Text="{Binding Sender}" TextColor="{Binding Sender, Converter={StaticResource IsMyMessageContent}}"/>
+                                <Label Text="{Binding Content}" TextColor="{Binding Sender, Converter={StaticResource IsMyMessageContent}}" />
+                            </StackLayout>
+                        </Frame>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <StackLayout Grid.Row="1">
+            <Entry Placeholder="Enter text message" PlaceholderColor="Gray" BackgroundColor="LightGray" />
         </StackLayout>
-    </StackLayout>
+    </Grid>
 
 </ContentPage>

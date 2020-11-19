@@ -2,7 +2,6 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Messenger_Mobile_App.Views.ContactsPage"
-             xmlns:behaviorsPack="clr-namespace:Xamarin.Forms.BehaviorsPack;assembly=Xamarin.Forms.BehaviorsPack"
              xmlns:local="clr-namespace:Messenger_Mobile_App.ViewModels" 
              xmlns:model="clr-namespace:Messenger_Mobile_App.Models"  
              Title="{Binding Title}">
@@ -22,10 +21,7 @@
     </ContentPage.ToolbarItems>
 
     <StackLayout>
-        <ListView x:Name="ContactsListView" HasUnevenRows="True" ItemsSource="{Binding Contacts}" SelectionMode="None" IsPullToRefreshEnabled="True" RefreshCommand="{Binding LoadContactsCommand}" IsRefreshing="{Binding IsBusy, Mode=OneWay}">
-            <ListView.Behaviors>
-                <behaviorsPack:EventToCommandBehavior EventName="ItemTapped" Command="{Binding ContactTappedCommand}"/>
-            </ListView.Behaviors>
+        <ListView x:Name="ContactsListView" HasUnevenRows="True" ItemsSource="{Binding Contacts}" SelectionMode="None" IsPullToRefreshEnabled="True" ItemTapped="OnItemTapped" RefreshCommand="{Binding LoadContactsCommand}" IsRefreshing="{Binding IsBusy, Mode=OneWay}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>

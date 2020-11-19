@@ -42,7 +42,7 @@ namespace Messenger_Mobile_App.Services
 
         public async Task<bool> DeleteItemAsync(string id)
         {
-            var oldItem = conversations.Where((Conversation conversation) => conversation.Id.Equals(id)).FirstOrDefault();
+            var oldItem = conversations.Where((Conversation conversation) => conversation.Contact.Name.Equals(id)).FirstOrDefault();
             conversations.Remove(oldItem);
 
             return await Task.FromResult(true);
@@ -50,7 +50,7 @@ namespace Messenger_Mobile_App.Services
 
         public async Task<Conversation> GetItemAsync(string id)
         {
-            return await Task.FromResult(conversations.FirstOrDefault(c => c.Id.Equals(id)));
+            return await Task.FromResult(conversations.FirstOrDefault(c => c.Contact.Name.Equals(id)));
         }
 
         public async Task<IEnumerable<Conversation>> GetItemsAsync(bool forceRefresh = false)
@@ -60,7 +60,7 @@ namespace Messenger_Mobile_App.Services
 
         public async Task<bool> UpdateItemAsync(Conversation item)
         {
-            var oldItem = conversations.Where((Conversation conversation) => conversation.Id.Equals(item.Id)).FirstOrDefault();
+            var oldItem = conversations.Where((Conversation conversation) => conversation.Contact.Name.Equals(item.Contact.Name)).FirstOrDefault();
             conversations.Remove(oldItem);
             conversations.Add(item);
 

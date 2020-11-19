@@ -1,6 +1,8 @@
-﻿using Messenger_Mobile_App.ViewModels;
+﻿using Messenger_Mobile_App.Models;
+using Messenger_Mobile_App.ViewModels;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -21,5 +23,11 @@ namespace Messenger_Mobile_App.Views
             base.OnAppearing();
             _viewModel.OnAppearing();
         }
+        public void OnItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            Contact contact = e.Item as Contact;
+            _viewModel.ContactTappedCommand.Execute(contact);
+        }
     }
+
 }
