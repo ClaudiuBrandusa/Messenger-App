@@ -1,0 +1,104 @@
+﻿@{
+    Layout = "_Layout"; ViewBag.Title = "Chat Box";
+}
+
+
+<div id="chat-container">
+    <div id="search-container">
+        <input type="text" placeholder="Search" />
+    </div>
+    <div id="conversation-list">
+        <div class="conversation active">
+            <img src="~/images/profile6.jpg" alt="Daryl Duckmanton" />
+            <div class="title-text">
+                Daryl Duckmanton
+            </div>
+            <div class="created-date">
+                Apr 16
+            </div>
+            <div class="conversation-message">
+                This is a message
+            </div>
+        </div>
+        <div class="conversation">
+            <img src="~/images/profile4.jpg" alt="Kim O`Neil" />
+            <div class="title-text">
+                Kim O`Neil
+            </div>
+            <div class="created-date">
+                Jun 4
+            </div>
+            <div class="conversation-message">
+                Very funny
+            </div>
+        </div>
+        <div class="conversation">
+            <img src="~/images/profile6.jpg" alt="John Anderson" />
+            <div class="title-text">
+                John Anderson
+            </div>
+            <div class="created-date">
+                Aug 23
+            </div>
+            <div class="conversation-message">
+                Yes I love how Python does that
+            </div>
+        </div>
+        <div class="conversation">
+            <img src="~/images/profile4.jpg" alt="Sarah Momes" />
+            <div class="title-text">
+                Sarah Momes
+            </div>
+            <div class="created-date">
+                1 year
+            </div>
+            <div class="conversation-message">
+                Thank you.I appreciate that.
+            </div>
+        </div>
+        <div class="conversation">
+            <img src="~/images/profile6.jpg" alt="Carl Anderson" />
+            <div class="title-text">
+                Carl Anderson
+            </div>
+            <div class="created-date">
+                Dec 24
+            </div>
+            <div class="conversation-message">
+                Merry Christmas!
+            </div>
+        </div>
+    </div>
+    <div id="new-message-container">
+        <a href="#">
+            <img src="~/images/add_green3.png" width="40" height="40" alt="New Conversation" style="margin-top: -3px; margin-left: 0px" />
+        </a>
+    </div>
+    <div id="chat-title">
+        <span>Daryl Duckmanton</span>
+        <img src="~/images/settings2.png" width="50" height="50" alt="Delete Conversation" />
+    </div>
+    <div id="chat-message-list">
+        <div class="message-row you-message">
+            <div class="message-content">
+                <div class="message-text">Ok then</div>
+                <div class="message-time">Apr 16</div>
+            </div>
+        </div>
+        <div class="message-row other-message">
+            <div class="message-content">
+                <img src="~/images/profile6.jpg" width="40" height="40" alt="Daryl Duckmanton" />
+                <div class="message-text">
+                    Yeah I think it`s best we do that. Otherwise things won`t
+                    work well at all. I`m adding more text here to test the
+                    sizing of the speech bubble and the wrapping of it too.
+                </div>
+                <div class="message-time">Apr 16</div>
+            </div>
+        </div>
+    </div>
+  
+    <div id="chat-form">
+        <input class="col-md-10" type="text" placeholder="type a message" style="margin-top: 1.5%; height:52px; margin-left:2%;" /> 
+    </div>
+</div>
