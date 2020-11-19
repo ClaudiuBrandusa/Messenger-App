@@ -57,11 +57,13 @@ namespace Messenger_Mobile_App.ViewModels
             try 
             {
                 // we are populating the list with hard coded messages
-                Messages.Add(new Message { Content="Hi", Sender="You", Alignment=LayoutOptions.End });
-                Messages.Add(new Message { Content = "What's up?", Sender = "You", Alignment = LayoutOptions.End });
-                Messages.Add(new Message { Content = "Nothing", Sender = "Him", Alignment = LayoutOptions.Start });
-                Messages.Add(new Message { Content = "Alright!", Sender = "You", Alignment = LayoutOptions.End });
-            }catch(Exception ex)
+                Messages.Add(new Message { Content="Hi", Sender="You"});
+                Messages.Add(new Message { Content="Hi", Sender=Name});
+                Messages.Add(new Message { Content = "What's up?", Sender = "You"});
+                Messages.Add(new Message { Content = "Nothing, you?", Sender = Name});
+                Messages.Add(new Message { Content = "I'm good", Sender = "You"});
+            }
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex);
             }

@@ -11,6 +11,8 @@
         <ResourceDictionary>
             <services:IsMyMessageConverter x:Key="IsMyMessage" />
             <services:IsMyMessageContentConverter x:Key="IsMyMessageContent" />
+            <services:ViewMessageSenderConverter x:Key="ViewMessageSender" />
+            <services:AlignMessageConverter x:Key="AlignMessage" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -33,10 +35,12 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Frame Padding="2" Margin="4,5,4,5"  BackgroundColor="{Binding Sender, Converter={StaticResource IsMyMessage}}" HorizontalOptions="{Binding Alignment}">
-                            <StackLayout>
-                                <Label Text="{Binding Sender}" TextColor="{Binding Sender, Converter={StaticResource IsMyMessageContent}}"/>
-                                <Label Text="{Binding Content}" TextColor="{Binding Sender, Converter={StaticResource IsMyMessageContent}}" />
+                        <Frame Padding="2">
+                            <StackLayout Margin="4,5,4,5" HorizontalOptions="{Binding Sender, Converter={StaticResource AlignMessage}}">
+                                <Label Text="{Binding Sender, Converter={StaticResource ViewMessageSender}}" TextColor="Black"/>
+                                <Frame Padding="12,6,12,6" BackgroundColor="{Binding Sender, Converter={StaticResource IsMyMessage}}">
+                                    <Label Text="{Binding Content}" TextColor="{Binding Sender, Converter={StaticResource IsMyMessageContent}}" />
+                                </Frame>
                             </StackLayout>
                         </Frame>
                     </ViewCell>
