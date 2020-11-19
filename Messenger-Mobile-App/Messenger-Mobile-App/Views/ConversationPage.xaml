@@ -26,15 +26,15 @@
     
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="8*"/>
-            <RowDefinition Height="2*"/>
+            <RowDefinition Height="9*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <ListView Grid.Row="0" ItemsSource="{Binding Messages}" SelectionMode="None" RefreshCommand="{Binding ReloadMessagesCommand}" IsPullToRefreshEnabled="True" IsRefreshing="{Binding IsBusy, Mode=OneWay}" SeparatorVisibility="None">
+        <ListView Grid.Row="0" HasUnevenRows="True" ItemsSource="{Binding Messages}" SelectionMode="None" RefreshCommand="{Binding ReloadMessagesCommand}" IsPullToRefreshEnabled="True" IsRefreshing="{Binding IsBusy, Mode=OneWay}" SeparatorVisibility="None">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Frame Padding="0" HeightRequest="100" BackgroundColor="{Binding Sender, Converter={StaticResource IsMyMessage}}" HorizontalOptions="{Binding Alignment}">
-                            <StackLayout  Margin="10,5,10,5">
+                        <Frame Padding="2" Margin="4,5,4,5"  BackgroundColor="{Binding Sender, Converter={StaticResource IsMyMessage}}" HorizontalOptions="{Binding Alignment}">
+                            <StackLayout>
                                 <Label Text="{Binding Sender}" TextColor="{Binding Sender, Converter={StaticResource IsMyMessageContent}}"/>
                                 <Label Text="{Binding Content}" TextColor="{Binding Sender, Converter={StaticResource IsMyMessageContent}}" />
                             </StackLayout>
@@ -43,9 +43,14 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <StackLayout Grid.Row="1">
-            <Entry Placeholder="Enter text message" PlaceholderColor="Gray" BackgroundColor="LightGray" />
-        </StackLayout>
+        <Grid Grid.Row="1" VerticalOptions="Fill" BackgroundColor="Red" ColumnSpacing="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="8*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <model:MyEntry Grid.Column="0" Placeholder="Enter text message" PlaceholderColor="Gray" BackgroundColor="LightGray" VerticalOptions="Fill" MyHandleColor="#2c437d" MyTintColor="#2c437d" MyHighlightColor="#2c437d" />
+            <Label Grid.Column="1" BackgroundColor="#2c437d" TextColor="White" Text="Send" VerticalOptions="Fill" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+        </Grid>
     </Grid>
 
 </ContentPage>

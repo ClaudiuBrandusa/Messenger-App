@@ -21,7 +21,6 @@ namespace Messenger_Mobile_App.Views
         public ConversationsPage()
         {
             InitializeComponent();
-            //BindingContext = this;//_viewModel = new ConversationsViewModel();
 
             Conversations = new List<Conversation>();
 
