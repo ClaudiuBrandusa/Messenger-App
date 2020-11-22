@@ -62,6 +62,7 @@ namespace Messenger_Mobile_App.ViewModels
             set
             {
                 active = value;
+                OnPropertyChanged();
             }
         }
 
@@ -105,7 +106,7 @@ namespace Messenger_Mobile_App.ViewModels
                 Title = name;
                 Url = conversation.Contact.ImageUrl;
                 contactImage = ImageSource.FromFile(Url);
-                NavigationPage.SetTitleIconImageSource(Application.Current, contactImage);
+                Active = conversation.Contact.IsActive;
             }
             catch(Exception ex)
             {
