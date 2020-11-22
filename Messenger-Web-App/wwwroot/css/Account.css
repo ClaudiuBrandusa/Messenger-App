@@ -1,0 +1,189 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+    background-image: url('../images/background.jpg');
+    background-size: cover;
+    display: grid;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 45px; /* Vertically center the text there */
+    text-align: center;
+    background: #2c437d;
+    opacity: 0.9;
+}
+
+.account-box {
+    min-width: 300px;
+    max-width: 500px;
+    min-width: 300px;
+    height: 85vh;
+    background: #0048AA;
+    border-radius: 10px;
+    margin-top: -8px;
+    margin-left: 27%;
+}
+
+.profile-image > img
+{
+    border: 2px solid white;
+    border-radius: 100%;
+    margin: 8% 3% 2% 35%;
+}
+
+.profile-image > h1
+{
+    color: white;
+    font-weight: bold;
+    font-size: 30px;
+    margin-bottom: 5%;
+}
+
+.profile-content > h2 {
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    background-color: #1c2c54;
+    border: 2px solid white;
+    border-radius: 10px 10px 10px 10px;
+    text-align: center;
+    margin-top: 6.5%;
+    margin-left:17%;
+}
+
+.btn-edit {
+    background-color: forestgreen;
+    color: white;
+    height: 51px;
+    width: 192px;
+    text-align: center;
+    margin-left: 31.5%;
+    margin-top: 6.5%;
+    border: white 2px solid;
+    border-radius: 15px 15px 15px 15px;
+}
+
+.btn-edit:hover {
+    background-color: #1c2c54;
+    color: white;
+    height: 51px;
+    width: 192px;
+    text-align: center;
+    margin-left: 31.5%;
+    margin-top: 6.5%;
+    border: white 2px solid;
+    border-radius: 15px 15px 15px 15px;
+}
+
+
+
+.editaccount-box {
+    min-width: 300px;
+    max-width: 500px;
+    min-width: 300px;
+    height: 85vh;
+    background: #0048AA;
+    border-radius: 10px;
+    margin-top: -8px;
+    margin-left: 27%;
+}
+
+.editaccount-box > h1 {
+    color: white;
+    font-weight: bold;
+    font-size: 50px;
+    margin-bottom: 5%;
+}
+
+.btn-upload {
+    height: 30px;
+    width: 130px;
+    margin-left: 5%;
+    margin-top: 5%;
+    border: white 1px solid;
+    border-radius: 15px 15px 15px 15px;
+    background-color: darkblue;
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+    text-align: center;
+}
+
+.btn-change
+{
+    height: 50px;
+    width: 250px;
+    margin-left: 25%;
+    margin-top: 5%;
+    border: white 1px solid;
+    border-radius: 15px 15px 15px 15px;
+    background-color: forestgreen;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+}
