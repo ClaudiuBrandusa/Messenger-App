@@ -41,5 +41,15 @@ namespace Messenger_Web_App.Controllers
         {
             return View();
         }
+
+        public IActionResult Account()
+        {
+            return View();
+        }
+
+        public IActionResult EditAccount()
+        {
+            return View();
+        }
     }
 }
