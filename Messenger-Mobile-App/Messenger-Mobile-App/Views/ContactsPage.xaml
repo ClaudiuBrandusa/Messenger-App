@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Messenger_Mobile_App.Views.ContactsPage"
+             xmlns:services="clr-namespace:Messenger_Mobile_App.Services" 
              xmlns:local="clr-namespace:Messenger_Mobile_App.ViewModels" 
              xmlns:model="clr-namespace:Messenger_Mobile_App.Models"  
              Title="{Binding Title}">
@@ -13,6 +14,9 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <Color x:Key="Accent">#96d1ff</Color>
+            <services:ContactActiveConverter x:Key="ContactActive" />
+            <services:ContactActiveColorConverter x:Key="ContactActiveColor" />
+            <services:ImageValidatorConverter x:Key="ImageValidator" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -36,7 +40,7 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Image Grid.RowSpan="2" 
-                                        Source="{Binding ImageUrl}"
+                                        Source="{Binding ImageUrl, Converter={StaticResource ImageValidator}}"
                                         Aspect="AspectFill"
                                         HeightRequest="60"
                                         WidthRequest="60"/>
@@ -46,10 +50,10 @@
                                         FontAttributes="Bold" />
                             <Label Grid.Row="1"
                                         Grid.Column="1"
-                                        Text="Is active:"/>
+                                        Text="Online status:"/>
                             <Label Grid.Row="1"
                                         Grid.Column="2"
-                                        Text="{Binding IsActive}"/>
+                                        Text="{Binding IsActive, Converter={StaticResource ContactActive}}" TextColor="{Binding IsActive, Converter={StaticResource ContactActiveColor}}"/>
                         </Grid>
                     </ViewCell>
                 </DataTemplate>

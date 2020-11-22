@@ -11,13 +11,22 @@ namespace Messenger_Mobile_App
         public AppShell()
         {
             InitializeComponent();
-            Routing.RegisterRoute(nameof(ConversationsPage), typeof(ConversationsPage));
+            //Routing.RegisterRoute(nameof(ConversationsPage), typeof(ConversationsPage));
             Routing.RegisterRoute(nameof(ConversationPage), typeof(ConversationPage));
+            Routing.RegisterRoute(nameof(ConversationSettingsPage), typeof(ConversationSettingsPage));
             Routing.RegisterRoute(nameof(NewContactPage), typeof(NewContactPage));
             Routing.RegisterRoute(nameof(NewConversationPage), typeof(NewConversationPage));
         }
 
-        private async void OnMenuItemClicked(object sender, EventArgs e)
+        private async void OnMenuLogoutClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("//LoginPage");
+        }
+        private async void OnMenuSettingsClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("//LoginPage");
+        }
+        private async void OnMenuProfileClicked(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync("//LoginPage");
         }

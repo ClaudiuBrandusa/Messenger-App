@@ -71,23 +71,27 @@ namespace Messenger_Mobile_App.ViewModels
 
         public Command ReloadMessagesCommand { get; }
 
+        public Command OpenConversationSettingsCommand { get; }
+
         public ConversationViewModel()
         {
             ReloadMessagesCommand = new Command(async () => await ReloadMessages());
             Messages = new ObservableCollection<Message>();
+            OpenConversationSettingsCommand = new Command(async () => await EnterConversationSettings());
         }
 
         public async Task ReloadMessages()
         {
             IsBusy = true;
-            try 
+            try
             {
+                Messages.Clear();
                 // we are populating the list with hard coded messages
-                Messages.Add(new Message { Content="Hi", Sender="You"});
-                Messages.Add(new Message { Content="Hi", Sender=Name});
-                Messages.Add(new Message { Content = "What's up?", Sender = "You"});
-                Messages.Add(new Message { Content = "Nothing, you?", Sender = Name});
-                Messages.Add(new Message { Content = "I'm good", Sender = "You"});
+                Messages.Add(new Message { Content = "Hi", Sender = "You", Date = new DateTime(2020, 11, 22, 10, 0, 0)});
+                Messages.Add(new Message { Content="Hi", Sender=Name, Date = new DateTime(2020, 11, 22, 10, 5, 0) });
+                Messages.Add(new Message { Content = "What's up?", Sender = "You", Date = new DateTime(2020, 11, 22, 10, 12, 0) });
+                Messages.Add(new Message { Content = "Nothing, you?", Sender = Name, Date = new DateTime(2020, 11, 22, 10, 53, 0) });
+                Messages.Add(new Message { Content = "I'm good", Sender = "You", Date = new DateTime(2020, 11, 22, 11, 13, 0) });
             }
             catch (Exception ex)
             {
@@ -113,6 +117,11 @@ namespace Messenger_Mobile_App.ViewModels
                 Debug.WriteLine(ex);
             }
             IsBusy = false;
+        }
+
+        async Task EnterConversationSettings()
+        {
+            await Shell.Current.GoToAsync($"{nameof(ConversationSettingsPage)}?{nameof(ConversationSettingsViewModel.Name)}={conversation.Contact.Name}");
         }
 
         public void OnAppearing()

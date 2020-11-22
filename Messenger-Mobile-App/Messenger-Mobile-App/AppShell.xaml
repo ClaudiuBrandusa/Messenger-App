@@ -19,7 +19,7 @@
                 <Setter Property="Shell.TabBarTitleColor" Value="White"/>
             </Style>
             <Style TargetType="TabBar" BasedOn="{StaticResource BaseStyle}" />
-            <Style TargetType="TabbedPage"  BasedOn="{StaticResource BaseStyle}" />
+            <Style TargetType="FlyoutItem"  BasedOn="{StaticResource BaseStyle}" />
 
             <!--
             Default Styles for all Flyout Items
@@ -68,22 +68,25 @@
         </ResourceDictionary>
     </Shell.Resources>
 
+    <Shell.FlyoutHeader>
+        <Label Text="Messenger App" FontSize="Large" TextColor="White" Padding="4"/>
+    </Shell.FlyoutHeader>
+
     <!-- 
         When the Flyout is visible this defines the content to display in the flyout.
         FlyoutDisplayOptions="AsMultipleItems" will create a separate flyout item for each child element    
         https://docs.microsoft.com/dotnet/api/xamarin.forms.shellgroupitem.flyoutdisplayoptions?view=xamarin-forms
     -->
-    <TabBar> <!--Remember to implement the flyout layout for the Status, Settings, Log out-->
-        <ShellContent Title="Conversations" Icon="tab_about.png" ContentTemplate="{DataTemplate local:ConversationsPage}" />
-        <ShellContent Title="Contacts" Icon="tab_feed.png" ContentTemplate="{DataTemplate local:ContactsPage}" />
-    </TabBar>
+    <!--Remember to implement the flyout layout for the Status, Settings, Log out-->
+    <FlyoutItem FlyoutDisplayOptions="AsSingleItem">
+        <ShellContent Title="Conversations" Icon="tab_about.png" Route="ConversationsPage" ContentTemplate="{DataTemplate local:ConversationsPage}" />
+        <ShellContent Title="Contacts" Icon="tab_feed.png" Route="ContactsPage" ContentTemplate="{DataTemplate local:ContactsPage}" />
+    </FlyoutItem>
+        <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
+    <MenuItem Text="Profile" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuProfileClicked" />
+    <MenuItem Text="Settings" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuSettingsClicked" />
+    <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuLogoutClicked" />
 
-    <!--<ShellContent Route="ConversationPage" Shell.FlyoutBehavior="Disabled" ContentTemplate="{DataTemplate local:ConversationPage}" />-->
-
-
-    <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
-    <!--<MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked">
-    </MenuItem>-->
 
     <!--
         This defines content that won't show up in a flyout menu. When this content is active the flyout menu won't be available.
@@ -100,10 +103,9 @@
     // https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#flyout-header
     <Shell.FlyoutHeaderTemplate>
         <DataTemplate>
-            <Grid>ContentHere</Grid>
+            <Label/>
         </DataTemplate>
     </Shell.FlyoutHeaderTemplate>
-
     // ItemTemplate is for ShellItems as displayed in a Flyout
     // https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#define-flyoutitem-appearance
     <Shell.ItemTemplate>

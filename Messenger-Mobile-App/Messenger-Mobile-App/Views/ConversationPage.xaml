@@ -15,12 +15,13 @@
             <services:AlignMessageConverter x:Key="AlignMessage" />
             <services:ContactActiveConverter x:Key="ContactActive" />
             <services:ContactActiveColorConverter x:Key="ContactActiveColor" />
+            <services:ImageValidatorConverter x:Key="ImageValidator" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <Shell.TitleView>
         <StackLayout Orientation="Horizontal" VerticalOptions="Center" Spacing="8">
-            <Image Source="{Binding Url}" VerticalOptions="Center" HeightRequest="40"/>
+            <Image Source="{Binding Url, Converter={StaticResource ImageValidator}}" VerticalOptions="Center" HeightRequest="40" BackgroundColor="White"/>
             <Label Text="{Binding Title}" VerticalOptions="CenterAndExpand" TextColor="White" FontSize="Medium"/>
             <Label Text="{Binding Active, Converter={StaticResource ContactActive}}" VerticalOptions="CenterAndExpand" TextColor="{Binding Active, Converter={StaticResource ContactActiveColor}}" FontSize="Medium"/>
         </StackLayout>
@@ -31,7 +32,7 @@
     </ContentPage.BindingContext>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem IconImageSource="settings_icon.png" Text="Settings"/>
+        <ToolbarItem IconImageSource="settings_icon.png" Text="Settings" Command="{Binding OpenConversationSettingsCommand}"/>
     </ContentPage.ToolbarItems>
     
     <Grid>
@@ -49,6 +50,7 @@
                                 <Frame Padding="12,6,12,6" BackgroundColor="{Binding Sender, Converter={StaticResource IsMyMessage}}">
                                     <Label Text="{Binding Content}" TextColor="{Binding Sender, Converter={StaticResource IsMyMessageContent}}" />
                                 </Frame>
+                                <Label Text="{Binding Date, StringFormat='{0:hh mm}'}"/>
                             </StackLayout>
                         </Frame>
                     </ViewCell>

@@ -15,16 +15,9 @@ namespace Messenger_Mobile_App.Services
         {
             contacts = new List<Contact>() // there goes the contacts loading
             {
-                new Contact { Name = "Radu", IsActive = true, ImageUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/1200px-Google_Chrome_icon_%28September_2014%29.svg.png" },
-                new Contact { Name = "Florin", IsActive = false, ImageUrl="https://d.newsweek.com/en/full/1585616/google-meet-logo.jpg?w=1600&h=1600&q=88&f=24975ba158fe3f926e521f5b86227d7a"}
+                new Contact { Name = "Radu", IsActive = true, ImageUrl="profile1.png" },
+                new Contact { Name = "Florin", IsActive = false}
             };
-
-
-            // Validating the image url
-            foreach (var contact in contacts)
-            {
-                contact.ImageUrl = ImageValidator.ValidateImageUrl(contact.ImageUrl);
-            }
         }
 
         public async Task<bool> AddItemAsync(Contact item)

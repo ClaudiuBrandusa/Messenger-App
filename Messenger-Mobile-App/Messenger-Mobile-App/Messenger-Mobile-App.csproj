@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+    <RootNamespace>Messenger_Mobile_App</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,9 @@
 
   <ItemGroup>
     <EmbeddedResource Update="Views\ConversationPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\ConversationSettingsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\ConversationsPage.xaml">
