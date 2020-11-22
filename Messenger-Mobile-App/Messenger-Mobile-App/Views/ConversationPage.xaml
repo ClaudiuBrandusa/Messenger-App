@@ -16,14 +16,20 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
+    <Shell.TitleView>
+        <StackLayout Orientation="Horizontal" VerticalOptions="Center" Spacing="8">
+            <Image Source="{Binding Url}" VerticalOptions="Center" HeightRequest="40"/>
+            <Label Text="{Binding Title}" VerticalOptions="CenterAndExpand" TextColor="White" FontSize="Medium"/>
+            <Label Text="{Binding Active}" VerticalOptions="CenterAndExpand" TextColor="White" FontSize="Medium"/>
+        </StackLayout>
+    </Shell.TitleView>
+    
     <ContentPage.BindingContext>
         <local:ConversationViewModel/>
     </ContentPage.BindingContext>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem IconImageSource="{Binding ContactImage}" />
-        <ToolbarItem Text="{Binding Name}" />
-        <ToolbarItem Text="Settings" />
+        <ToolbarItem IconImageSource="settings_icon.png" Text="Settings"/>
     </ContentPage.ToolbarItems>
     
     <Grid>

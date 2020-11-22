@@ -1,4 +1,5 @@
 ﻿using Messenger_Mobile_App.Models;
+using Messenger_Mobile_App.Services;
 using Messenger_Mobile_App.Views;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,30 @@ namespace Messenger_Mobile_App.ViewModels
             }
         }
 
+        string url;
+
+        public string Url
+        {
+            get => url;
+            set
+            {
+                url = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool active;
+
+        public bool Active
+        {
+            get => active;
+            set
+            {
+                active = value;
+            }
+        }
+
+
         public ObservableCollection<Message> Messages { get; private set; }
 
         public Command ReloadMessagesCommand { get; }
@@ -77,8 +102,12 @@ namespace Messenger_Mobile_App.ViewModels
             {
                 conversation = await DataConversations.GetItemAsync(Name);
                 name = conversation.Contact.Name;
-                contactImage = ImageSource.FromFile(conversation.Contact.ImageUrl);
-            }catch(Exception ex)
+                Title = name;
+                Url = conversation.Contact.ImageUrl;
+                contactImage = ImageSource.FromFile(Url);
+                NavigationPage.SetTitleIconImageSource(Application.Current, contactImage);
+            }
+            catch(Exception ex)
             {
                 Debug.WriteLine(ex);
             }

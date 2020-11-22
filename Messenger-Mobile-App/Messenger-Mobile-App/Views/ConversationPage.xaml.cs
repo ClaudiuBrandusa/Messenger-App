@@ -18,6 +18,7 @@ namespace Messenger_Mobile_App.Views
         {
             InitializeComponent();
             Shell.SetTabBarIsVisible(this, false); // This way we hide the tab bat when we are using this page
+
             BindingContext = _viewModel = new ConversationViewModel();
         }
 
