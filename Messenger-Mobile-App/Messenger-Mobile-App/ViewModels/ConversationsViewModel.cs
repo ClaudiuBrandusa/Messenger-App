@@ -25,7 +25,7 @@ namespace Messenger_Mobile_App.ViewModels
             Conversations = new ObservableCollection<Conversation>();
             LoadConversationsCommand = new Command(async () => await ExecuteLoadConversationsCommand());
             AddContactCommand = new Command(OnAddConversation);
-            ConversationTappedCommand = new Command<Conversation>(OnConversationClicked);
+            ConversationTappedCommand = new Command<Conversation>(OnConversationTapped);
         }
 
         async Task ExecuteLoadConversationsCommand()
@@ -56,15 +56,25 @@ namespace Messenger_Mobile_App.ViewModels
             await Shell.Current.GoToAsync(nameof(NewConversationPage));
         }
 
-        async void OnConversationClicked(Conversation conversation)
-        {
-            await Task.CompletedTask;
-        }
-
         public void OnAppearing()
         {
             IsBusy = true;
             ExecuteLoadConversationsCommand();
+        }
+        
+        async void OnConversationTapped(Conversation conversation)
+        {
+            if (conversation == null)
+            {
+                return;
+            }
+
+            if (conversation == null || conversation == default)
+            {
+                return;
+            }
+
+            await Shell.Current.GoToAsync($"{nameof(ConversationPage)}?{nameof(ConversationViewModel.Name)}={conversation.Contact.Name}");
         }
     }
 }

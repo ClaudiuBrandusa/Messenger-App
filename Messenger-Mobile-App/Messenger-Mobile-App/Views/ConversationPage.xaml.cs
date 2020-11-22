@@ -1,4 +1,5 @@
-﻿using Messenger_Mobile_App.ViewModels;
+﻿using Messenger_Mobile_App.Models;
+using Messenger_Mobile_App.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace Messenger_Mobile_App.Views
         public ConversationPage()
         {
             InitializeComponent();
+            Shell.SetTabBarIsVisible(this, false); // This way we hide the tab bat when we are using this page
             BindingContext = _viewModel = new ConversationViewModel();
         }
 

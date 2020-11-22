@@ -21,7 +21,6 @@ namespace Messenger_Mobile_App.Views
         public ConversationsPage()
         {
             InitializeComponent();
-            //BindingContext = this;//_viewModel = new ConversationsViewModel();
 
             Conversations = new List<Conversation>();
 
@@ -33,6 +32,12 @@ namespace Messenger_Mobile_App.Views
         {
             base.OnAppearing();
             _viewModel.OnAppearing();
+        }
+
+        public void OnItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            Conversation conversation = e.Item as Conversation;
+            _viewModel.ConversationTappedCommand.Execute(conversation);
         }
     }
 }

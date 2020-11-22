@@ -1,20 +1,60 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:services="clr-namespace:Messenger_Mobile_App.Services" 
              xmlns:local="clr-namespace:Messenger_Mobile_App.ViewModels" 
              xmlns:model="clr-namespace:Messenger_Mobile_App.Models" 
              Title="{Binding Title}"
              x:Class="Messenger_Mobile_App.Views.ConversationPage">
 
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <services:IsMyMessageConverter x:Key="IsMyMessage" />
+            <services:IsMyMessageContentConverter x:Key="IsMyMessageContent" />
+            <services:ViewMessageSenderConverter x:Key="ViewMessageSender" />
+            <services:AlignMessageConverter x:Key="AlignMessage" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <ContentPage.BindingContext>
         <local:ConversationViewModel/>
     </ContentPage.BindingContext>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="{Binding ContactImage}" />
+        <ToolbarItem Text="{Binding Name}" />
+        <ToolbarItem Text="Settings" />
+    </ContentPage.ToolbarItems>
     
-    <StackLayout x:DataType="local:ConversationViewModel">
-        <Label Text="{Binding Test, Mode=TwoWay}"/>
-        <StackLayout x:DataType="model:Conversation">
-            <Label Text="{Binding Id}"/>
-        </StackLayout>
-    </StackLayout>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="9*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <ListView Grid.Row="0" HasUnevenRows="True" ItemsSource="{Binding Messages}" SelectionMode="None" RefreshCommand="{Binding ReloadMessagesCommand}" IsPullToRefreshEnabled="True" IsRefreshing="{Binding IsBusy, Mode=OneWay}" SeparatorVisibility="None">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Frame Padding="2">
+                            <StackLayout Margin="4,5,4,5" HorizontalOptions="{Binding Sender, Converter={StaticResource AlignMessage}}">
+                                <Label Text="{Binding Sender, Converter={StaticResource ViewMessageSender}}" TextColor="Black"/>
+                                <Frame Padding="12,6,12,6" BackgroundColor="{Binding Sender, Converter={StaticResource IsMyMessage}}">
+                                    <Label Text="{Binding Content}" TextColor="{Binding Sender, Converter={StaticResource IsMyMessageContent}}" />
+                                </Frame>
+                            </StackLayout>
+                        </Frame>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Grid Grid.Row="1" VerticalOptions="Fill" BackgroundColor="Red" ColumnSpacing="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="8*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <model:MyEntry Grid.Column="0" Placeholder="Enter text message" PlaceholderColor="Gray" BackgroundColor="LightGray" VerticalOptions="Fill" MyHandleColor="#2c437d" MyTintColor="#2c437d" MyHighlightColor="#2c437d" />
+            <Label Grid.Column="1" BackgroundColor="#2c437d" TextColor="White" Text="Send" VerticalOptions="Fill" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+        </Grid>
+    </Grid>
 
 </ContentPage>
