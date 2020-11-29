@@ -605,6 +605,7 @@ h1 {
     flex-direction: column-reverse;
     padding: 0 20px;
     overflow-y: scroll;
+    background-color: white;
 }
 
 .message-row

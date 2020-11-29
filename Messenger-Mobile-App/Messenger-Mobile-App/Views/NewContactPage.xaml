@@ -6,12 +6,8 @@
              Title="Add new Contact">
     <ContentPage.Content>
         <StackLayout Spacing="3" Padding="15">
-            <Label Text="Contact Name" FontSize="Medium" />
-            <Entry Text="{Binding Name, Mode=TwoWay}" FontSize="Medium" />
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-            <StackLayout Orientation="Horizontal">
+            <Entry Placeholder="Contact Name" Text="{Binding Name, Mode=TwoWay}" FontSize="Medium" />
+            <StackLayout Orientation="Horizontal" VerticalOptions="EndAndExpand">
                 <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand"></Button>
                 <Button Text="Add" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"></Button>
             </StackLayout>
