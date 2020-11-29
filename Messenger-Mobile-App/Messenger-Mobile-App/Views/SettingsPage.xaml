@@ -4,10 +4,13 @@
              Title="{Binding Title}"
              x:Class="Messenger_Mobile_App.Views.SettingsPage">
     <ContentPage.Content>
-        <StackLayout Padding="10">
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+        <StackLayout Orientation="Vertical"  Padding="20">
+            <StackLayout HorizontalOptions="Start">
+
+                <Button Text="Change profile image" FontSize="Small"/>
+                <Button Text="Change email address" FontSize="Small"/>
+                <Button Text="Report a problem" FontSize="Small"/>
+            </StackLayout>
             <StackLayout VerticalOptions="EndAndExpand">
                 <Button Text="Back" Command="{Binding GoBackCommand}"/>
             </StackLayout>
