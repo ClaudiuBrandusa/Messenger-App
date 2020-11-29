@@ -9,10 +9,12 @@
                 <Label Text="Conversation name: " FontSize="Medium"/>
                 <Label Text="{Binding Name}" FontSize="Medium" FontAttributes="Bold"/>
             </StackLayout>
-            <Label Text="Set nickname" FontSize="Medium"/>
-            <Label Text="Ignore notifications" FontSize="Medium"/>
-            <Label Text="Remove contact" FontSize="Medium"/>
-            <Label Text="Block contact" FontSize="Medium"/>
+            <StackLayout HorizontalOptions="Start">
+                <Button Text="Set nickname" FontSize="Small"/>
+                <Button Text="Ignore notifications" FontSize="Small"/>
+                <Button Text="Remove contact" FontSize="Small"/>
+                <Button Text="Block contact" FontSize="Small"/>
+            </StackLayout>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

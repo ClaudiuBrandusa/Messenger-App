@@ -39,11 +39,12 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Image Grid.RowSpan="2" 
-                                        Source="{Binding ImageUrl, Converter={StaticResource ImageValidator}}"
-                                        Aspect="AspectFill"
-                                        HeightRequest="60"
-                                        WidthRequest="60"/>
+                            <Frame Grid.RowSpan="2" CornerRadius="50" Padding="0" Margin="0" IsClippedToBounds="True" HeightRequest="50" WidthRequest="50">
+                                <Image Source="{Binding ImageUrl, Converter={StaticResource ImageValidator}}"
+                                            Aspect="AspectFill"
+                                            HeightRequest="60"
+                                            WidthRequest="60"/>
+                            </Frame>
                             <Label Grid.Row="0"
                                         Grid.Column="1"
                                         Text="{Binding Name}"

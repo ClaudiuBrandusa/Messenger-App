@@ -21,7 +21,10 @@
 
     <Shell.TitleView>
         <StackLayout Orientation="Horizontal" VerticalOptions="Center" Spacing="8">
-            <Image Source="{Binding Url, Converter={StaticResource ImageValidator}}" VerticalOptions="Center" HeightRequest="40" BackgroundColor="White"/>
+            <Frame CornerRadius="50" Padding="0" Margin="0" IsClippedToBounds="True" VerticalOptions="Center" HeightRequest="40" WidthRequest="40">
+                <Image Source="{Binding Url, Converter={StaticResource ImageValidator}}" VerticalOptions="Center" HeightRequest="40" Aspect="AspectFill"/>
+            </Frame>
+            
             <Label Text="{Binding Title}" VerticalOptions="CenterAndExpand" TextColor="White" FontSize="Medium"/>
             <Label Text="{Binding Active, Converter={StaticResource ContactActive}}" VerticalOptions="CenterAndExpand" TextColor="{Binding Active, Converter={StaticResource ContactActiveColor}}" FontSize="Medium"/>
         </StackLayout>

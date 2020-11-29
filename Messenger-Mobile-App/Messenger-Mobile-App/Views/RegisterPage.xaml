@@ -1,27 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d"
-             x:Class="Messenger_Mobile_App.Views.LoginPage"
+             x:Class="Messenger_Mobile_App.Views.RegisterPage"
              Shell.NavBarIsVisible="False">
     <ContentPage.Content>
         <StackLayout Spacing="30" Padding="40" HorizontalOptions="Center" VerticalOptions="FillAndExpand">
             <StackLayout VerticalOptions="Start" HorizontalOptions="Center">
-                <Label Text="Login page" FontSize="Medium"/>
+                <Label Text="Register page" FontSize="Medium"/>
             </StackLayout>
             <StackLayout Padding="0,30,0,0" VerticalOptions="Center" HorizontalOptions="Center">
                 <Entry Placeholder="Username" />
+                <Entry Placeholder="Email" />
                 <Entry Placeholder="Password" IsPassword="True"/>
-                <Label Text="Don't you have an account? Register here." TextColor="{StaticResource Primary}">
+                <Entry Placeholder="Confirm Password" IsPassword="True"/>
+                <Label Text="Already have an account? Login here." TextColor="{StaticResource Primary}">
                     <Label.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding RegisterCommand}"/>
+                        <TapGestureRecognizer Command="{Binding LoginCommand}"/>
                     </Label.GestureRecognizers>
                 </Label>
             </StackLayout>
             <StackLayout Padding="0,60,0,0" VerticalOptions="End">
-                <Button VerticalOptions="Center" Text="Login" Command="{Binding LoginCommand}"/>
+                <Button VerticalOptions="Center" Text="Register" Command="{Binding RegisterCommand}"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

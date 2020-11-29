@@ -82,12 +82,13 @@
         <ShellContent Title="Conversations" Icon="tab_about.png" Route="ConversationsPage" ContentTemplate="{DataTemplate local:ConversationsPage}" />
         <ShellContent Title="Contacts" Icon="tab_feed.png" Route="ContactsPage" ContentTemplate="{DataTemplate local:ContactsPage}" />
     </FlyoutItem>
-        <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
+
+
     <MenuItem Text="Profile" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuProfileClicked" />
     <MenuItem Text="Settings" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuSettingsClicked" />
     <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuLogoutClicked" />
 
-
+    
     <!--
         This defines content that won't show up in a flyout menu. When this content is active the flyout menu won't be available.
         This is useful for creating areas of the application where you don't want users to be able to navigate away from.
@@ -95,6 +96,9 @@
         await Shell.Current.GoToAsync("//LoginPage");
     -->
     <ShellContent Route="LoginPage" Shell.FlyoutBehavior="Disabled" ContentTemplate="{DataTemplate local:LoginPage}" />
+    <ShellContent Route="RegisterPage" Shell.FlyoutBehavior="Disabled" ContentTemplate="{DataTemplate local:RegisterPage}" />
+    <ShellContent Route="SettingsPage" Shell.FlyoutBehavior="Disabled" ContentTemplate="{DataTemplate local:SettingsPage}" />
+    <ShellContent Route="ProfilePage" Shell.FlyoutBehavior="Disabled" ContentTemplate="{DataTemplate local:ProfilePage}" />
 
     <!-- Optional Templates 
     // These may be provided inline as below or as separate classes.
