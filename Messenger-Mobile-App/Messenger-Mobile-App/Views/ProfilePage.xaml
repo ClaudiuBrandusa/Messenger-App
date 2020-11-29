@@ -1,18 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:services="clr-namespace:Messenger_Mobile_App.Services" 
              xmlns:vw="clr-namespace:Messenger_Mobile_App.ViewModels"
              Title="{Binding Title}"
              x:Class="Messenger_Mobile_App.Views.ProfilePage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <services:ImageValidatorConverter x:Key="ImageValidator" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
     <ContentPage.BindingContext>
         <vw:ProfilePageViewModel/>
     </ContentPage.BindingContext>
     
     <ContentPage.Content>
-        <StackLayout Padding="10">
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+        <StackLayout Padding="30">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                <Frame CornerRadius="200" Padding="0" Margin="0" IsClippedToBounds="True" VerticalOptions="Center" HeightRequest="200" WidthRequest="200">
+                    <Image Source="{Binding User.ImgUrl, Converter={StaticResource ImageValidator}}" VerticalOptions="Center" HeightRequest="200" Aspect="AspectFill"/>
+                </Frame>
+            </StackLayout>
+            <StackLayout Padding="25" HorizontalOptions="Center">
+                <Label VerticalOptions="Center" Text="{Binding User.Name}" FontSize="Medium" FontAttributes="Bold"/>
+            </StackLayout>
             <StackLayout VerticalOptions="EndAndExpand">
                 <Button Text="Back" Command="{Binding GoBackCommand}"/>
             </StackLayout>
