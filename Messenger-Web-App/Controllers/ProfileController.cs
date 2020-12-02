@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 
 namespace Messenger_Web_App.Controllers
 {
+    //[Authorize]
     public class ProfileController : Controller
     {
         public ViewResult Register() => View();
@@ -25,17 +26,25 @@ namespace Messenger_Web_App.Controllers
             Register receivedRegister = new Register();
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("ApiKey", "ThisMySecretKey123");
+                httpClient.DefaultRequestHeaders.Add("ApiKey", "ThisMySecretKey123");
 
-                StringContent content = new StringContent(JsonConvert.SerializeObject(register), Encoding.UTF8, "application/json");
+                string json = JsonConvert.SerializeObject(register);
 
-                using (var response = await httpClient.PostAsync("http://localhost:49499/api/Authentication/Register", content))
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                Dictionary<string, string> body = JsonConvert.DeserializeObject<Dictionary<string,string>>(json);
+                using (var response = await httpClient.PostAsync("http://localhost:49499/api/authentication/register", new FormUrlEncodedContent(body)))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
+                    //return RedirectToAction("Test", "Profile", apiResponse);  // use this route in order to read the response
                     receivedRegister = JsonConvert.DeserializeObject<Register>(apiResponse);
                 }
             }
             return View(receivedRegister);
+        }
+
+        public IActionResult Test(string content)
+        {
+            return View(content);
         }
 
         public IActionResult Login()
