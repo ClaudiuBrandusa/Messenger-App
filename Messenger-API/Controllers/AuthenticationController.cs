@@ -1,23 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Messenger_API.Authentication;
+using Messenger_API.Data;
+using Messenger_API.Filters;
 using Messenger_API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Messenger_API.Controllers
 {
-    [Route("api/authentication")]
+    //[Authorize]
+    [Route("api/[controller]")]
     [ApiController]
+
     public class AuthenticationController : Controller 
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IConfiguration _configuration;
-
 
         public AuthenticationController(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
@@ -25,10 +34,20 @@ namespace Messenger_API.Controllers
             _configuration = configuration;
         }
 
+<<<<<<< HEAD
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromForm] Register model)
+=======
+
+        [HttpPost]
+        [APIKeyAuth]
+        public async Task<IActionResult> Register( Register model)
+>>>>>>> 32ed4b978856d12b23efb8fdad482b5713410bb8
         {
             var userExist = await userManager.FindByNameAsync(model.UserName);
+
+            Debug.WriteLine("Error1");
+
             if (userExist != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User could not be created" });
 

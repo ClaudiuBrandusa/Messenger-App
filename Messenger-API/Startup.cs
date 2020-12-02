@@ -42,7 +42,12 @@ namespace Messenger_API
             //For Entity Framework
             services.AddDbContext<UserContext>(options => options.UseSqlServer(Configuration.GetConnectionString("UserContextConnection")));
             //For Identity
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 6;
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+            })
                 .AddEntityFrameworkStores<UserContext>()
                 .AddDefaultTokenProviders();
 
@@ -64,7 +69,7 @@ namespace Messenger_API
                     ValidateAudience = true,
                     ValidAudience = Configuration["JWT:ValidAudience"],
                     ValidIssuer = Configuration["JWT:ValidIssuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:IssuerSigningKey"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:ApiKey"]))
                 };
             });         
         }
@@ -81,6 +86,7 @@ namespace Messenger_API
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
