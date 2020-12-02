@@ -1,21 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using Messenger_API.Authentication;
-using Messenger_API.Data;
 using Messenger_API.Filters;
-using Messenger_API.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Messenger_API.Controllers
 {
@@ -39,8 +29,6 @@ namespace Messenger_API.Controllers
         public async Task<IActionResult> Register([FromForm] Register model)
         {
             var userExist = await userManager.FindByNameAsync(model.UserName);
-
-            Debug.WriteLine("Error1");
 
             if (userExist != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User could not be created" });
