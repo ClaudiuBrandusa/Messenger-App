@@ -3,32 +3,14 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:49499",
-<<<<<<< HEAD
+      "applicationUrl": "http://localhost:49499/",
       "sslPort": 0
-=======
-      "sslPort": 44386
->>>>>>> 32ed4b978856d12b23efb8fdad482b5713410bb8
     }
   },
-  "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "IIS Express": {
+    "Start": {
       "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "weatherforecast",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "Messenger_API": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "weatherforecast",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+      "ErrorString": "Invalid property identifier character: <. Path 'iisSettings.iisExpress.applicationUrl', line 7, position 0."
     }
   }
 }
