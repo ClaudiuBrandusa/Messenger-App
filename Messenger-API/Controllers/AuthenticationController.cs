@@ -25,10 +25,8 @@ namespace Messenger_API.Controllers
             _configuration = configuration;
         }
 
-
-        [HttpPost]
-        [Route("Register")]
-        public async Task<IActionResult> Register([FromBody] Register model)
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register([FromForm] Register model)
         {
             var userExist = await userManager.FindByNameAsync(model.UserName);
             if (userExist != null)
