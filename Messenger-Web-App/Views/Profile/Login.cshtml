@@ -2,11 +2,11 @@
     Layout = "_Layout"; ViewBag.Title = "Login";
 }
 
-@model Messenger_API.Authentication.Login
+@model Login
 
 
 <div class="loginbox">
-    <form asp-action="Login">
+    <form asp-controller="Profile" asp-action="Login">
         <img src="~/images/user.png" class="avatar" />
         <h1>Login Here</h1>
         <div class="form-group">

@@ -26,7 +26,13 @@ namespace Messenger_Web_App
         {
 
             services.AddControllersWithViews();
-        
+
+            services.AddAuthentication("Cookie")
+                .AddCookie("Cookie", config =>
+                {
+                    config.Cookie.Name = "Messenger.Cookie";
+                    config.LoginPath = "/profile/login";
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,6 +53,7 @@ namespace Messenger_Web_App
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

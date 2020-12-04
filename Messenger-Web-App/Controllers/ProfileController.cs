@@ -8,14 +8,20 @@ using System.Threading.Tasks;
 using Messenger_API.Data;
 using Messenger_Web_App.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Security.Claims;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Messenger_Web_App.Controllers
 {
     //[Authorize]
     public class ProfileController : Controller
     {
+
+
         public ViewResult Register() => View();
 
         [HttpPost]
@@ -30,7 +36,7 @@ namespace Messenger_Web_App.Controllers
 
                 string json = JsonConvert.SerializeObject(register);
 
-                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                //StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
                 Dictionary<string, string> body = JsonConvert.DeserializeObject<Dictionary<string,string>>(json);
                 using (var response = await httpClient.PostAsync("http://localhost:49499/api/authentication/register", new FormUrlEncodedContent(body)))
                 {
@@ -42,14 +48,51 @@ namespace Messenger_Web_App.Controllers
             return View(receivedRegister);
         }
 
-        public IActionResult Test(string content)
-        {
-            return View(content);
-        }
-
-        public IActionResult Login()
+        public IActionResult Test()
         {
             return View();
+        }
+
+        public ViewResult Login() => View();
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(Login login)
+        {
+            Login receivedLogin = new Login();
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("ApiKey", "ThisMySecretKey123");
+
+                string json = JsonConvert.SerializeObject(login);
+
+                //StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                Dictionary<string, string> body = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                using (var response = await httpClient.PostAsync("http://localhost:49499/api/authentication/login", new FormUrlEncodedContent(body)))
+                {
+                    //return Redirect(response.StatusCode.ToString());
+                    if (response.StatusCode.ToString().Equals("OK"))
+                    {
+                        var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, login.Username),
+                        };
+                        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+                        AuthenticationProperties authProperties = new AuthenticationProperties 
+                        {
+                            AllowRefresh = true,
+                            ExpiresUtc = DateTimeOffset.Now.AddMinutes(30),
+                            IsPersistent = true,
+                        };  
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties); 
+                        return Redirect("~/");
+                    }
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    receivedLogin = JsonConvert.DeserializeObject<Login>(apiResponse);
+                    return View(receivedLogin);               
+                }
+            }    
         }
 
         public IActionResult AddContact()
