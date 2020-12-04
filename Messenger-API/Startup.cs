@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Messenger_API.Authentication;
 using Messenger_API.Data;
+using Messenger_API.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,6 +34,7 @@ namespace Messenger_API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSignalR();
 
             services.AddDbContext<MessageContext>(config =>
             {
@@ -84,7 +86,16 @@ namespace Messenger_API
 
             app.UseHttpsRedirection();
 
+            app.UseCors(builder =>
+            {
+                builder.WithOrigins("https://localhost:44321", "http://localhost:49426")
+                    .AllowAnyHeader()
+                    .WithMethods("GET", "POST")
+                    .AllowCredentials();
+            });
+
             app.UseRouting();
+
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -92,6 +103,7 @@ namespace Messenger_API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<MessageHub>("/messagehub");
             });
         }
     }

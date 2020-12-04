@@ -15,47 +15,8 @@
     <div class="chat-page">
         <div class="msg-inbox">
             <div class="chats">
-                <div class="msg-page">
-                    <div class="received-chats">
-                        <div class="received-chats-img">
-                            <img src="~/images/user2.png" width="20" height="20" style="margin-top:-2%;" />
-                        </div>
-                        <div class="received-msg">
-                            <div class="received-msg-inbox">
-                                <p>Hi !! This is message from John Lewis</p>
-                                <span class="time">11:01 PM | October 11 </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="outgoing-chats">
-                        <div class="outgoing-chats-msg">
-                            <p>Hi !! This is message from me</p>
-                            <span class="time">11:01 PM | October 11 </span>
-                        </div>
-                        <div class="outgoing-chats-img">
-                            <img src="~/images/user1.jpg" width="20" height="20" style="margin-top:0.5%;" />
-                        </div>
-                    </div>
-                    <div class="received-chats">
-                        <div class="received-chats-img">
-                            <img src="~/images/user2.png" width="20" height="20" style="margin-top:-2%;" />
-                        </div>
-                        <div class="received-msg">
-                            <div class="received-msg-inbox">
-                                <p>Hi !! This is 2nd message from John Lewis</p>
-                                <span class="time">11:01 PM | October 11 </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="outgoing-chats">
-                        <div class="outgoing-chats-msg">
-                            <p>Hi !! This is 2nd message from me</p>
-                            <span class="time">11:01 PM | October 11 </span>
-                        </div>
-                        <div class="outgoing-chats-img">
-                            <img src="~/images/user1.jpg" width="20" height="20" style="margin-top:0.5%;" />
-                        </div>
-                    </div>
+                <div class="msg-page" id="messages">
+                    <!-- There goes the javascript magic -->
                 </div>
             </div>
         </div>
@@ -67,11 +28,15 @@
                 <i class="fa fa-smile-o"></i>
             </div>
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="write message..." />
-                <div class="input-group-append">
+                <input type="text" class="form-control" placeholder="write message..." id="message_input" />
+                <div class="input-group-append" id="send_btn">
                     <span class="input-group-text"><i class="fa fa-paper-plane"></i></span>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!--Adding the script references-->
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
