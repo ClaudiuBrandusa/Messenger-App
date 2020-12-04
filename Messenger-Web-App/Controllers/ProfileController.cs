@@ -85,7 +85,7 @@ namespace Messenger_Web_App.Controllers
                             ExpiresUtc = DateTimeOffset.Now.AddMinutes(30),
                             IsPersistent = true,
                         };  
-                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties); 
+                        await HttpContext.SignInAsync(principal, authProperties); 
                         return Redirect("~/");
                     }
                     string apiResponse = await response.Content.ReadAsStringAsync();
