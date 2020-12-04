@@ -97,9 +97,13 @@
             </div>
         </div>
     </div>
-  
+
     <div id="chat-form">
-        <input class="col-md-10" type="text" placeholder="type a message" style="margin-top: 1.7%; height:52px; margin-left:2%;" />
-        <button class="btn-send" type="button">Send</button>
+        <input id="message_input" class="col-md-10" type="text" placeholder="type a message" style="margin-top: 1.7%; height:52px; margin-left:2%;" />
+        <button id="send_btn" class="btn-send" type="button">Send</button>
     </div>
 </div>
+
+<!--Adding the script references-->
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>

@@ -6,7 +6,7 @@ var connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:49
 connection.on("ReceiveMessage", function (user, message) {
 
     // finding the message place
-    var messages = document.getElementById("messages");
+    var messages = document.getElementById("chat-message-list");
     if (messages == null) {
         alert("null");
         return;
@@ -17,44 +17,36 @@ connection.on("ReceiveMessage", function (user, message) {
 
     // creating the message html object
     var message = document.createElement("div");
-    message.classList.add("received-chats");
+    message.classList.add("message-row");
+    message.classList.add("other-message");
 
-    var image_container = document.createElement("div");
-    image_container.classList.add("received-chats-img");
+    var message_content = document.createElement("div");
+    message_content.classList.add("message-content");
 
     var image = document.createElement("img");
 
     // image source will be hard coded for now
     image.src = window.location.protocol + "//" + window.location.host + "/images/user2.png";
-    image.width = "20";
-    image.height = "20";
-    image.style.marginTop = "-2%";
+    image.width = "40";
+    image.height = "40";
 
-    image_container.appendChild(image);
+    message_content.appendChild(image);
 
-    message.appendChild(image_container);
+    var message_content_text = document.createElement("div");
+    message_content_text.classList.add("message-text");
 
-    var message_padding = document.createElement("div");
-    message_padding.classList.add("received-msg");
+    message_content_text.textContent = msg;
 
-    var message_content = document.createElement("div");
-    message_content.classList.add("received-msg-inbox");
-    var message_content_p = document.createElement("p");
+    message_content.appendChild(message_content_text);
 
-    message_content_p.textContent = msg;
-
-    message_content.appendChild(message_content_p);
-
-    var message_content_date = document.createElement("span");
-    message_content_date.classList.add("time");
+    var message_content_date = document.createElement("div");
+    message_content_date.classList.add("message-time");
     // we will leave the date hard coded for now
     message_content_date.textContent = "Now";
 
     message_content.appendChild(message_content_date);
 
-    message_padding.appendChild(message_content);
-
-    message.appendChild(message_padding);
+    message.appendChild(message_content);
 
     messages.appendChild(message);
 
@@ -65,7 +57,7 @@ connection.on("ReceiveMessage", function (user, message) {
 connection.on("SendMessage", function (message) {
 
     // finding the message place
-    var messages = document.getElementById("messages");
+    var messages = document.getElementById("chat-message-list");
     if (messages == null) {
         alert("null");
         return;
@@ -75,39 +67,26 @@ connection.on("SendMessage", function (message) {
     
     // creating the message html object
     var message = document.createElement("div");
-    message.classList.add("outgoing-chats");
+    message.classList.add("message-row");
+    message.classList.add("you-message");
 
     var message_content = document.createElement("div");
-    message_content.classList.add("outgoing-chats-msg");
-    var message_content_p = document.createElement("p");
+    message_content.classList.add("message-content");
+    var message_content_text = document.createElement("div");
+    message_content_text.classList.add("message-text");
+
+    message_content_text.textContent = msg;
     
-    message_content_p.textContent = msg;
+    message_content.appendChild(message_content_text);
     
-    message_content.appendChild(message_content_p);
-    
-    var message_content_date = document.createElement("span");
-    message_content_date.classList.add("time");
+    var message_content_date = document.createElement("div");
+    message_content_date.classList.add("message-time");
     // we will leave the date hard coded for now
     message_content_date.textContent = "Now";
 
     message_content.appendChild(message_content_date);
 
     message.appendChild(message_content);
-
-    var image_container = document.createElement("div");
-    image_container.classList.add("outgoing-chats-img");
-
-    var image = document.createElement("img");
-
-    // image source will be hard coded for now
-    image.src = window.location.protocol + "//" + window.location.host + "/images/user1.jpg";
-    image.width = "20";
-    image.height = "20";
-    image.style.marginTop = "0.5%";
-
-    image_container.appendChild(image);
-
-    message.appendChild(image_container);
 
     messages.appendChild(message);
 
