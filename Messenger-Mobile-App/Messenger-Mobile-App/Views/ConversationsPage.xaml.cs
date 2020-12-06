@@ -1,7 +1,9 @@
 ﻿using Messenger_Mobile_App.Models;
+using Messenger_Mobile_App.Services;
 using Messenger_Mobile_App.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +25,6 @@ namespace Messenger_Mobile_App.Views
             InitializeComponent();
 
             Conversations = new List<Conversation>();
-
 
             BindingContext = _viewModel = new ConversationsViewModel();
         }

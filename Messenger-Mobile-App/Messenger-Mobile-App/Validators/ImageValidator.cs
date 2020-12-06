@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Messenger_Mobile_App.Services
+namespace Messenger_Mobile_App.Validators
 {
     public class ImageValidator
     {
@@ -8,7 +8,7 @@ namespace Messenger_Mobile_App.Services
         public static string ValidateImageUrl(string url)
         {
             // we will just check if the url is not empty for now
-            if(String.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(url))
             {
                 url = DefaultContactProfileImage;
             }

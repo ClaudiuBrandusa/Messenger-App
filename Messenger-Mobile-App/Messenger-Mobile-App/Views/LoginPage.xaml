@@ -12,8 +12,8 @@
                 <Label Text="Login page" FontSize="Medium"/>
             </StackLayout>
             <StackLayout Padding="0,30,0,0" VerticalOptions="Center" HorizontalOptions="Center">
-                <Entry Placeholder="Username" />
-                <Entry Placeholder="Password" IsPassword="True"/>
+                <Entry Placeholder="Username" Text="{Binding Username, Mode=TwoWay}" />
+                <Entry Placeholder="Password" IsPassword="True" Text="{Binding Password, Mode=TwoWay}"/>
                 <Label Text="Don't you have an account? Register here." TextColor="{StaticResource Primary}">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding RegisterCommand}"/>

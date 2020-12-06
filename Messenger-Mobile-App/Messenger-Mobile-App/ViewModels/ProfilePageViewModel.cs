@@ -1,4 +1,5 @@
 ﻿using Messenger_Mobile_App.Models;
+using Messenger_Mobile_App.Services;
 using Messenger_Mobile_App.Views;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace Messenger_Mobile_App.ViewModels
         public ProfilePageViewModel()
         {
             Title = "Profile";
-            User = new User { Name = "Claudiu", ImgUrl="" };
+            User = DependencyService.Get<CurrentUser>().GetUser();
             GoBackCommand = new Command(async () => await BackCommand());
         }
 

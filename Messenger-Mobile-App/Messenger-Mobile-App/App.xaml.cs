@@ -8,6 +8,7 @@ namespace Messenger_Mobile_App
 {
     public partial class App : Application
     {
+        CurrentUser User;
 
         public App()
         {

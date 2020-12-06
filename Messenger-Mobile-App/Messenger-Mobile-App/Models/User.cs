@@ -7,6 +7,7 @@ namespace Messenger_Mobile_App.Models
     public class User
     {
         public string Name { get; set; }
+        public string Email { get; set; }
         public string ImgUrl { get; set; }
 
         public override string ToString()
