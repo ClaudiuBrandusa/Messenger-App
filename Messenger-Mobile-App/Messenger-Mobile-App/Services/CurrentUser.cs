@@ -1,8 +1,12 @@
 ﻿using Messenger_Mobile_App.Models;
 using Messenger_Mobile_App.Validators;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Messenger_Mobile_App.Services
 {
@@ -18,7 +22,7 @@ namespace Messenger_Mobile_App.Services
             Credential = new Credential();
         }
 
-        public bool Register()
+        public async Task<bool> RegisterAsync()
         {
             if(!ValidateUserName(User.Name))
             {
@@ -33,13 +37,45 @@ namespace Messenger_Mobile_App.Services
                 return false;
             }
 
-            // Here we should do the HTTP request to the API
+            // HTTP request to the API
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Add("ApiKey", "ThisMySecretKey123");
+
+                    Register model = new Register
+                    {
+                        UserName = User.Name,
+                        Email = User.Email,
+                        Password = Credential.Password,
+                        ConfirmPassword = Credential.Password
+                    };
+
+                    string json = JsonConvert.SerializeObject(model);
+                    var ip = "10.0.2.2";
+                    Dictionary<string, string> body = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    using (var response = await httpClient.PostAsync(String.Format("http://{0}:49499/api/authentication/register", ip), new FormUrlEncodedContent(body)))
+                    {
+                        if (!response.StatusCode.ToString().Equals("OK"))
+                        {
+                            //return false; Ignoring the request for now
+                        }
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                    }
+                }
+            }catch(Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                //return false; Ignoring the connection errors for now
+            }
 
             // will auto login after registration
-            return Login();
+            return await LoginAsync();
         }
 
-        public bool Login() // It should return false if something went wrong
+        public async Task<bool> LoginAsync() // It should return false if something went wrong
         {
             if(!ValidateUserName(User.Name))
             {
@@ -50,7 +86,38 @@ namespace Messenger_Mobile_App.Services
                 return false;
             }
 
-            // Here we should do the HTTP request to the API
+            // HTTP request to the API
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Add("ApiKey", "ThisMySecretKey123");
+
+                    Register model = new Register
+                    {
+                        UserName = User.Name,
+                        Email = User.Email,
+                        Password = Credential.Password,
+                        ConfirmPassword = Credential.Password
+                    };
+
+                    string json = JsonConvert.SerializeObject(model);
+                    var ip = "10.0.2.2";
+                    Dictionary<string, string> body = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    using (var response = await httpClient.PostAsync(String.Format("http://{0}:49499/api/authentication/login", ip), new FormUrlEncodedContent(body)))
+                    {
+                        if (!response.StatusCode.ToString().Equals("OK"))
+                        {
+                            //return false; Ignoring the request for now
+                        }
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                    }
+                }
+            }catch(Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                //return false; Ignoring the connection errors for now
+            }
 
             LoadProfileImage();
 

@@ -106,7 +106,7 @@ namespace Messenger_Mobile_App.ViewModels
             user.SetEmail(Email);
 
             // If something went wrong
-            if (!user.Register())
+            if (!await user.RegisterAsync())
             {
                 // then cancel the login process
                 await Shell.Current.DisplayAlert("Unable to register", "You cannot create an account with these credentials", "Back");

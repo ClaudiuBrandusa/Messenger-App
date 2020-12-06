@@ -68,7 +68,7 @@ namespace Messenger_Mobile_App.ViewModels
             user.SetPassword(Password);
 
             // If something went wrong
-            if(!user.Login())
+            if(! await user.LoginAsync())
             {
                 // then cancel the login process
                 await Shell.Current.DisplayAlert("Unable to login", "There is no account with these credentials","Back");
