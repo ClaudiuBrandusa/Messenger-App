@@ -1,87 +1,72 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
+﻿
 
-a.navbar-brand {
-    white-space: normal;
-    text-align: center;
-    word-break: break-all;
-}
 
-/* Provide sufficient contrast against white background */
-a {
-    color: #0366d6;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-    font-size: 14px;
-}
-
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
-}
-
-.border-top {
-    border-top: 1px solid #e5e5e5;
-}
-
-.border-bottom {
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.box-shadow {
-    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
-
-button.accept-policy {
-    font-size: 1rem;
-    line-height: inherit;
-}
-
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-    position: relative;
-    min-height: 100%;
-}
-
-body {
-    /* Margin bottom by footer height */
-    background-image: url('../images/background.jpg');
-    background-size: cover;
-    display: grid;
-}
-
-.footer {
-    position: absolute;
-    bottom: 0;
+/* For mobile phones: */
+[class*="col-"] 
+{
     width: 100%;
-    white-space: nowrap;
-    line-height: 45px; /* Vertically center the text there */
-    text-align: center;
-    background: #2c437d;
-    opacity: 0.9;
 }
 
-.account-box {
+@media only screen and (min-width: 600px) {
+    /* For tablets: */
+    .col-1 {width: 8.33%;}
+
+    .col-2 {width: 16.66%;}
+
+    .col-3 {width: 25%;}
+
+    .col-4 {width: 33.33%;}
+
+    .col-5 {width: 41.66%;}
+
+    .col-6 {width: 50%;}
+
+    .col-7 {width: 58.33%;}
+
+    .col-8 {width: 66.66%;}
+
+    .col-9 {width: 75%;}
+
+    .col-10 {width: 83.33%;}
+
+    .col-11 {width: 91.66%;}
+
+    .col-12 {width: 100%;}
+}
+
+@media only screen and (min-width: 768px) {
+    /* For desktop: */
+    .col-1 {width: 8.33%;}
+
+    .col-2 {width: 16.66%;}
+
+    .col-3 {width: 25%;}
+
+    .col-4 {width: 33.33%;}
+
+    .col-5 {width: 41.66%;}
+
+    .col-6 {width: 50%;}
+
+    .col-7 {width: 58.33%;}
+
+    .col-8 {width: 66.66%;}
+
+    .col-9 {width: 75%;}
+
+    .col-10 {width: 83.33%;}
+
+    .col-11 {width: 91.66%;}
+
+    .col-12 {width: 100%;}
+}
+
+
+
+.account-box 
+{
     min-width: 300px;
     max-width: 500px;
-    min-width: 300px;
     height: 85vh;
     background: #0048AA;
     border-radius: 10px;
@@ -104,7 +89,8 @@ body {
     margin-bottom: 5%;
 }
 
-.profile-content > h2 {
+.profile-content > h2 
+{
     color: white;
     font-weight: bold;
     font-size: 20px;
@@ -116,7 +102,8 @@ body {
     margin-left:17%;
 }
 
-.btn-edit {
+.btn-edit 
+{
     background-color: forestgreen;
     color: white;
     height: 51px;
@@ -128,7 +115,8 @@ body {
     border-radius: 15px 15px 15px 15px;
 }
 
-.btn-edit:hover {
+.btn-edit:hover 
+{
     background-color: #1c2c54;
     color: white;
     height: 51px;
@@ -140,9 +128,8 @@ body {
     border-radius: 15px 15px 15px 15px;
 }
 
-
-
-.editaccount-box {
+.editaccount-box 
+{
     min-width: 300px;
     max-width: 500px;
     min-width: 300px;
@@ -153,14 +140,16 @@ body {
     margin-left: 27%;
 }
 
-.editaccount-box > h1 {
+.editaccount-box > h1 
+{
     color: white;
     font-weight: bold;
     font-size: 50px;
     margin-bottom: 5%;
 }
 
-.btn-upload {
+.btn-upload 
+{
     height: 30px;
     width: 130px;
     margin-left: 5%;

@@ -95,6 +95,29 @@ namespace Messenger_Web_App.Controllers
             }    
         }
 
+        public ViewResult Logout() => View();
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout(Login login)
+        {
+            Login receivedLogin = new Login();
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("ApiKey", "ThisMySecretKey123");
+
+                string json = JsonConvert.SerializeObject(login);
+
+                //StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                Dictionary<string, string> body = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                using (var response = await httpClient.PostAsync("http://localhost:49499/api/authentication/login", new FormUrlEncodedContent(body)))
+                {
+                    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                    return Redirect("~/");
+                }
+            }   
+        }
+
         public IActionResult AddContact()
         {
             return View();
