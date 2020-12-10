@@ -715,3 +715,13 @@ h1 {
 {
    display: none;
 }
+.btn-navbar{
+    background-color:none;
+    color:white;
+    border:none;
+}
+.btn-navbar:hover {
+    background-color: navy;
+    color: white;
+    border: none;
+}
