@@ -92,5 +92,42 @@ namespace Messenger_API.Controllers
             }
             return Unauthorized();
         }
+
+        [HttpPost("Logout")]
+        [APIKeyAuth]
+        public async Task<IActionResult> Logout([FromForm] Login model)
+        {
+            var user = await userManager.FindByNameAsync(model.Username);
+            if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
+            {
+                var userRoles = await userManager.GetRolesAsync(user);
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name,user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                };
+
+                foreach (var userRole in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                }
+
+                var authSigninKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:ApiKey"]));
+                var token = new JwtSecurityToken
+                (
+                    issuer: _configuration["JWT:ValidIssuer"],
+                    audience: _configuration["JWT:ValidAudience"],
+                    expires: DateTime.Now.AddHours(3),
+                    claims: authClaims,
+                    signingCredentials: new SigningCredentials(authSigninKey, SecurityAlgorithms.HmacSha256)
+                );
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(token),
+                    StatusCode = 200
+                });
+            }
+            return Unauthorized();
+        }
     }
 }

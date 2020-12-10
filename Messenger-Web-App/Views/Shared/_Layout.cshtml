@@ -10,11 +10,13 @@
     <link rel="stylesheet" href="~/css/site.css" />
     <link href="~/css/AddContact.css" rel="stylesheet" />
     <link href="~/css/Account.css" rel="stylesheet" />
+    <link href="~/css/ChatBox.css" rel="stylesheet" />
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3" style="background: #2c437d; opacity: 0.85; height:50px;">
             <div class="container" style="margin-right:25%;">
+<<<<<<< HEAD
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                     <img src="~/images/message-256.png" width="40" height="40" />
                     <span style="color:white; font-size:16px;">MESSENGER</span>
@@ -26,6 +28,13 @@
                     </a>
                     <a class="btn btn-navbar"  asp-area="" asp-controller="Profile" asp-action="Login">
                         <span>Log in</span>
+=======
+                @if (!Context.User.Identity.IsAuthenticated)
+                {
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/images/message-256.png" width="40" height="40" />
+                        <span style="color:white; font-size:16px;">MESSENGER</span>
+>>>>>>> e202a5c7c180bf6745961ff4eba0f94697f55a1f
                     </a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +43,7 @@
                 }
                 else
                 {
+<<<<<<< HEAD
                     <a class="btn btn-navbar" asp-area="" asp-controller="Messages" asp-action="ChatBox">
                         <span>Chat</span>
                     </a>
@@ -45,6 +55,17 @@
                     </a>
                 }
 
+=======
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/images/message-256.png" width="40" height="40" />
+                        <span style="color:white; font-size:16px;">MESSENGER</span>
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                }
+>>>>>>> e202a5c7c180bf6745961ff4eba0f94697f55a1f
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
@@ -52,6 +73,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Privacy"></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="ChatBox" asp-controller="Profile" asp-action="Chat"></a>
                         </li>
                     </ul>
                 </div>
