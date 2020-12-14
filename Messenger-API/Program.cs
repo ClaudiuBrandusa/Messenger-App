@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.IO;
 
 namespace Messenger_API
 {
@@ -20,6 +21,11 @@ namespace Messenger_API
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    var config = new ConfigurationBuilder()
+                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile("appsettings.json", optional: false)
+                        .Build();
+                    webBuilder.UseUrls($"http://localhost:{config.GetValue<string>("Port")}");
                     webBuilder.UseStartup<Startup>();
                 });
     }
