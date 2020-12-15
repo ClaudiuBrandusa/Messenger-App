@@ -23,6 +23,8 @@ namespace Messenger_API
 {
     public class Startup
     {
+        readonly string AllowAllSpecificOrigins = "_allowAllSpecificOrigins"; // used at CORS problem
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -33,8 +35,20 @@ namespace Messenger_API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowAllSpecificOrigins, builder => 
+                {
+                    builder
+                        .AllowAnyHeader()
+                        .WithMethods("GET", "POST", "OPTIONS")
+                        .SetIsOriginAllowed(_ => true)
+                        .AllowCredentials();
+                });
+            });
+
             services.AddSignalR();
+            services.AddControllers();
 
             services.AddDbContext<MessageContext>(config =>
             {
@@ -84,15 +98,7 @@ namespace Messenger_API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseCors(builder =>
-            {
-                builder.WithOrigins("https://localhost:44321", "http://localhost:49426")
-                    .AllowAnyHeader()
-                    .WithMethods("GET", "POST")
-                    .AllowCredentials();
-            });
+            app.UseCors(AllowAllSpecificOrigins);
 
             app.UseRouting();
 
