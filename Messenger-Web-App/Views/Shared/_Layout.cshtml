@@ -37,9 +37,10 @@
                     <a class="btn btn-navbar" asp-area="" asp-controller="Profile" asp-action="Account">
                         <span>Account</span>
                     </a>
-                    <a class="btn btn-navbar" asp-area="" asp-controller="Profile" asp-action="Login">
-                        <span>Log out</span>
-                    </a>
+                    
+                    <form method="post">
+                        <button class="btn btn-navbar" type="submit"  asp-action="Logout" asp-controller="Profile">Log Out</button>
+                    </form>
                 }
 
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
