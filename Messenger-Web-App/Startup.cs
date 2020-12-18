@@ -17,7 +17,10 @@ namespace Messenger_Web_App
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Constants = new Constants(configuration);
         }
+
+        public static Constants Constants { get; private set; }
 
         public IConfiguration Configuration { get; }
 
