@@ -1,6 +1,8 @@
 ﻿using Messenger_API.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +19,6 @@ namespace Messenger_API.Data
         }
 
         public DbSet<Conversation>  Conversations{ get; set; }
-        //public DbSet<ConversationAdmin> ConversationAdmins { get; set; }
         public DbSet<Friend> Friends { get; set; }
         public DbSet<FriendName> FriendNames { get; set; }
         public DbSet<MessageContent> MessageContents { get; set; }
@@ -40,7 +41,6 @@ namespace Messenger_API.Data
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
             //FriendName & Friend (one to many)
             modelBuilder.Entity<Friend>()
                 .HasKey(p => p.FriendId);
@@ -50,7 +50,6 @@ namespace Messenger_API.Data
                 .WithMany(fn => fn.FriendNames)
                 .HasForeignKey(f => f.FriendId)
                 .OnDelete(DeleteBehavior.Restrict);
-
 
             //SmallUser & MessageContent (many to one)
             modelBuilder.Entity<MessageContent>()
@@ -62,7 +61,6 @@ namespace Messenger_API.Data
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
             //MessageContent & PacketContent (one to one)
             modelBuilder.Entity<PacketContent>()
                 .HasKey(p => p.MessageId);
@@ -73,7 +71,6 @@ namespace Messenger_API.Data
                 .HasForeignKey<PacketContent>(m => m.MessageId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
             //PacketContent & Packet (one to many)
             modelBuilder.Entity<Packet>()
                 .HasKey(p => p.PacketId);
@@ -82,6 +79,24 @@ namespace Messenger_API.Data
                 .HasOne(p => p.Packet)
                 .WithMany(pc => pc.PacketContents)
                 .HasForeignKey(p => p.PacketId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //SmallUser & Conversation (many to one)
+            modelBuilder.Entity<Conversation>()
+                .HasKey(p => new { p.ConversationId, p.UserId });
+
+            modelBuilder.Entity<Conversation>()
+                .HasOne(s => s.SmallUser)
+                .WithMany(c => c.Conversations)
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Conversation & Packet (many to one)
+            modelBuilder.Entity<Packet>()
+                .HasOne(c => c.Conversation)
+                .WithMany(p => p.Packets)
+                .HasForeignKey(c => c.ConversationId)
+                .HasPrincipalKey(c => c.ConversationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             /*
@@ -95,33 +110,12 @@ namespace Messenger_API.Data
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);*/
 
-
-            //SmallUser & Conversation (many to one)
-            modelBuilder.Entity<Conversation>()
-                .HasKey(p => new { p.ConversationId, p.UserId });
-
-            modelBuilder.Entity<Conversation>()
-                .HasOne(s => s.SmallUser)
-                .WithMany(c => c.Conversations)
-                .HasForeignKey(s => s.UserId)
-                .OnDelete(DeleteBehavior.Restrict);       
-
-
             /*//Conversation & ConversationAdmin (many to one)
             modelBuilder.Entity<ConversationAdmin>()
                 .HasOne(c => c.Conversation)
                 .WithMany(a => a.ConversationAdmins)
                 .HasForeignKey(c => c.ConversationId)
                 .OnDelete(DeleteBehavior.Restrict);*/
-
-
-            //Conversation & Packet (many to one)
-            modelBuilder.Entity<Packet>()
-                .HasOne(c => c.Conversation)
-                .WithMany(p => p.Packets)
-                .HasForeignKey(c => c.ConversationId)
-                .HasPrincipalKey(c => c.ConversationId)
-                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

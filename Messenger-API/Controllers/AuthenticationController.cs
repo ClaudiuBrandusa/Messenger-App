@@ -5,11 +5,13 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Messenger_API.Authentication;
+using Messenger_API.Data;
 using Messenger_API.Filters;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -56,6 +58,35 @@ namespace Messenger_API.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User could not be created" });
             }
+
+            //Create source connection
+            SqlConnection source = new SqlConnection("server=.;database=MessengerUsersDB;Trusted_Connection=true");
+            //Create destination connection
+            SqlConnection destination = new SqlConnection("server=.;database=MessagesDB;Trusted_Connection=true");
+            // Clean up destination table. Your destination database must have the
+            // table with schema which you are copying data to.
+            // Before executing this code, you must create a table BulkDataTable
+            // in your database where you are trying to copy data to.
+            SqlCommand cmd = new SqlCommand("DELETE FROM SmallUsers", destination);
+            //Open source and destination connections
+            source.Open();
+            destination.Open();
+            cmd.ExecuteNonQuery();
+            //Select data from AspNetUsers table
+            cmd = new SqlCommand("SELECT Id, UserName FROM AspNetUsers", source);
+            //Execute reader
+            SqlDataReader reader = cmd.ExecuteReader();
+            //Create SqlBulkCopy
+            SqlBulkCopy bulkData = new SqlBulkCopy(destination);
+            //Set destination table name
+            bulkData.DestinationTableName = "SmallUsers";
+            //Write data
+            bulkData.WriteToServer(reader);
+            //Close objects
+            bulkData.Close();
+            destination.Close();
+            source.Close();
+
             return Ok(new Response { Status = "Success", Message = "User created successfully" });
         }
 
