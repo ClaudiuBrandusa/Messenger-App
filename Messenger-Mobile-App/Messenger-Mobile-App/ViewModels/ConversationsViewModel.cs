@@ -1,4 +1,5 @@
 ﻿using Messenger_Mobile_App.Models;
+using Messenger_Mobile_App.Services;
 using Messenger_Mobile_App.Views;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,8 @@ namespace Messenger_Mobile_App.ViewModels
             LoadConversationsCommand = new Command(async () => await ExecuteLoadConversationsCommand());
             AddContactCommand = new Command(OnAddConversation);
             ConversationTappedCommand = new Command<Conversation>(OnConversationTapped);
+
+            DependencyService.Get<ChatService>().Connect();
         }
 
         async Task ExecuteLoadConversationsCommand()

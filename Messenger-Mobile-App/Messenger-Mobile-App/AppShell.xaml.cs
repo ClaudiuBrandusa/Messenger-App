@@ -32,6 +32,7 @@ namespace Messenger_Mobile_App
 
         private async void OnMenuLogoutClicked(object sender, EventArgs e)
         {
+            await DependencyService.Get<ChatService>().Disconnect();
             await Shell.Current.GoToAsync("//LoginPage");
         }
         private async void OnMenuSettingsClicked(object sender, EventArgs e)

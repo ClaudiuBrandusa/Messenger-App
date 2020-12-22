@@ -30,6 +30,8 @@ namespace Messenger_Mobile_App.ViewModels
             LoadContactsCommand = new Command(async () => await ExecuteLoadContacts());
             AddContactCommand = new Command(OnAddContact);
             ContactTappedCommand = new Command<Contact>(OnContactSelected);
+
+            DependencyService.Get<ChatService>().Connect();
         }
 
         async Task ExecuteLoadContacts()

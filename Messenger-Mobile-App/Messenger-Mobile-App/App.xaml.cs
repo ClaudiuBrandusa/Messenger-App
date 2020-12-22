@@ -18,6 +18,7 @@ namespace Messenger_Mobile_App
             DependencyService.Register<ContactsDataStore>();
             DependencyService.Register<ConversationsDataStore>();
             DependencyService.Register<CurrentUser>();
+            DependencyService.Register<ChatService>();
             MainPage = new AppShell();
         }
 
