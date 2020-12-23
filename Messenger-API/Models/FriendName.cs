@@ -7,7 +7,7 @@ namespace Messenger_API.Models
 {
     public class FriendName
     {
-        public int FriendId { get; set; }
+        public string FriendId { get; set; }
         public string UserId { get; set; }
 
         public SmallUser SmallUser { get; set; }

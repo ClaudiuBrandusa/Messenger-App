@@ -8,7 +8,7 @@ namespace Messenger_API.Models
 {
     public class Conversation
     {   
-        public int ConversationId { get; set; }
+        public string ConversationId { get; set; }
         public string UserId { get; set; }
         public bool IsAdmin { get; set; }
 

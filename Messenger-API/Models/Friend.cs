@@ -8,7 +8,7 @@ namespace Messenger_API.Models
 {
     public class Friend
     {
-        public int FriendId { get; set; }
+        public string FriendId { get; set; }
         public DateTime SentDate { get; set; }
         public DateTime ConfirmedDate { get; set; }
 

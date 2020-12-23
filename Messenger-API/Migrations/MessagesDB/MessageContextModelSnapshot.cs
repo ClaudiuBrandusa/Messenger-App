@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Messenger_API.MessagesDB
+namespace Messenger_API.Migrations.MessagesDB
 {
     [DbContext(typeof(MessageContext))]
     partial class MessageContextModelSnapshot : ModelSnapshot
@@ -21,8 +21,8 @@ namespace Messenger_API.MessagesDB
 
             modelBuilder.Entity("Messenger_API.Models.Conversation", b =>
                 {
-                    b.Property<int>("ConversationId")
-                        .HasColumnType("int");
+                    b.Property<string>("ConversationId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -39,10 +39,8 @@ namespace Messenger_API.MessagesDB
 
             modelBuilder.Entity("Messenger_API.Models.Friend", b =>
                 {
-                    b.Property<int>("FriendId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("FriendId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("ConfirmedDate")
                         .HasColumnType("datetime2");
@@ -57,8 +55,8 @@ namespace Messenger_API.MessagesDB
 
             modelBuilder.Entity("Messenger_API.Models.FriendName", b =>
                 {
-                    b.Property<int>("FriendId")
-                        .HasColumnType("int");
+                    b.Property<string>("FriendId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -100,8 +98,8 @@ namespace Messenger_API.MessagesDB
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ConversationId")
-                        .HasColumnType("int");
+                    b.Property<string>("ConversationId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("PacketNumber")
                         .HasColumnType("int");
@@ -179,8 +177,7 @@ namespace Messenger_API.MessagesDB
                         .WithMany("Packets")
                         .HasForeignKey("ConversationId")
                         .HasPrincipalKey("ConversationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Messenger_API.Models.PacketContent", b =>
