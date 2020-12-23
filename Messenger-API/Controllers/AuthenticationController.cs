@@ -27,12 +27,14 @@ namespace Messenger_API.Controllers
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly MessageContext messageContext;
 
         public AuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration,  
-                                        SignInManager<ApplicationUser> signInManager)
+                                        SignInManager<ApplicationUser> signInManager, MessageContext messageContext)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.messageContext = messageContext;
             _configuration = configuration;
             _signInManager = signInManager;
         }
@@ -59,33 +61,8 @@ namespace Messenger_API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User could not be created" });
             }
 
-            //Create source connection
-            SqlConnection source = new SqlConnection("server=.;database=MessengerUsersDB;Trusted_Connection=true");
-            //Create destination connection
-            SqlConnection destination = new SqlConnection("server=.;database=MessagesDB;Trusted_Connection=true");
-            // Clean up destination table. Your destination database must have the
-            // table with schema which you are copying data to.
-            // Before executing this code, you must create a table BulkDataTable
-            // in your database where you are trying to copy data to.
-            SqlCommand cmd = new SqlCommand("DELETE FROM SmallUsers", destination);
-            //Open source and destination connections
-            source.Open();
-            destination.Open();
-            cmd.ExecuteNonQuery();
-            //Select data from AspNetUsers table
-            cmd = new SqlCommand("SELECT Id, UserName FROM AspNetUsers", source);
-            //Execute reader
-            SqlDataReader reader = cmd.ExecuteReader();
-            //Create SqlBulkCopy
-            SqlBulkCopy bulkData = new SqlBulkCopy(destination);
-            //Set destination table name
-            bulkData.DestinationTableName = "SmallUsers";
-            //Write data
-            bulkData.WriteToServer(reader);
-            //Close objects
-            bulkData.Close();
-            destination.Close();
-            source.Close();
+            messageContext.SmallUsers.Add(new Models.SmallUser { UserId = user.SecurityStamp, UserName = user.UserName });
+            await messageContext.SaveChangesAsync();
 
             return Ok(new Response { Status = "Success", Message = "User created successfully" });
         }
@@ -118,6 +95,7 @@ namespace Messenger_API.Controllers
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(authSigninKey, SecurityAlgorithms.HmacSha256)
                 );
+
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),

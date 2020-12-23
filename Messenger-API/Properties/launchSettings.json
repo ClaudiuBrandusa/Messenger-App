@@ -10,6 +10,7 @@
   "profiles": {
     "Start": {
       "commandName": "IISExpress",
+      "ancmHostingModel": "OutOfProcess",
       "ErrorString": "Invalid property identifier character: <. Path 'iisSettings.iisExpress.applicationUrl', line 7, position 0."
     }
   }
