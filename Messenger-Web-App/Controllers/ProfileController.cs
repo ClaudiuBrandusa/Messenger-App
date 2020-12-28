@@ -38,7 +38,7 @@ namespace Messenger_Web_App.Controllers
 
                 //StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
                 Dictionary<string, string> body = JsonConvert.DeserializeObject<Dictionary<string,string>>(json);
-                using (var response = await httpClient.PostAsync("http://localhost:49499/api/authentication/register", new FormUrlEncodedContent(body)))
+                using (var response = await httpClient.PostAsync(Startup.Constants.Register_Endpoint, new FormUrlEncodedContent(body)))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     //return RedirectToAction("Test", "Profile", apiResponse);  // use this route in order to read the response
@@ -68,7 +68,7 @@ namespace Messenger_Web_App.Controllers
 
                 //StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
                 Dictionary<string, string> body = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                using (var response = await httpClient.PostAsync("http://localhost:49499/api/authentication/login", new FormUrlEncodedContent(body)))
+                using (var response = await httpClient.PostAsync(Startup.Constants.Login_Endpoint, new FormUrlEncodedContent(body)))
                 {
                     //return Redirect(response.StatusCode.ToString());
                     if (response.StatusCode.ToString().Equals("OK"))
@@ -106,7 +106,7 @@ namespace Messenger_Web_App.Controllers
             {
                 httpClient.DefaultRequestHeaders.Add("ApiKey", "ThisMySecretKey123");
 
-                using (var response = await httpClient.PostAsync("http://localhost:49499/api/authentication/logout", null))
+                using (var response = await httpClient.PostAsync(Startup.Constants.Logout_Endpoint, null))
                 {
                     await HttpContext.SignOutAsync();
                     return Redirect("~/");
