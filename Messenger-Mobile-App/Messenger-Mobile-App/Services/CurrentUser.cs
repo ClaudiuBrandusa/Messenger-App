@@ -60,7 +60,7 @@ namespace Messenger_Mobile_App.Services
                     {
                         if (!response.StatusCode.ToString().Equals("OK"))
                         {
-                            //return false; Ignoring the request for now
+                            return false;
                         }
                         string apiResponse = await response.Content.ReadAsStringAsync();
                     }
@@ -108,7 +108,7 @@ namespace Messenger_Mobile_App.Services
                     {
                         if (!response.StatusCode.ToString().Equals("OK"))
                         {
-                            //return false; Ignoring the request for now
+                            return false;
                         }
                         string apiResponse = await response.Content.ReadAsStringAsync();
                     }

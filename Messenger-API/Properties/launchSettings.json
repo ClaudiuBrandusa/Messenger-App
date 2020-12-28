@@ -3,13 +3,14 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:49499/",
+      "applicationUrl": "http://127.0.0.1:49499/",
       "sslPort": 0
     }
   },
   "profiles": {
     "Start": {
       "commandName": "IISExpress",
+      "ancmHostingModel": "OutOfProcess",
       "ErrorString": "Invalid property identifier character: <. Path 'iisSettings.iisExpress.applicationUrl', line 7, position 0."
     }
   }

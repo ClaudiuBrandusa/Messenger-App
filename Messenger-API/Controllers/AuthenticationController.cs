@@ -5,11 +5,13 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Messenger_API.Authentication;
+using Messenger_API.Data;
 using Messenger_API.Filters;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -25,12 +27,14 @@ namespace Messenger_API.Controllers
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly MessageContext messageContext;
 
         public AuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration,  
-                                        SignInManager<ApplicationUser> signInManager)
+                                        SignInManager<ApplicationUser> signInManager, MessageContext messageContext)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.messageContext = messageContext;
             _configuration = configuration;
             _signInManager = signInManager;
         }
@@ -56,6 +60,10 @@ namespace Messenger_API.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User could not be created" });
             }
+
+            messageContext.SmallUsers.Add(new Models.SmallUser { UserId = user.SecurityStamp, UserName = user.UserName });
+            await messageContext.SaveChangesAsync();
+
             return Ok(new Response { Status = "Success", Message = "User created successfully" });
         }
 
@@ -87,6 +95,7 @@ namespace Messenger_API.Controllers
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(authSigninKey, SecurityAlgorithms.HmacSha256)
                 );
+
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),

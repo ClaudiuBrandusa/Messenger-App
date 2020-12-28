@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Messenger_API.Migrations.MessagesDB
 {
-    public partial class Init : Migration
+    public partial class Update : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,8 +11,7 @@ namespace Messenger_API.Migrations.MessagesDB
                 name: "Friends",
                 columns: table => new
                 {
-                    FriendId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FriendId = table.Column<string>(nullable: false),
                     SentDate = table.Column<DateTime>(nullable: false),
                     ConfirmedDate = table.Column<DateTime>(nullable: false)
                 },
@@ -37,7 +36,7 @@ namespace Messenger_API.Migrations.MessagesDB
                 name: "Conversations",
                 columns: table => new
                 {
-                    ConversationId = table.Column<int>(nullable: false),
+                    ConversationId = table.Column<string>(nullable: false),
                     UserId = table.Column<string>(nullable: false),
                     IsAdmin = table.Column<bool>(nullable: false)
                 },
@@ -57,7 +56,7 @@ namespace Messenger_API.Migrations.MessagesDB
                 name: "FriendNames",
                 columns: table => new
                 {
-                    FriendId = table.Column<int>(nullable: false),
+                    FriendId = table.Column<string>(nullable: false),
                     UserId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
@@ -104,7 +103,7 @@ namespace Messenger_API.Migrations.MessagesDB
                 {
                     PacketId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ConversationId = table.Column<int>(nullable: false),
+                    ConversationId = table.Column<string>(nullable: true),
                     PacketNumber = table.Column<int>(nullable: false)
                 },
                 constraints: table =>

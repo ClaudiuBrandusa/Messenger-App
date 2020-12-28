@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph GraphDirection="LeftToRight" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+<Node Id="IModel" Label="MessageContext" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot" PropertyAccessMode="PropertyAccessMode.Default" ProductVersion="3.1.10" Annotations="Relational:MaxIdentifierLength: 128
+SqlServer:ValueGenerationStrategy: IdentityColumn" Category="Model" Group="Expanded" />
+<Node Id = "Conversation" Label="Conversation" Name="Conversation" BaseClass="" IsAbstract="False" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot"  Annotations="ConstructorBinding: Microsoft.EntityFrameworkCore.Metadata.ConstructorBinding
+Relational:TableName: Conversations" Category="EntityType" Group="Expanded" />
+<Node Id = "Friend" Label="Friend" Name="Friend" BaseClass="" IsAbstract="False" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot"  Annotations="ConstructorBinding: Microsoft.EntityFrameworkCore.Metadata.ConstructorBinding
+Relational:TableName: Friends" Category="EntityType" Group="Expanded" />
+<Node Id = "Conversation.ConversationId" Label="ConversationId" Name="ConversationId" Category="Property Primary" Type="int" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.Storage.IntTypeMapping" IsPrimaryKey="True" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "Conversation.Packets" Label="Packets (*)" Name="Packets" Category="Navigation Collection" Type="ICollection&lt;Packet&gt;"  Field="" Dependent="Packet" Principal="" Inverse="Conversation" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "Conversation.SmallUser" Label="SmallUser (1)" Name="SmallUser" Category="Navigation Property" Type="SmallUser"  Field="" Dependent="" Principal="SmallUser" Inverse="Conversations" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "Conversation.UserId" Label="UserId" Name="UserId" Category="Property Primary" Type="string" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerStringTypeMapping" IsPrimaryKey="True" IsForeignKey="True" IsRequired="True" IsIndexed="True" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "Conversation.IsAdmin" Label="IsAdmin" Name="IsAdmin" Category="Property Required" Type="bool" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerBoolTypeMapping" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "FriendName" Label="FriendName" Name="FriendName" BaseClass="" IsAbstract="False" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot"  Annotations="ConstructorBinding: Microsoft.EntityFrameworkCore.Metadata.ConstructorBinding
+Relational:TableName: FriendNames" Category="EntityType" Group="Expanded" />
+<Node Id = "Friend.FriendId" Label="FriendId" Name="FriendId" Category="Property Primary" Type="int" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="SqlServer:ValueGenerationStrategy: IdentityColumn
+TypeMapping: Microsoft.EntityFrameworkCore.Storage.IntTypeMapping" IsPrimaryKey="True" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="ValueGenerated.OnAdd" />
+<Node Id = "Friend.FriendNames" Label="FriendNames (*)" Name="FriendNames" Category="Navigation Collection" Type="ICollection&lt;FriendName&gt;"  Field="" Dependent="FriendName" Principal="" Inverse="Friend" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "Friend.ConfirmedDate" Label="ConfirmedDate" Name="ConfirmedDate" Category="Property Required" Type="DateTime" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDateTimeTypeMapping" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "Friend.SentDate" Label="SentDate" Name="SentDate" Category="Property Required" Type="DateTime" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDateTimeTypeMapping" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "MessageContent" Label="MessageContent" Name="MessageContent" BaseClass="" IsAbstract="False" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot"  Annotations="ConstructorBinding: Microsoft.EntityFrameworkCore.Metadata.ConstructorBinding
+Relational:TableName: MessageContents" Category="EntityType" Group="Expanded" />
+<Node Id = "FriendName.FriendId" Label="FriendId" Name="FriendId" Category="Property Primary" Type="int" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.Storage.IntTypeMapping" IsPrimaryKey="True" IsForeignKey="True" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "FriendName.Friend" Label="Friend (1)" Name="Friend" Category="Navigation Property" Type="Friend"  Field="" Dependent="" Principal="Friend" Inverse="FriendNames" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "FriendName.SmallUser" Label="SmallUser (1)" Name="SmallUser" Category="Navigation Property" Type="SmallUser"  Field="" Dependent="" Principal="SmallUser" Inverse="FriendNames" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "FriendName.UserId" Label="UserId" Name="UserId" Category="Property Primary" Type="string" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerStringTypeMapping" IsPrimaryKey="True" IsForeignKey="True" IsRequired="True" IsIndexed="True" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "Packet" Label="Packet" Name="Packet" BaseClass="" IsAbstract="False" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot"  Annotations="ConstructorBinding: Microsoft.EntityFrameworkCore.Metadata.ConstructorBinding
+Relational:TableName: Packets" Category="EntityType" Group="Expanded" />
+<Node Id = "MessageContent.MessageId" Label="MessageId" Name="MessageId" Category="Property Primary" Type="int" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="SqlServer:ValueGenerationStrategy: IdentityColumn
+TypeMapping: Microsoft.EntityFrameworkCore.Storage.IntTypeMapping" IsPrimaryKey="True" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="ValueGenerated.OnAdd" />
+<Node Id = "MessageContent.PacketContent" Label="PacketContent (1)" Name="PacketContent" Category="Navigation Property" Type="PacketContent"  Field="" Dependent="PacketContent" Principal="" Inverse="MessageContent" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "MessageContent.SmallUser" Label="SmallUser (1)" Name="SmallUser" Category="Navigation Property" Type="SmallUser"  Field="" Dependent="" Principal="SmallUser" Inverse="MessageContents" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "MessageContent.Content" Label="Content" Name="Content" Category="Property Optional" Type="string" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerStringTypeMapping" IsPrimaryKey="False" IsForeignKey="False" IsRequired="False" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "MessageContent.SentDate" Label="SentDate" Name="SentDate" Category="Property Required" Type="DateTime" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDateTimeTypeMapping" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "MessageContent.UserId" Label="UserId" Name="UserId" Category="Property Foreign" Type="string" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerStringTypeMapping" IsPrimaryKey="False" IsForeignKey="True" IsRequired="False" IsIndexed="True" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "PacketContent" Label="PacketContent" Name="PacketContent" BaseClass="" IsAbstract="False" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot"  Annotations="ConstructorBinding: Microsoft.EntityFrameworkCore.Metadata.ConstructorBinding
+Relational:TableName: PacketContents" Category="EntityType" Group="Expanded" />
+<Node Id = "Packet.PacketId" Label="PacketId" Name="PacketId" Category="Property Primary" Type="int" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="SqlServer:ValueGenerationStrategy: IdentityColumn
+TypeMapping: Microsoft.EntityFrameworkCore.Storage.IntTypeMapping" IsPrimaryKey="True" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="ValueGenerated.OnAdd" />
+<Node Id = "Packet.Conversation" Label="Conversation (1)" Name="Conversation" Category="Navigation Property" Type="Conversation"  Field="" Dependent="" Principal="Conversation" Inverse="Packets" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "Packet.PacketContents" Label="PacketContents (*)" Name="PacketContents" Category="Navigation Collection" Type="ICollection&lt;PacketContent&gt;"  Field="" Dependent="PacketContent" Principal="" Inverse="Packet" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "Packet.ConversationId" Label="ConversationId" Name="ConversationId" Category="Property Foreign" Type="int" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.Storage.IntTypeMapping" IsPrimaryKey="False" IsForeignKey="True" IsRequired="True" IsIndexed="True" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "Packet.PacketNumber" Label="PacketNumber" Name="PacketNumber" Category="Property Required" Type="int" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.Storage.IntTypeMapping" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "SmallUser" Label="SmallUser" Name="SmallUser" BaseClass="" IsAbstract="False" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot"  Annotations="ConstructorBinding: Microsoft.EntityFrameworkCore.Metadata.ConstructorBinding
+Relational:TableName: SmallUsers" Category="EntityType" Group="Expanded" />
+<Node Id = "PacketContent.MessageId" Label="MessageId" Name="MessageId" Category="Property Primary" Type="int" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.Storage.IntTypeMapping" IsPrimaryKey="True" IsForeignKey="True" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "PacketContent.MessageContent" Label="MessageContent (1)" Name="MessageContent" Category="Navigation Property" Type="MessageContent"  Field="" Dependent="" Principal="MessageContent" Inverse="PacketContent" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "PacketContent.Packet" Label="Packet (1)" Name="Packet" Category="Navigation Property" Type="Packet"  Field="" Dependent="" Principal="Packet" Inverse="PacketContents" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "PacketContent.PacketId" Label="PacketId" Name="PacketId" Category="Property Foreign" Type="int" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.Storage.IntTypeMapping" IsPrimaryKey="False" IsForeignKey="True" IsRequired="True" IsIndexed="True" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "SmallUser" Label="SmallUser" Name="SmallUser" BaseClass="" IsAbstract="False" ChangeTrackingStrategy="ChangeTrackingStrategy.Snapshot"  Annotations="" Category="EntityType" Group="Expanded" />
+<Node Id = "SmallUser.UserId" Label="UserId" Name="UserId" Category="Property Primary" Type="string" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerStringTypeMapping" IsPrimaryKey="True" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "SmallUser.Conversations" Label="Conversations (*)" Name="Conversations" Category="Navigation Collection" Type="ICollection&lt;Conversation&gt;"  Field="" Dependent="Conversation" Principal="" Inverse="SmallUser" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "SmallUser.FriendNames" Label="FriendNames (*)" Name="FriendNames" Category="Navigation Collection" Type="ICollection&lt;FriendName&gt;"  Field="" Dependent="FriendName" Principal="" Inverse="SmallUser" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "SmallUser.MessageContents" Label="MessageContents (*)" Name="MessageContents" Category="Navigation Collection" Type="ICollection&lt;MessageContent&gt;"  Field="" Dependent="MessageContent" Principal="" Inverse="SmallUser" PropertyAccessMode="PropertyAccessMode.Default" />
+<Node Id = "SmallUser.UserName" Label="UserName" Name="UserName" Category="Property Optional" Type="string" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="TypeMapping: Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerStringTypeMapping" IsPrimaryKey="False" IsForeignKey="False" IsRequired="False" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+  </Nodes>
+  <Links>
+<Link Source = "IModel" Target="Conversation" Category="Contains" />
+<Link Source = "IModel" Target="Friend" Category="Contains" />
+<Link Source = "Conversation" Target="Conversation.Packets" Category="Contains" />
+<Link Source = "Conversation" Target="Conversation.SmallUser" Category="Contains" />
+<Link Source = "Conversation" Target="Conversation.ConversationId" Category="Contains" />
+<Link Source="Conversation" Target="SmallUser" From="Conversation.UserId" To="SmallUser.UserId" Name="Conversation -> SmallUser" Annotations="" IsUnique="False" Label="1:*" Category="Foreign Key" />
+<Link Source = "Conversation" Target="Conversation.UserId" Category="Contains" />
+<Link Source = "Conversation" Target="Conversation.IsAdmin" Category="Contains" />
+<Link Source = "IModel" Target="FriendName" Category="Contains" />
+<Link Source = "Friend" Target="Friend.FriendNames" Category="Contains" />
+<Link Source = "Friend" Target="Friend.FriendId" Category="Contains" />
+<Link Source = "Friend" Target="Friend.ConfirmedDate" Category="Contains" />
+<Link Source = "Friend" Target="Friend.SentDate" Category="Contains" />
+<Link Source = "IModel" Target="MessageContent" Category="Contains" />
+<Link Source = "FriendName" Target="FriendName.Friend" Category="Contains" />
+<Link Source = "FriendName" Target="FriendName.SmallUser" Category="Contains" />
+<Link Source = "FriendName" Target="FriendName.FriendId" Category="Contains" />
+<Link Source="FriendName" Target="Friend" From="FriendName.FriendId" To="Friend.FriendId" Name="FriendName -> Friend" Annotations="" IsUnique="False" Label="1:*" Category="Foreign Key" />
+<Link Source="FriendName" Target="SmallUser" From="FriendName.UserId" To="SmallUser.UserId" Name="FriendName -> SmallUser" Annotations="" IsUnique="False" Label="1:*" Category="Foreign Key" />
+<Link Source = "FriendName" Target="FriendName.UserId" Category="Contains" />
+<Link Source = "IModel" Target="Packet" Category="Contains" />
+<Link Source = "MessageContent" Target="MessageContent.PacketContent" Category="Contains" />
+<Link Source = "MessageContent" Target="MessageContent.SmallUser" Category="Contains" />
+<Link Source = "MessageContent" Target="MessageContent.MessageId" Category="Contains" />
+<Link Source="MessageContent" Target="SmallUser" From="MessageContent.UserId" To="SmallUser.UserId" Name="MessageContent -> SmallUser" Annotations="" IsUnique="False" Label="1:*" Category="Foreign Key" />
+<Link Source = "MessageContent" Target="MessageContent.Content" Category="Contains" />
+<Link Source = "MessageContent" Target="MessageContent.SentDate" Category="Contains" />
+<Link Source = "MessageContent" Target="MessageContent.UserId" Category="Contains" />
+<Link Source = "IModel" Target="PacketContent" Category="Contains" />
+<Link Source = "Packet" Target="Packet.Conversation" Category="Contains" />
+<Link Source = "Packet" Target="Packet.PacketContents" Category="Contains" />
+<Link Source = "Packet" Target="Packet.PacketId" Category="Contains" />
+<Link Source="Packet" Target="Conversation" From="Packet.ConversationId" To="Conversation.ConversationId" Name="Packet -> Conversation" Annotations="" IsUnique="False" Label="1:*" Category="Foreign Key" />
+<Link Source = "Packet" Target="Packet.ConversationId" Category="Contains" />
+<Link Source = "Packet" Target="Packet.PacketNumber" Category="Contains" />
+<Link Source = "IModel" Target="SmallUser" Category="Contains" />
+<Link Source = "PacketContent" Target="PacketContent.MessageContent" Category="Contains" />
+<Link Source = "PacketContent" Target="PacketContent.Packet" Category="Contains" />
+<Link Source = "PacketContent" Target="PacketContent.MessageId" Category="Contains" />
+<Link Source="PacketContent" Target="MessageContent" From="PacketContent.MessageId" To="MessageContent.MessageId" Name="PacketContent -> MessageContent" Annotations="" IsUnique="True" Label="1:1" Category="Foreign Key" />
+<Link Source="PacketContent" Target="Packet" From="PacketContent.PacketId" To="Packet.PacketId" Name="PacketContent -> Packet" Annotations="" IsUnique="False" Label="1:*" Category="Foreign Key" />
+<Link Source = "PacketContent" Target="PacketContent.PacketId" Category="Contains" />
+<Link Source = "IModel" Target="SmallUser" Category="Contains" />
+<Link Source = "SmallUser" Target="SmallUser.Conversations" Category="Contains" />
+<Link Source = "SmallUser" Target="SmallUser.FriendNames" Category="Contains" />
+<Link Source = "SmallUser" Target="SmallUser.MessageContents" Category="Contains" />
+<Link Source = "SmallUser" Target="SmallUser.UserId" Category="Contains" />
+<Link Source = "SmallUser" Target="SmallUser.UserName" Category="Contains" />
+  </Links>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="EntityType" ValueLabel="True">
+      <Condition Expression="HasCategory('EntityType')" />
+      <Setter Property="Background" Value="#FFC0C0C0" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Property Primary" ValueLabel="True">
+      <Condition Expression="HasCategory('Property Primary')" />
+      <Setter Property="Background" Value="#FF008000" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Property Optional" ValueLabel="True">
+      <Condition Expression="HasCategory('Property Optional')" />
+      <Setter Property="Background" Value="#FF808040" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Property Foreign" ValueLabel="True">
+      <Condition Expression="HasCategory('Property Foreign')" />
+      <Setter Property="Background" Value="#FF8080FF" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Property Required" ValueLabel="True">
+      <Condition Expression="HasCategory('Property Required')" />
+      <Setter Property="Background" Value="#FFC0A000" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Navigation Property" ValueLabel="True">
+      <Condition Expression="HasCategory('Navigation Property')" />
+      <Setter Property="Background" Value="#FF990000" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Navigation Collection" ValueLabel="True">
+      <Condition Expression="HasCategory('Navigation Collection')" />
+      <Setter Property="Background" Value="#FFFF3232" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Model" ValueLabel="True">
+      <Condition Expression="HasCategory('Model')" />
+      <Setter Property="Background" Value="#FFFFFFFF" />
+    </Style>
+  </Styles>
+  <Properties>
+    <Property Id="Name" Group="Model Properties" DataType="System.String" />
+    <Property Id="Field"  Description="Backing field" Group="Model Properties" DataType="System.String" />
+    <Property Id="Type"  Description="CLR data type" Group="Model Properties" DataType="System.String" />
+    <Property Id="To" Description="Source property" Group="Model Properties" DataType="System.String" />
+    <Property Id="From" Description="Target property" Group="Model Properties" DataType="System.String" />
+    <Property Id="Dependent" Description="Dependent entity" Group="Model Properties" DataType="System.String" />
+    <Property Id="Inverse" Description="Inverse entity" Group="Model Properties" DataType="System.String" />
+    <Property Id="Principal" Description="Principal entity" Group="Model Properties" DataType="System.String" />    
+    <Property Id="Annotations" Description="Annotations" Group="Model Properties" DataType="System.String" />
+    <Property Id="BaseClass"  Description="Base class" Group="Model Properties" DataType="System.String" />
+    <Property Id="ChangeTrackingStrategy" Description="Change tracking strategy" Group="Model Properties" DataType="System.String" />
+    <Property Id="IsUnique" Group="Model Properties" DataType="System.Boolean" />
+    <Property Id="IsAbstract" Group="Model Properties" DataType="System.Boolean" />
+    <Property Id="ProductVersion" Label="Product Version" Description="EF Core product version" Group="Model Properties" DataType="System.String" />
+    <Property Id="IsIndexed" Group="Property Flags" DataType="System.Boolean" />
+    <Property Id="IsRequired" Group="Property Flags" DataType="System.Boolean" />
+    <Property Id="IsPrimaryKey" Group="Property Flags" DataType="System.Boolean" />
+    <Property Id="IsForeignKey" Group="Property Flags" DataType="System.Boolean" />
+    <Property Id="IsShadow" Group="Property Flags" DataType="System.Boolean" />
+    <Property Id="IsAlternateKey" Group="Property Flags" DataType="System.Boolean" />
+    <Property Id="IsConcurrencyToken" Group="Property Flags" DataType="System.Boolean" />
+    <Property Id="IsIndexed" Group="Property Flags" DataType="System.Boolean" />
+    <Property Id="IsUnicode" Group="Property Flags" DataType="System.Boolean" />
+    <Property Id="ValueGenerated" Group="Property Flags" DataType="System.String" />
+    <Property Id="BeforeSaveBehavior" Group="Property Flags" DataType="System.String" />
+    <Property Id="AfterSaveBehavior" Group="Property Flags" DataType="System.String" />
+    <Property Id="PropertyAccessMode" Group="Property Flags" DataType="System.String" />
+  </Properties>
+</DirectedGraph>
