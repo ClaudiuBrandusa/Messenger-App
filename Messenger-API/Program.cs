@@ -9,6 +9,9 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
+using Messenger_API.Data;
+using Messenger_API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Messenger_API
 {
@@ -22,33 +25,28 @@ namespace Messenger_API
             {
                 IConfiguration configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-                //Create source connection
-                SqlConnection source = new SqlConnection(configuration.GetConnectionString("UserContextConnection"));
-                //Create destination connection
-                SqlConnection destination = new SqlConnection(configuration.GetConnectionString("MessageContextConnection"));
-                // Clean up destination table. Your destination database must have the
-                // table with schema which you are copying data to.
-                // Before executing this code, you must create a table BulkDataTable
-                // in your database where you are trying to copy data to.
-                SqlCommand cmd = new SqlCommand("DELETE FROM SmallUsers", destination);
-                //Open source and destination connections
-                source.Open();
-                destination.Open();
-                cmd.ExecuteNonQuery();
-                //Select data from AspNetUsers table
-                cmd = new SqlCommand("SELECT Id, UserName FROM AspNetUsers", source);
-                //Execute reader
-                SqlDataReader reader = cmd.ExecuteReader();
-                //Create SqlBulkCopy
-                SqlBulkCopy bulkData = new SqlBulkCopy(destination);
-                //Set destination table name
-                bulkData.DestinationTableName = "SmallUsers";
-                //Write data
-                bulkData.WriteToServer(reader);
-                //Close objects
-                bulkData.Close();
-                destination.Close();
-                source.Close();
+                UserContext userContext = scope.ServiceProvider.GetRequiredService<UserContext>();
+                MessageContext messageContext = scope.ServiceProvider.GetRequiredService<MessageContext>();
+
+                var users = new List<SmallUser>();
+                foreach(var user in userContext.Users)
+                {
+                    users.Add(new SmallUser 
+                    {
+                        UserId = user.Id,
+                        UserName = user.UserName
+                    });
+                }
+                var smallUsers = messageContext.SmallUsers.AsNoTracking().ToList();
+
+                var results = users.Where(u => !smallUsers.Any(s => u.UserId.Equals(s.UserId) && u.UserName.Equals(s.UserName))); 
+                
+                foreach(var user in results)
+                {
+                    messageContext.SmallUsers.Add(user);
+                }
+
+                await messageContext.SaveChangesAsync();
             }
 
             await webHost.RunAsync();

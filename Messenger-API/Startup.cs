@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Messenger_API.Authentication;
 using Messenger_API.Data;
 using Messenger_API.Hubs;
+using Messenger_API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -49,6 +50,7 @@ namespace Messenger_API
 
             services.AddSignalR();
             services.AddControllers();
+            services.AddScoped<IMessageRepository, MessageRepository>();
 
             services.AddDbContext<MessageContext>(config =>
             {
