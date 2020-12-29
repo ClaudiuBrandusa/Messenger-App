@@ -24,12 +24,16 @@ namespace Messenger_API
 {
     public class Startup
     {
-        readonly string AllowAllSpecificOrigins = "_allowAllSpecificOrigins"; // used at CORS problem
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Constants = new Constants(configuration);
         }
+
+        public static Constants Constants { get; private set; }
+
+        readonly string AllowAllSpecificOrigins = "_allowAllSpecificOrigins"; // used at CORS problem
+
 
         public IConfiguration Configuration { get; }
 
