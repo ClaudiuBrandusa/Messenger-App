@@ -5,7 +5,7 @@
 
 <div id="chat-container">
     <div id="search-container">
-        <input type="text" placeholder="Search" />
+        <input type="text" placeholder="Search" id="search-conversation-input" />
     </div>
     <div id="conversation-list">
         <div class="conversation active">
@@ -103,6 +103,9 @@
         <button id="send_btn" class="btn-send" type="button">Send</button>
     </div>
 </div>
+
+@Html.Hidden("username", Context.User.Identity.Name)
+@Html.Hidden("chatroom", -1)
 
 <!--Adding the script references-->
 <script src="~/lib/signalr/dist/browser/signalr.js"></script>

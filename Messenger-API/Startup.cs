@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Messenger_API.Authentication;
 using Messenger_API.Data;
 using Messenger_API.Hubs;
 using Messenger_API.Services;
+using Messenger_API.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -55,6 +57,10 @@ namespace Messenger_API
             services.AddSignalR();
             services.AddControllers();
             services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<ITokenRepository, UserRepository>();
+
+            services.AddTransient<ITokenHandler, RefreshTokenHandler>();
+            services.AddTransient<IUserRepository, UserRepository>();
 
             services.AddDbContext<MessageContext>(config =>
             {
@@ -89,9 +95,33 @@ namespace Messenger_API
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
                     ValidAudience = Configuration["JWT:ValidAudience"],
                     ValidIssuer = Configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:ApiKey"]))
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken))
+                        {
+                            var list = accessToken.ToString().Split(" ");
+                            if (list.Length > 1)
+                            {
+                                context.Token = list[1];
+                            }
+                            else
+                            {
+                                context.Token = accessToken;
+                            }
+                        }
+
+                        return Task.CompletedTask;
+                    }
                 };
             });         
         }

@@ -6,6 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\UsersDB\20201230115952_RefreshTokens.cs" />
+    <Compile Remove="Migrations\UsersDB\20201230115952_RefreshTokens.Designer.cs" />
+    <Compile Remove="Migrations\UsersDB\20201230120114_RefreshTokens.cs" />
+    <Compile Remove="Migrations\UsersDB\20201230120114_RefreshTokens.Designer.cs" />
+    <Compile Remove="Migrations\UsersDB\20201230121024_RefreshTokens.cs" />
+    <Compile Remove="Migrations\UsersDB\20201230121024_RefreshTokens.Designer.cs" />
+    <Compile Remove="Migrations\UsersDB\20210101004937_Test.cs" />
+    <Compile Remove="Migrations\UsersDB\20210101004937_Test.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="jose-jwt" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.10" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
@@ -16,6 +27,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
   </ItemGroup>
 
 

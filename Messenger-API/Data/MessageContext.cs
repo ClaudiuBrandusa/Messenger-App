@@ -18,7 +18,7 @@ namespace Messenger_API.Data
         {
         }
 
-        public DbSet<Conversation>  Conversations{ get; set; }
+        public DbSet<Conversation>  Conversations { get; set; }
         public DbSet<Friend> Friends { get; set; }
         public DbSet<FriendName> FriendNames { get; set; }
         public DbSet<MessageContent> MessageContents { get; set; }

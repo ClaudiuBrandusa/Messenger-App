@@ -1,7 +1,20 @@
 ﻿"use strict";
 
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
 // keep in mind that the connection url is hard coded for now
-var connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:49499/messagehub").build();
+var connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:49499/messagehub", {
+    accessTokenFactory: () => getCookie("access_token")
+}).build();
 
 connection.on("ReceiveMessage", function (user, message) {
 
@@ -94,6 +107,14 @@ connection.on("SendMessage", function (message) {
     messages.scrollTop = message.offsetTop;
 });
 
+connection.on("EnterConversation", function (conversation_id) {
+    alert("conversation id is: " + conversation_id);
+});
+
+connection.on("alert", function (message) {
+    alert(message);
+});
+
 connection.start().then(function () {
     // there goes the init
     var send_btn = document.getElementById("send_btn");
@@ -115,7 +136,7 @@ connection.start().then(function () {
             return; // then we have nothing to send
         }
 
-        var user = "User";
+        var user = document.getElementById("username").value;
         var message = input.value;
 
         input.value = "";
@@ -123,6 +144,23 @@ connection.start().then(function () {
         connection.invoke("SendMessage", user, message).catch(function (err) {
             return console.error(err.toString());
         });
+
+        // Search conversation part
+
+        var search_conversation_container = document.getElementById("search-container");
+
+        if (search_conversation_container == null) {
+            alert("search conversation container not found");
+            return;
+        }
+
+        var search_conversation_input = document.getElementById("search-conversation-input");
+
+        if (search_conversation_input == null) {
+            alert("search conversation input not found");
+            return;
+        }
+
     });
 
     // keydown events

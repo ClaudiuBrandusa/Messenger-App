@@ -7,7 +7,11 @@ using System.Threading.Tasks;
 using Messenger_API.Authentication;
 using Messenger_API.Data;
 using Messenger_API.Filters;
+using Messenger_API.Models;
+using Messenger_API.Services;
+using Messenger_API.Tokens;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,15 +32,22 @@ namespace Messenger_API.Controllers
         private readonly IConfiguration _configuration;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly MessageContext messageContext;
+        private readonly ITokenRepository tokenRepository;
+        private readonly ITokenHandler tokenHandler;
+        private readonly IUserRepository userRepository;
 
         public AuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration,  
-                                        SignInManager<ApplicationUser> signInManager, MessageContext messageContext)
+                                        SignInManager<ApplicationUser> signInManager, MessageContext messageContext, ITokenRepository tokenRepository,
+                                        ITokenHandler tokenHandler, IUserRepository userRepository)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.messageContext = messageContext;
+            this.tokenRepository = tokenRepository;
             _configuration = configuration;
             _signInManager = signInManager;
+            this.tokenHandler = tokenHandler;
+            this.userRepository = userRepository;
         }
 
         [HttpPost("Register")]
@@ -61,10 +72,23 @@ namespace Messenger_API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User could not be created" });
             }
 
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name,user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                };
+
             messageContext.SmallUsers.Add(new Models.SmallUser { UserId = user.SecurityStamp, UserName = user.UserName });
             await messageContext.SaveChangesAsync();
 
-            return Ok(new Response { Status = "Success", Message = "User created successfully" });
+            var token = tokenHandler.GenerateToken(authClaims);
+
+            return Ok(new
+            {
+                token = tokenHandler.WriteToken(token),
+                refreshToken = tokenHandler.GenerateRefreshToken(user.Id).Token,
+                StatusCode = 200
+            });
         }
 
         [HttpPost("Login")]
@@ -86,33 +110,70 @@ namespace Messenger_API.Controllers
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
 
-                var authSigninKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:ApiKey"]));
-                var token = new JwtSecurityToken
-                (
-                    issuer: _configuration["JWT:ValidIssuer"],
-                    audience: _configuration["JWT:ValidAudience"],
-                    expires: DateTime.Now.AddHours(3),
-                    claims: authClaims,
-                    signingCredentials: new SigningCredentials(authSigninKey, SecurityAlgorithms.HmacSha256)
-                );
+                var token = tokenHandler.GenerateToken(authClaims);
 
                 return Ok(new
                 {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
+                    token = tokenHandler.WriteToken(token),
+                    refreshToken = tokenHandler.GenerateRefreshToken(user.Id).Token,
+                    expirationTime = 10,
                     StatusCode = 200
                 });
             }
             return Unauthorized();
         }
 
+        [Authorize]
         [HttpPost("Logout")]
         [APIKeyAuth]
         public async Task<IActionResult> Logout()
         {
-            //await _tokenManager.DeactivateCurrentAsync();
+            var userId = userRepository.GetIdByUsername(User.Identity.Name);
+
             await _signInManager.SignOutAsync();
 
             return Ok(new Response { Status = "Success", Message = "User logout successfully" });
         }
+
+
+        // Refresh JWT Token
+        [HttpPost("Refresh")]
+        [APIKeyAuth]
+        public IActionResult Refresh([FromForm]string token, [FromForm]string refreshToken)
+        {
+
+            var principal = tokenHandler.GetPrincipalFromExpiredToken(token);
+            if (principal == null || principal == default)
+            {
+                return new ObjectResult(new
+                {
+                    StatusCode = 422
+                });
+            }
+            var username = principal.Identity.Name;
+            var userId = userRepository.GetIdByUsername(username);
+            if(!tokenHandler.IsTokenAvailableForUserId(userId, refreshToken))
+            {
+                Console.WriteLine("Invalid refresh token");
+                return new ObjectResult(new
+                {
+                    StatusCode = 422
+                });
+            }
+
+            tokenRepository.RemoveRefreshToken(refreshToken);
+
+            var newJwtToken = tokenHandler.GenerateToken(principal.Claims);
+            var newRefreshToken = tokenHandler.GenerateRefreshToken();
+
+            tokenRepository.SetRefreshToken(userId, newRefreshToken);
+
+            return new ObjectResult(new { 
+                StatusCode = 200,
+                token = tokenHandler.WriteToken(newJwtToken),
+                refreshToken = newRefreshToken
+            });
+        }
+
     }
 }

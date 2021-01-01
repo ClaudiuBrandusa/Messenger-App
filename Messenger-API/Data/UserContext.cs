@@ -1,4 +1,5 @@
 ﻿using Messenger_API.Authentication;
+using Messenger_API.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,9 +16,12 @@ namespace Messenger_API.Data
 
         }
 
-
+        public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<RefreshTokenEntity>()
+                .HasKey(t => t.Token);
+
             base.OnModelCreating(builder);
         }
     }
