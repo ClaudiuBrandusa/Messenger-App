@@ -42,7 +42,7 @@ namespace Messenger_API.Tokens
             return refreshToken;
         }
 
-        public string GenerateRefreshToken()
+        string GenerateRefreshToken()
         {
             Random random = new Random();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

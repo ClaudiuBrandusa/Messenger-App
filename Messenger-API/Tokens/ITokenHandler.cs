@@ -11,8 +11,6 @@ namespace Messenger_API.Tokens
         string WriteToken(JwtSecurityToken token);
         RefreshToken GenerateRefreshToken(string userId);
         bool IsTokenAvailableForUserId(string userId, string token);
-        string GenerateRefreshToken();
-
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
     }
 }
