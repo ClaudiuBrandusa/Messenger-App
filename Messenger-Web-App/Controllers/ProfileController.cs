@@ -77,7 +77,7 @@ namespace Messenger_Web_App.Controllers
                             HttpContext.Response.Cookies.Append("access_token", dictionaryResponse["token"]);
                             HttpContext.Response.Cookies.Append("refresh_token", dictionaryResponse["refreshToken"]);
 
-                            return Redirect("~/");
+                            return RedirectToAction("ChatBox", "Messages");
                         }
 
                         receivedRegister = JsonConvert.DeserializeObject<Register>(apiResponse);
@@ -132,7 +132,7 @@ namespace Messenger_Web_App.Controllers
                             HttpContext.Response.Cookies.Append("access_token", dictionaryResponse["token"]);
                             HttpContext.Response.Cookies.Append("refresh_token", dictionaryResponse["refreshToken"]);
 
-                            return Redirect("~/");
+                            return RedirectToAction("ChatBox", "Messages");
                         }
                         receivedLogin = JsonConvert.DeserializeObject<Login>(apiResponse);
                         return View(receivedLogin);               
@@ -140,7 +140,7 @@ namespace Messenger_Web_App.Controllers
                         HttpContext.Response.Cookies.Append("refresh_token", dictionaryResponse["refreshToken"]);
 
 
-                        return Redirect("~/");
+                        return View(receivedLogin);
                     }
                 }
             }

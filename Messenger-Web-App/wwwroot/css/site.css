@@ -615,8 +615,9 @@ h1
     font-size: 15px;
 }
 
-.btn-navbar:hover {
-    background-color: navy;
+.btn-navbar:hover 
+{
+    background-color: #2a363b;
     color: white;
     border: none;
 }
