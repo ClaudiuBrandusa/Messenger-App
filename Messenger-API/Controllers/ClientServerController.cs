@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Messenger_API.Models;
@@ -69,6 +70,17 @@ namespace Messenger_API.Controllers
                 return Ok("Succes");
             else
                 return Ok(userId);
+        }
+
+        [HttpPost("AddImageProfile")]
+        public IActionResult AddImageProfile([FromForm] ImageProfile imageProfile, [FromForm] List<IFormFile> Image)
+        {
+            var rez = _message.AddImageProfile(imageProfile, Image);
+
+            if (rez)
+                return Ok(rez);
+            else
+                return Ok("Fail");
         }
     }
 }

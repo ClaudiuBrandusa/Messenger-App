@@ -1,7 +1,9 @@
 ﻿using Messenger_API.Data;
 using Messenger_API.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -104,6 +106,30 @@ namespace Messenger_API.Services
             var user = _context.SmallUsers.FirstOrDefault(r => r.UserName.Equals(userName));
 
             return user.UserId;
+        }
+
+        public bool AddImageProfile(ImageProfile imageProfile, List<IFormFile> Image)
+        {
+            if(imageProfile == null)
+            {
+                return false;
+            }
+
+            foreach (var item in Image)
+            {
+                if (item.Length > 0)
+                {
+                    using (var stream = new MemoryStream())
+                    {
+                        item.CopyToAsync(stream);
+                        imageProfile.Image = stream.ToArray();
+                    }
+                }
+            }
+            _context.ImageProfiles.Add(imageProfile);
+            _context.SaveChanges();
+
+            return true;
         }
     }
 }

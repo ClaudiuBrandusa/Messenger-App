@@ -35,53 +35,57 @@ namespace Messenger_Web_App.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(Register register)
         {
-            Register receivedRegister = new Register();
-            using (var httpClient = new HttpClient())
+            if (ModelState.IsValid)
             {
-                httpClient.DefaultRequestHeaders.Add("ApiKey", "ThisMySecretKey123");
-
-                string json = JsonConvert.SerializeObject(register);
-
-                Dictionary<string, string> body = JsonConvert.DeserializeObject<Dictionary<string,string>>(json);
-                using (var response = await httpClient.PostAsync(Startup.Constants.Register_Endpoint, new FormUrlEncodedContent(body)))
+                Register receivedRegister = new Register();
+                using (var httpClient = new HttpClient())
                 {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    Dictionary<string, string> dictionaryResponse = JsonConvert.DeserializeObject<Dictionary<string, string>>(apiResponse);
+                    httpClient.DefaultRequestHeaders.Add("ApiKey", "ThisMySecretKey123");
 
-                    if (response.StatusCode.ToString().Equals("OK"))
+                    string json = JsonConvert.SerializeObject(register);
+
+                    Dictionary<string, string> body = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    using (var response = await httpClient.PostAsync(Startup.Constants.Register_Endpoint, new FormUrlEncodedContent(body)))
                     {
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Name, register.UserName)
-                        };
-                        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                        ClaimsPrincipal principal = new ClaimsPrincipal(identity);
-                        var a = new JwtSecurityTokenHandler().ReadToken(dictionaryResponse["token"]);
-                        AuthenticationProperties authProperties = new AuthenticationProperties
-                        {
-                            AllowRefresh = true,
-                            ExpiresUtc = DateTimeOffset.Now.AddSeconds(Math.Max((a.ValidTo - DateTime.UtcNow).TotalSeconds-5, 5)),
-                            IsPersistent = true
-                        };
-                        await HttpContext.SignInAsync(principal, authProperties);
-                        if (HttpContext.Request.Cookies.ContainsKey("access_token"))
-                        {
-                            HttpContext.Response.Cookies.Delete("access_token");
-                        }
-                        if (HttpContext.Request.Cookies.ContainsKey("refresh_token"))
-                        {
-                            HttpContext.Response.Cookies.Delete("refresh_token");
-                        }
-                        HttpContext.Response.Cookies.Append("access_token", dictionaryResponse["token"]);
-                        HttpContext.Response.Cookies.Append("refresh_token", dictionaryResponse["refreshToken"]);
-                        
-                        return Redirect("~/");
-                    }
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        Dictionary<string, string> dictionaryResponse = JsonConvert.DeserializeObject<Dictionary<string, string>>(apiResponse);
 
-                    receivedRegister = JsonConvert.DeserializeObject<Register>(apiResponse);
+                        if (response.StatusCode.ToString().Equals("OK"))
+                        {
+                            var claims = new List<Claim>
+                            {
+                                new Claim(ClaimTypes.Name, register.UserName)
+                            };
+                            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                            ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+                            var a = new JwtSecurityTokenHandler().ReadToken(dictionaryResponse["token"]);
+                            AuthenticationProperties authProperties = new AuthenticationProperties
+                            {
+                                AllowRefresh = true,
+                                ExpiresUtc = DateTimeOffset.Now.AddSeconds(Math.Max((a.ValidTo - DateTime.UtcNow).TotalSeconds - 5, 5)),
+                                IsPersistent = true
+                            };
+                            await HttpContext.SignInAsync(principal, authProperties);
+                            if (HttpContext.Request.Cookies.ContainsKey("access_token"))
+                            {
+                                HttpContext.Response.Cookies.Delete("access_token");
+                            }
+                            if (HttpContext.Request.Cookies.ContainsKey("refresh_token"))
+                            {
+                                HttpContext.Response.Cookies.Delete("refresh_token");
+                            }
+                            HttpContext.Response.Cookies.Append("access_token", dictionaryResponse["token"]);
+                            HttpContext.Response.Cookies.Append("refresh_token", dictionaryResponse["refreshToken"]);
+
+                            return Redirect("~/");
+                        }
+
+                        receivedRegister = JsonConvert.DeserializeObject<Register>(apiResponse);
+                    }
                 }
+                return View(receivedRegister);
             }
-            return View(receivedRegister);
+            return View(register);
         }
 
         public IActionResult Test()
@@ -95,43 +99,47 @@ namespace Messenger_Web_App.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(Login login)
         {
-            Login receivedLogin = new Login();
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Add("ApiKey", "ThisMySecretKey123");
-
-                string json = JsonConvert.SerializeObject(login);
-
-                Dictionary<string, string> body = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                using (var response = await httpClient.PostAsync(Startup.Constants.Login_Endpoint, new FormUrlEncodedContent(body)))
+            if(ModelState.IsValid)
+            { 
+                Login receivedLogin = new Login();
+                using (var httpClient = new HttpClient())
                 {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    Dictionary<string, string> dictionaryResponse = JsonConvert.DeserializeObject<Dictionary<string,string>>(apiResponse);
-                    
-                    if (response.StatusCode.ToString().Equals("OK"))
-                    {
-                        ClaimsPrincipal principal = GetPrincipalFromExpiredToken(dictionaryResponse["token"]);
-                        var a = new JwtSecurityTokenHandler().ReadToken(dictionaryResponse["token"]);
-                        AuthenticationProperties authProperties = new AuthenticationProperties 
-                        {
-                            AllowRefresh = true,
-                            ExpiresUtc = DateTimeOffset.Now.AddSeconds(Math.Max((a.ValidTo - DateTime.UtcNow).TotalSeconds-5, 5)), // clamping the value at 5 seconds
-                            IsPersistent = true
-                        };  
-                        await HttpContext.SignInAsync(principal, authProperties);
-                        if (HttpContext.Request.Cookies.ContainsKey("access_token"))
-                        {
-                            HttpContext.Response.Cookies.Delete("access_token");
-                        }
-                        HttpContext.Response.Cookies.Append("access_token", dictionaryResponse["token"]);
-                        HttpContext.Response.Cookies.Append("refresh_token", dictionaryResponse["refreshToken"]);
+                    httpClient.DefaultRequestHeaders.Add("ApiKey", "ThisMySecretKey123");
 
-                        return Redirect("~/");
+                    string json = JsonConvert.SerializeObject(login);
+
+                    Dictionary<string, string> body = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    using (var response = await httpClient.PostAsync(Startup.Constants.Login_Endpoint, new FormUrlEncodedContent(body)))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        Dictionary<string, string> dictionaryResponse = JsonConvert.DeserializeObject<Dictionary<string,string>>(apiResponse);
+                    
+                        if (response.StatusCode.ToString().Equals("OK"))
+                        {
+                            ClaimsPrincipal principal = GetPrincipalFromExpiredToken(dictionaryResponse["token"]);
+                            var a = new JwtSecurityTokenHandler().ReadToken(dictionaryResponse["token"]);
+                            AuthenticationProperties authProperties = new AuthenticationProperties 
+                            {
+                                AllowRefresh = true,
+                                ExpiresUtc = DateTimeOffset.Now.AddSeconds(Math.Max((a.ValidTo - DateTime.UtcNow).TotalSeconds-5, 5)), // clamping the value at 5 seconds
+                                IsPersistent = true
+                            };  
+                            await HttpContext.SignInAsync(principal, authProperties);
+                            if (HttpContext.Request.Cookies.ContainsKey("access_token"))
+                            {
+                                HttpContext.Response.Cookies.Delete("access_token");
+                            }
+                            HttpContext.Response.Cookies.Append("access_token", dictionaryResponse["token"]);
+                            HttpContext.Response.Cookies.Append("refresh_token", dictionaryResponse["refreshToken"]);
+
+                            return Redirect("~/");
+                        }
+                        receivedLogin = JsonConvert.DeserializeObject<Login>(apiResponse);
+                        return View(receivedLogin);               
                     }
-                    receivedLogin = JsonConvert.DeserializeObject<Login>(apiResponse);
-                    return View(receivedLogin);               
                 }
-            }    
+            }
+            return View(login);
         }
 
         [Authorize]

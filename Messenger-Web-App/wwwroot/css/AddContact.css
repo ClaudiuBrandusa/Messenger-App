@@ -63,12 +63,11 @@
 
 
 
-.contactbox 
-{
+.contactbox {
     min-width: 300px;
     max-width: 400px;
     height: 85vh;
-    background: #0048AA;
+    background: #2c437d;
     border-radius: 10px;
     margin-top: -8px;
     margin-left: 32%;
@@ -130,7 +129,7 @@ form.example::after
 .container2 
 {
     padding: 2px 16px;
-    background-color: #0048AA;
+    background-color: #2c437d;
     color: white;
     margin-top: -40%;
     height: 10px;

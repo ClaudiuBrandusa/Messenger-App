@@ -14,6 +14,7 @@ namespace Messenger_Web_App.Models
         public string Email { get; set; }
         [Required(ErrorMessage = "Password is required.")]
         public string Password { get; set; }
+        [Required(ErrorMessage = "Confirm Password is required.")]
         public string ConfirmPassword { get; set; }
     }
 }

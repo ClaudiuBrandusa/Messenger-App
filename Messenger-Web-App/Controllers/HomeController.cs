@@ -27,12 +27,6 @@ namespace Messenger_Web_App.Controllers
         //[Authorize]
         public IActionResult Index()
         {
-            if(HttpContext.User.Identity.IsAuthenticated)
-            {
-                var model = new Login() { Username = HttpContext.User.Identity.Name };
-                return View(model);
-            }
-            
             return View();
         }
 

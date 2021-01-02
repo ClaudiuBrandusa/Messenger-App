@@ -18,13 +18,14 @@ namespace Messenger_API.Data
         {
         }
 
-        public DbSet<Conversation>  Conversations { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
         public DbSet<Friend> Friends { get; set; }
         public DbSet<FriendName> FriendNames { get; set; }
         public DbSet<MessageContent> MessageContents { get; set; }
         public DbSet<Packet> Packets { get; set; }
         public DbSet<PacketContent> PacketContents { get; set; }
         public DbSet<SmallUser> SmallUsers { get; set; }
+        public DbSet<ImageProfile> ImageProfiles { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -97,6 +98,16 @@ namespace Messenger_API.Data
                 .WithMany(p => p.Packets)
                 .HasForeignKey(c => c.ConversationId)
                 .HasPrincipalKey(c => c.ConversationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Profile & SmallUser (one to one)
+            modelBuilder.Entity<ImageProfile>()
+                .HasKey(p => p.UserId);
+
+            modelBuilder.Entity<ImageProfile>()
+                .HasOne(s => s.SmallUser)
+                .WithOne(p => p.ImageProfile)
+                .HasForeignKey<ImageProfile>(m => m.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             /*

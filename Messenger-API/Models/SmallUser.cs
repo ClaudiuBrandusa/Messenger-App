@@ -13,6 +13,6 @@ namespace Messenger_API.Models
         public ICollection<FriendName> FriendNames { get; set; }
         public ICollection<MessageContent> MessageContents { get; set; }
         public ICollection<Conversation> Conversations { get; set; }
-        //public ICollection<ConversationAdmin> ConversationAdmins { get; set; }
+        public ImageProfile ImageProfile { get; set; }
     }
 }

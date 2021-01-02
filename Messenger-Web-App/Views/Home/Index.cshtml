@@ -1,19 +1,34 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
-@model Login
-
-@if (Model != null)
-{
-    <h1>Hello @Model.Username</h1>
-}
-else
-{
-    <h1>Model is null</h1>
+    ViewData["Title"] = "Presentation Page";
 }
 
 
-<script type="text/javascript">
 
+
+<div>
+    <img class="maindiv" src="~/images/welcome.png" />
+    <img class="maindiv" src="~/images/slide1.jpg" />
+    <img class="maindiv" src="~/images/slide2.png" />
+    <img class="maindiv" src="~/images/slide4.jpg" />
+    <img class="maindiv" src="~/images/slide5.jpg" />
+    <img class="maindiv" src="~/images/slide6.jpg" />
+</div>
+
+
+
+<script>
+    var myIndex = 0;
+    carousel();
+
+    function carousel() {
+        var i;
+        var x = document.getElementsByClassName("maindiv");
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+        }
+        myIndex++;
+        if (myIndex > x.length) { myIndex = 1 }
+        x[myIndex - 1].style.display = "block";
+        setTimeout(carousel, 2000); // Change image every 5 seconds
+    }
 </script>
