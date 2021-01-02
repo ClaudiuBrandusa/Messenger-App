@@ -134,16 +134,13 @@ namespace Messenger_Web_App.Controllers
 
                             return Redirect("~/");
                         }
-<<<<<<< HEAD
                         receivedLogin = JsonConvert.DeserializeObject<Login>(apiResponse);
                         return View(receivedLogin);               
-=======
                         HttpContext.Response.Cookies.Append("access_token", dictionaryResponse["token"]);
                         HttpContext.Response.Cookies.Append("refresh_token", dictionaryResponse["refreshToken"]);
 
 
                         return Redirect("~/");
->>>>>>> d2f14f9562207a66caa524daf61d32bf28e6d966
                     }
                 }
             }
