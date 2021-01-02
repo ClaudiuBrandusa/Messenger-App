@@ -94,7 +94,7 @@ namespace Messenger_API.Services
             };
 
             _context.RefreshTokens.Add(entity);
-
+            Console.WriteLine("Got here with token:"+refreshToken.Token);
             _context.SaveChanges();
         }
         public void SetRefreshToken(string userId, string refreshToken)

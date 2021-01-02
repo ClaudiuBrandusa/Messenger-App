@@ -134,8 +134,16 @@ namespace Messenger_Web_App.Controllers
 
                             return Redirect("~/");
                         }
+<<<<<<< HEAD
                         receivedLogin = JsonConvert.DeserializeObject<Login>(apiResponse);
                         return View(receivedLogin);               
+=======
+                        HttpContext.Response.Cookies.Append("access_token", dictionaryResponse["token"]);
+                        HttpContext.Response.Cookies.Append("refresh_token", dictionaryResponse["refreshToken"]);
+
+
+                        return Redirect("~/");
+>>>>>>> d2f14f9562207a66caa524daf61d32bf28e6d966
                     }
                 }
             }
@@ -164,7 +172,6 @@ namespace Messenger_Web_App.Controllers
         [HttpPost("Refresh")]
         public async Task<IActionResult> RefreshToken([FromForm] string token, [FromForm] string refreshToken)
         {
-            Console.WriteLine(refreshToken);
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Add("ApiKey", "ThisMySecretKey123");
@@ -196,12 +203,27 @@ namespace Messenger_Web_App.Controllers
                         Console.WriteLine("exception");
                         return BadRequest();
                     }
-                    Console.WriteLine(Uri.EscapeUriString(dictionaryResponse["refreshToken"]));
                     if(statusCode == 422)
                     {
                         Console.WriteLine(422);
                         return BadRequest();
                     }
+
+                    if (!dictionaryResponse.ContainsKey("token") || !dictionaryResponse.ContainsKey("refreshToken"))
+                    {
+                        Console.WriteLine("Empty dictionary");
+                        return BadRequest();
+                    }
+
+                    Console.WriteLine(Uri.EscapeUriString(dictionaryResponse["refreshToken"]));
+
+                    // Updating the user cookies if we are able, otherwise it means that we had accessed this route from the outside of the web app
+
+                    HttpContext?.Response?.Cookies?.Delete("access_token");
+                    HttpContext?.Response?.Cookies?.Delete("refresh_token");
+
+                    HttpContext?.Response?.Cookies?.Append("access_token", dictionaryResponse["token"]);
+                    HttpContext?.Response?.Cookies?.Append("refresh_token", dictionaryResponse["refreshToken"]);
 
                     return Ok(new { StatusCode = statusCode, token = dictionaryResponse["token"], refreshToken = dictionaryResponse["refreshToken"] });
                 }

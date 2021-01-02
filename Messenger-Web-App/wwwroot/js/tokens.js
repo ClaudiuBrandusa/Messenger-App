@@ -36,7 +36,7 @@ async function getNewToken() {
             if (response.ok) {
                 return response.json();
             } else {
-                return sendNewToken("status is: " + response.status); // something went wrong
+                sendNewToken("status is: " + response.status); return "undefined"; // something went wrong
             }
                 })
             .catch(error => console.error(error));
@@ -52,13 +52,15 @@ async function requestRefreshToken() {
                 // getting the new token
                 getNewToken()
                     .then(val => {
-                        sendNewToken(val.token);
-                        sendNewRefreshToken(val.refreshToken);
+                        if (val != "undefined") {
+                            sendNewToken(val.token);
+                            sendNewRefreshToken(val.refreshToken);
+                        } // else something went wrong
                     });
                 // after we change the token, we will need new credentials
                 self.postMessage("need data");
             } // else we do not need to refresh the token
-            setTimeout("requestRefreshToken()", 1000 * 60 * 5); // requesting new data at every 5 minutes
+            setTimeout("requestRefreshToken()", 1000 * 60 * 0.3); // requesting new data at every 4 minutes
             return val;
         }
     );

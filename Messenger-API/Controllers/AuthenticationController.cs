@@ -87,6 +87,7 @@ namespace Messenger_API.Controllers
             {
                 token = tokenHandler.WriteToken(token),
                 refreshToken = tokenHandler.GenerateRefreshToken(user.Id).Token,
+                expirationTime = _configuration["JWT:ExpirationTime"],
                 StatusCode = 200
             });
         }
@@ -116,7 +117,7 @@ namespace Messenger_API.Controllers
                 {
                     token = tokenHandler.WriteToken(token),
                     refreshToken = tokenHandler.GenerateRefreshToken(user.Id).Token,
-                    expirationTime = 10,
+                    expirationTime = _configuration["JWT:ExpirationTime"],
                     StatusCode = 200
                 });
             }
@@ -141,7 +142,6 @@ namespace Messenger_API.Controllers
         [APIKeyAuth]
         public IActionResult Refresh([FromForm]string token, [FromForm]string refreshToken)
         {
-
             var principal = tokenHandler.GetPrincipalFromExpiredToken(token);
             if (principal == null || principal == default)
             {
@@ -154,7 +154,7 @@ namespace Messenger_API.Controllers
             var userId = userRepository.GetIdByUsername(username);
             if(!tokenHandler.IsTokenAvailableForUserId(userId, refreshToken))
             {
-                Console.WriteLine("Invalid refresh token");
+                Console.WriteLine("Invalid refresh token Here");
                 return new ObjectResult(new
                 {
                     StatusCode = 422
@@ -164,10 +164,8 @@ namespace Messenger_API.Controllers
             tokenRepository.RemoveRefreshToken(refreshToken);
 
             var newJwtToken = tokenHandler.GenerateToken(principal.Claims);
-            var newRefreshToken = tokenHandler.GenerateRefreshToken();
-
-            tokenRepository.SetRefreshToken(userId, newRefreshToken);
-
+            var newRefreshToken = tokenHandler.GenerateRefreshToken(userId).Token;
+            Console.WriteLine("new reftoken: "+newRefreshToken);
             return new ObjectResult(new { 
                 StatusCode = 200,
                 token = tokenHandler.WriteToken(newJwtToken),
