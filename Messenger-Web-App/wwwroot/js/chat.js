@@ -382,6 +382,8 @@ function enterConversation(data) {
         // then we are already there
         return;
     }
+
+    conversationId = data.id;
     
     // set conversation title
     var conversation_title = document.getElementById("chat-title");
