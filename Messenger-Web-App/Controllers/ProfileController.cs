@@ -139,8 +139,7 @@ namespace Messenger_Web_App.Controllers
                         HttpContext.Response.Cookies.Append("access_token", dictionaryResponse["token"]);
                         HttpContext.Response.Cookies.Append("refresh_token", dictionaryResponse["refreshToken"]);
 
-
-                        return View(receivedLogin);
+                        return Redirect("~/");
                     }
                 }
             }
