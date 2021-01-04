@@ -22,10 +22,10 @@
                 </a>
                 @if (!Context.User.Identity.IsAuthenticated)
                 {
-                    <a class="btn btn-navbar"  asp-area="" asp-controller="Profile" asp-action="Register">
+                    <a class="btn btn-navbar" asp-area="" asp-controller="Profile" asp-action="Register">
                         <span>Register</span>
                     </a>
-                    <a class="btn btn-navbar"  asp-area="" asp-controller="Profile" asp-action="Login">
+                    <a class="btn btn-navbar" asp-area="" asp-controller="Profile" asp-action="Login">
                         <span>Log in</span>
                     </a>
                 }
@@ -37,16 +37,16 @@
                     <a class="btn btn-navbar" asp-area="" asp-controller="Profile" asp-action="Account">
                         <span>Account</span>
                     </a>
-                    
+
                     <form method="post">
-                        <button class="btn btn-navbar" type="submit"  asp-action="Logout" asp-controller="Profile">Log Out</button>
+                        <button class="btn btn-navbar" type="submit" asp-action="Logout" asp-controller="Profile">Log Out</button>
                     </form>
                 }
 
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
@@ -76,6 +76,7 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/c3e9a83437.js" crossorigin="anonymous"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

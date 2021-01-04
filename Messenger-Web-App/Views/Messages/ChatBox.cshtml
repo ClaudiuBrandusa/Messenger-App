@@ -6,8 +6,9 @@
 <div id="chat-container">
     <div id="search-container">
         <input type="text" placeholder="Search" id="search-conversation-input" />
+        <i class="fas fa-search" id="conversation-search-button"></i>
     </div>
-    <div id="conversation-list">
+    <div id="conversation-list" class="conversations-list">
         <div class="conversation active">
             <img src="~/images/profile6.jpg" alt="Daryl Duckmanton" />
             <div class="title-text">
@@ -69,33 +70,15 @@
             </div>
         </div>
     </div>
-    <div id="new-message-container">
-        <a href="#">
-            <img src="~/images/add_green3.png" width="40" height="40" alt="New Conversation" style="margin-top: -3px; margin-left: 0px" />
-        </a>
+    <div id="new-conversation-container" class="new-conversation-container">
+        <img src="~/images/add_green3.png" id="new-conversation-button" width="40" height="40" alt="New Conversation" style="margin-top: -3px; margin-left: 0px" />
     </div>
-    <div id="chat-title">
-        <span>Daryl Duckmanton</span>
-        <img src="~/images/settings2.png" width="40" height="40" alt="Delete Conversation" />
+    <div id="chat-title-container" class="chat-title-container">
+        <span id="chat-title">Daryl Duckmanton</span>
+        <img src="~/images/settings2.png" width="40" height="40" alt="Conversation settings" />
     </div>
     <div id="chat-message-list">
-        <div class="message-row you-message">
-            <div class="message-content">
-                <div class="message-text">Ok then</div>
-                <div class="message-time">Apr 16</div>
-            </div>
-        </div>
-        <div class="message-row other-message">
-            <div class="message-content">
-                <img src="~/images/profile6.jpg" width="40" height="40" alt="Daryl Duckmanton" />
-                <div class="message-text">
-                    Yeah I think it`s best we do that. Otherwise things won`t
-                    work well at all. I`m adding more text here to test the
-                    sizing of the speech bubble and the wrapping of it too.
-                </div>
-                <div class="message-time">Apr 16</div>
-            </div>
-        </div>
+        
     </div>
 
     <div id="chat-form">
@@ -103,9 +86,6 @@
         <button id="send_btn" class="btn-send" type="button">Send</button>
     </div>
 </div>
-
-@Html.Hidden("username", Context.User.Identity.Name)
-@Html.Hidden("chatroom", -1)
 
 <!--Adding the script references-->
 <script src="~/lib/signalr/dist/browser/signalr.js"></script>
