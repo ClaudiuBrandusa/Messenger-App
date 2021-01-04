@@ -4,14 +4,16 @@ using Messenger_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Messenger_API.Migrations.MessagesDB
 {
     [DbContext(typeof(MessageContext))]
-    partial class MessageContextModelSnapshot : ModelSnapshot
+    [Migration("20201229211200_ChangeNameTable")]
+    partial class ChangeNameTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,22 +37,6 @@ namespace Messenger_API.Migrations.MessagesDB
                     b.HasIndex("UserId");
 
                     b.ToTable("Conversations");
-                });
-
-            modelBuilder.Entity("Messenger_API.Models.ConversationDetail", b =>
-                {
-                    b.Property<string>("ConversationId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ConversationName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("isGroup")
-                        .HasColumnType("bit");
-
-                    b.HasKey("ConversationId");
-
-                    b.ToTable("ConversationDetails");
                 });
 
             modelBuilder.Entity("Messenger_API.Models.Friend", b =>
@@ -173,16 +159,6 @@ namespace Messenger_API.Migrations.MessagesDB
                     b.HasOne("Messenger_API.Models.SmallUser", "SmallUser")
                         .WithMany("Conversations")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Messenger_API.Models.ConversationDetail", b =>
-                {
-                    b.HasOne("Messenger_API.Models.Conversation", "Conversation")
-                        .WithOne("ConversationDetail")
-                        .HasForeignKey("Messenger_API.Models.ConversationDetail", "ConversationId")
-                        .HasPrincipalKey("Messenger_API.Models.Conversation", "ConversationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

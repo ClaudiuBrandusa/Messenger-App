@@ -68,15 +68,16 @@
     min-width: 300px;
     max-width: 500px;
     height: 85vh;
-    background: #0048AA;
+    background: #2a363b;
     border-radius: 10px;
     margin-top: -8px;
     margin-left: 27%;
+    border: 4px solid #2c437d;
 }
 
 .profile-image > img
 {
-    border: 2px solid white;
+    border: 3px solid white;
     border-radius: 100%;
     margin: 8% 3% 2% 35%;
 }
@@ -94,7 +95,7 @@
     color: white;
     font-weight: bold;
     font-size: 20px;
-    background-color: #1c2c54;
+    background-color: navy;
     border: 2px solid white;
     border-radius: 10px 10px 10px 10px;
     text-align: center;
@@ -113,11 +114,13 @@
     margin-top: 6.5%;
     border: white 2px solid;
     border-radius: 15px 15px 15px 15px;
+    font-weight:bold;
+    font-size:20px;
 }
 
 .btn-edit:hover 
 {
-    background-color: #1c2c54;
+    background-color: darkgoldenrod;
     color: white;
     height: 51px;
     width: 192px;
@@ -134,10 +137,11 @@
     max-width: 500px;
     min-width: 300px;
     height: 85vh;
-    background: #0048AA;
+    background: #2a363b;
     border-radius: 10px;
     margin-top: -8px;
     margin-left: 27%;
+    border: 4px solid #2c437d;
 }
 
 .editaccount-box > h1 
@@ -156,7 +160,7 @@
     margin-top: 5%;
     border: white 1px solid;
     border-radius: 15px 15px 15px 15px;
-    background-color: darkblue;
+    background-color: navy;
     color: white;
     font-weight: bold;
     font-size: 13px;
@@ -172,6 +176,20 @@
     border: white 1px solid;
     border-radius: 15px 15px 15px 15px;
     background-color: forestgreen;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.btn-change:hover
+{
+    height: 50px;
+    width: 250px;
+    margin-left: 25%;
+    margin-top: 5%;
+    border: white 1px solid;
+    border-radius: 15px 15px 15px 15px;
+    background-color: goldenrod;
     color: white;
     font-weight: bold;
     font-size: 20px;

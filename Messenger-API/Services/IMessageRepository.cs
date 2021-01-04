@@ -1,4 +1,5 @@
 ﻿using Messenger_API.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace Messenger_API.Services
         bool AcceptFriendRequest(string userId, string friendId);
         bool SendFriendRequest(string userId, string friendId);
         bool RemoveFriend(string userId, string friendId);
+        bool AddImageProfile(ImageProfile imageProfile, List<IFormFile> Image);
     }
 }
