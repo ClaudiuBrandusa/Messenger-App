@@ -165,6 +165,11 @@ namespace Messenger_Web_App.Controllers
             }
         }
 
+        public IActionResult ConversationSettings()
+        {
+            return View();
+        }
+
         [HttpPost("Refresh")]
         public async Task<IActionResult> RefreshToken([FromForm] string token, [FromForm] string refreshToken)
         {

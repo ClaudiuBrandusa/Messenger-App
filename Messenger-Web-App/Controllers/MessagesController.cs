@@ -14,5 +14,21 @@ namespace Messenger_Web_App.Controllers
         {
             return View();
         }
+        public IActionResult ChangeName()
+        {
+            return View();
+        }
+        public IActionResult SeeMembers()
+        {
+            return View();
+        }
+        public IActionResult AddUsers()
+        {
+            return View();
+        }
+        public IActionResult RemoveUsers()
+        {
+            return View();
+        }
     }
 }

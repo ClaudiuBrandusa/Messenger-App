@@ -1,0 +1,87 @@
+﻿.settings-container {
+    width: 320px;
+    height: 320px;
+    background: #2a363b;
+    color: #fff;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%,-50%);
+    box-sizing: border-box;
+    padding: 70px 30px;
+    border-radius: 20px;
+    font-weight: bold;
+    border: 5px solid #2c437d;
+}
+
+.settings-container h1
+{
+    font-size: 22px;
+    font-weight: bold;
+    color: snow;
+    text-align: center;
+    margin-top: -15%;
+}
+
+.settings-container button
+{
+    width: 125px;
+    height: 30px;
+    background-color: lawngreen;
+    border-radius: 10px;
+    color: black;
+    text-align: center;
+    font-weight: bold;
+    border: 2px solid snow;
+}
+
+.settings-container button:hover
+{
+    background-color: goldenrod;
+}
+
+.btn-list {
+    position: relative;
+    height: 100%;
+}
+
+
+.members-container {
+    width: 320px;
+    height: 620px;
+    background: #2a363b;
+    color: #fff;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%,-50%);
+    box-sizing: border-box;
+    padding: 70px 30px;
+    border-radius: 20px;
+    font-weight: bold;
+    border: 5px solid #2c437d;
+}
+
+.members-container h1 {
+    font-size: 22px;
+    font-weight: bold;
+    color: snow;
+    text-align: center;
+    margin-top: -15%;
+}
+
+.members-container ul {
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margins */
+}
+
+.members-container ul li {
+    border: 1px solid #ddd; /* Add a thin border to each list item */
+    margin-top: -1px; /* Prevent double borders */
+    background-color: dimgrey; /* Add a grey background color */
+    padding: 12px; /* Add some padding */
+    border-radius: 15px;
+    margin-top: 10px;
+    text-align: center;
+}
