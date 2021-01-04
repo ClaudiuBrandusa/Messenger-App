@@ -9,120 +9,53 @@
         <i class="fas fa-search" id="conversation-search-button"></i>
     </div>
     <div id="conversation-list" class="conversations-list">
-        <div class="conversation active">
-            <img src="~/images/profile6.jpg" alt="Daryl Duckmanton" style="border:2px solid snow" />
-            <div class="title-text">
-                Daryl Duckmanton
-            </div>
-            <div class="created-date">
-                Apr 16
-            </div>
-            <div class="conversation-message">
-                This is a message
-            </div>
-        </div>
-        <div class="conversation">
-            <img src="~/images/profile4.jpg" alt="Kim O`Neil" style="border:2px solid snow" />
-            <div class="title-text">
-                Kim O`Neil
-            </div>
-            <div class="created-date">
-                Jun 4
-            </div>
-            <div class="conversation-message">
-                Very funny
-            </div>
-        </div>
-        <div class="conversation">
-            <img src="~/images/profile6.jpg" alt="John Anderson" style="border:2px solid snow" />
-            <div class="title-text">
-                John Anderson
-            </div>
-            <div class="created-date">
-                Aug 23
-            </div>
-            <div class="conversation-message">
-                Yes I love how Python does that
-            </div>
-        </div>
-        <div class="conversation">
-            <img src="~/images/profile4.jpg" alt="Sarah Momes" style="border:2px solid snow" />
-            <div class="title-text">
-                Sarah Momes
-            </div>
-            <div class="created-date">
-                1 year
-            </div>
-            <div class="conversation-message">
-                Thank you.I appreciate that.
-            </div>
-        </div>
-        <div class="conversation">
-            <img src="~/images/profile6.jpg" alt="Carl Anderson" style="border:2px solid snow" />
-            <div class="title-text">
-                Carl Anderson
-            </div>
-            <div class="created-date">
-                Dec 24
-            </div>
-            <div class="conversation-message">
-                Merry Christmas!
-            </div>
-        </div>
+        
     </div>
-    <div id="new-conversation-container" style="margin-top:-5%;">
-          <i class="fas fa-comment-medical" id="new-conversation-button" style="font-size:30px; color:snow"></i>
-          <span style="font-size:10px; color:snow; margin-left:8%;">New</span>
-    </div>
-    <div class="container" style="margin-top:-22.5%; margin-left:23%">
-        <a asp-controller="Profile" asp-action="AddContact">
-            <i class="fas fa-user-plus" style="font-size:30px; color:lawngreen"></i>
+    <div class="chat-navbar" style="margin:0; padding:0">
+        <div id="new-conversation-container">
+
+            <i class="fas fa-comment-medical  chat-navbar-icon" id="new-conversation-button" style="font-size:30px; color:snow; margin-left:20%;"></i>
             <div>
-                <span style="font-size:10px; color:snow; margin-top:20px; margin-left:-5%;">Add Contact</span>
+                <span style="font-size:10px; color:snow; margin-left:-5%">New Conversation</span>
             </div>
-        </a>
-    </div>
-    <div class="container" style="margin-left:-18%; margin-top:-8.50%;">
-        <a asp-controller="Profile" asp-action="Account">
-            <i class="fas fa-user-cog" style="font-size:30px; color:snow"></i>
+        </div>
+        <div>
+            <i class="fas fa-user-plus chat-navbar-icon" style="font-size:30px; color:lawngreen; margin-left:10%"></i>
             <div>
-                <span style="font-size:10px; color:snow; margin-left:-2%;">User Settings</span>
+                <span style="font-size:10px; color:snow; ">Add Contact</span>
             </div>
-        </a>
-    </div>
-    <div class="container" style="margin-left:81%; margin-top:-19.5%;">
-          <i class="fas fa-circle" style="font-size:18px; color:lawngreen"></i>
-          <div>
-              <span style="font-size:10px; color:snow; margin-left:-4%;">Available</span>
-          </div>
+
+        </div>
+        <div>
+
+            <i class="fas fa-user-cog chat-navbar-icon" style="font-size:30px; color:snow; margin-left:10%"></i>
+            <div>
+                <span style="font-size:10px; color:snow; margin-left:0%">User Settings</span>
+            </div>
+
+        </div>
+        <div>
+
+            <i class="fas fa-circle chat-navbar-icon" style="font-size:18px; color:lawngreen; margin-left:15%;"></i>
+            <div>
+                <span style="font-size:10px; color:snow; margin-left:5%">Available</span>
+            </div>
+
+        </div>
     </div>
     <div id="chat-title-container" class="chat-title-container">
-        <span id="chat-title">Daryl Duckmanton</span>
+        <span id="chat-title"></span>
         <i class="fas fa-cog"></i>
     </div>
     <div id="chat-message-list">
-        <div class="message-row you-message">
-            <div class="message-content">
-                <div class="message-text">Ok then</div>
-                <div class="message-time">Apr 16</div>
-            </div>
-        </div>
-        <div class="message-row other-message">
-            <div class="message-content">
-                <img src="~/images/profile6.jpg" width="40" height="40" alt="Daryl Duckmanton" style="border:solid 2px dimgray;" />
-                <div class="message-text">
-                    Yeah I think it`s best we do that. Otherwise things won`t
-                    work well at all. I`m adding more text here to test the
-                    sizing of the speech bubble and the wrapping of it too.
-                </div>
-                <div class="message-time">Apr 16</div>
-            </div>
-        </div>
+       
     </div>
 
     <div id="chat-form">
         <input id="message_input" class="col-md-10" type="text" placeholder="type a message" style="margin-top: 1.7%; height:52px; margin-left:2%;" />
-        <button id="send_btn" class="btn-send" type="button">Send</button>
+        <div class="container_send-btn">
+            <button id="send_btn" class="btn-send" type="button">Send</button>
+        </div>
     </div>
 </div>
 
