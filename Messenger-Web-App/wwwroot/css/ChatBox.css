@@ -362,3 +362,9 @@
 {
     display: none;
 }
+
+.angle-double > i 
+{
+  font-size:100px; 
+  color: beige;
+}

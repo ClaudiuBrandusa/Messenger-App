@@ -15,5 +15,6 @@ namespace Messenger_API.Models
         public SmallUser SmallUser { get; set; }
         //public ICollection<ConversationAdmin> ConversationAdmins { get; set; }
         public ICollection<Packet> Packets { get; set; }
+        public ConversationDetail ConversationDetail { get; set; }
     }
 }
