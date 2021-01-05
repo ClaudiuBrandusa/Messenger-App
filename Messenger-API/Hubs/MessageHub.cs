@@ -121,20 +121,8 @@ namespace Messenger_API.Hubs
 
             var data = new HubChatroomConversation { Id = conversationId };
 
-            if (conversation.Count == 1)
-            {
-                data.ConversationName = conversation[0].UserId;
-            }
-            else
-            {
-                var callerId = GetUserId(Context.User.Identity.Name);
-                var receiver = conversation.FirstOrDefault(m => !m.UserId.Equals(callerId));
-
-                if(receiver != default)
-                {
-                    data.ConversationName = GetUsername(receiver.UserId);
-                }
-            }
+            data.ConversationName = GetConversationName(conversationId);
+            
             await Clients.Caller.SendAsync("EnterConversation", data);
         }
 
@@ -165,29 +153,11 @@ namespace Messenger_API.Hubs
 
             if (userId.Equals("")) return;
 
-            string conversationId = GenerateConversationId();
-            while (messageContext.Conversations.FirstOrDefault(c => c.ConversationId.Equals(conversationId)) != default)
-            {
-                // we keep generating until we get a non used id
-                conversationId = GenerateConversationId();
-            }
-
-            var member = new Conversation
-            {
-                ConversationId = conversationId,
-                UserId = userId,
-                IsAdmin = true,
-                SmallUser = user
-            };
-
-            if(!AddConversationToContext(member))
-            {
-                return;
-            }
+            Conversation member = GenerateEmptyConversation(userId);
 
             AddConversation(new List<Conversation>() { member });
 
-            await Clients.Caller.SendAsync("EnterConversation", new HubChatroomConversation { Id = member.ConversationId, ConversationName = "new conversation"});
+            await Clients.Caller.SendAsync("EnterConversation", new HubChatroomConversation { Id = member.ConversationId, ConversationName = GetConversationName(member.ConversationId)});
         }
 
         // Helper methods
@@ -204,7 +174,7 @@ namespace Messenger_API.Hubs
             if (conversations == null) return null;
 
             var hubConversations = conversations
-                .Select(c => new HubConversation { ConversationName = c.First().ConversationId, 
+                .Select(c => new HubConversation { ConversationName = GetConversationName(c.First().ConversationId), 
                     Id = c.First().ConversationId})
                 .ToList();
 
@@ -253,7 +223,9 @@ namespace Messenger_API.Hubs
 
         void UnloadConversationsForUser(string userId) // unloading all conversations wher the user is the only one member
         {
-            if (string.IsNullOrEmpty(userId))
+            // Disabled
+
+            /*if (string.IsNullOrEmpty(userId))
             {
                 return;
             }
@@ -272,7 +244,7 @@ namespace Messenger_API.Hubs
             foreach (var id in conversationsId)
             {
                 UnloadConversation(id);
-            }
+            }*/
         }
 
         void AddUserToConversation(string userId, string conversationId)
@@ -451,6 +423,78 @@ namespace Messenger_API.Hubs
                 return true;
             }
             return false;
+        }
+
+        Conversation GenerateEmptyConversation(string userId)
+        {
+            if (string.IsNullOrEmpty(userId)) return null;
+
+            var user = messageContext.SmallUsers.Find(userId);
+
+            if (user == null) return null;
+
+            string conversationId = GenerateConversationId();
+            while (messageContext.Conversations.FirstOrDefault(c => c.ConversationId.Equals(conversationId)) != default)
+            {
+                // we keep generating until we get a non used id
+                conversationId = GenerateConversationId();
+            }
+
+            var member = new Conversation
+            {
+                ConversationId = conversationId,
+                UserId = userId,
+                IsAdmin = true,
+                SmallUser = user
+            };
+
+            if (!AddConversationToContext(member))
+            {
+                return null;
+            }
+
+            SetConversationName(conversationId, "new conversation");
+
+            return member;
+        }
+
+        // Conversation name
+
+        void SetConversationName(string conversationId, string conversationName)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return;
+            if (string.IsNullOrEmpty(conversationName)) return;
+
+            var details = messageContext.ConversationDetails.FirstOrDefault(d => d.ConversationId.Equals(conversationId));
+            
+            if(details == default) // then we have no name reference on the conversation details table
+            {
+                details = new ConversationDetail
+                {
+                    Conversation = GetConversation(conversationId).First(),
+                    ConversationId = conversationId,
+                    ConversationName = conversationName
+                };
+
+                messageContext.ConversationDetails.Add(details);
+            }
+            else
+            {
+                details.ConversationName = conversationName;
+            }
+
+            messageContext.SaveChanges();
+        }
+
+        string GetConversationName(string conversationId)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return "";
+
+            var details = messageContext.ConversationDetails.FirstOrDefault(d => d.ConversationId.Equals(conversationId));
+
+            if (details == default) return "";
+
+            return details.ConversationName;
         }
 
         // (Message) Packets

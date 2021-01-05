@@ -26,7 +26,7 @@ function formatConversationTitle(string) {
     if (string == null) {
         return;
     }
-    return formatString(string, 15) + (string.length > 15 ? "..." : "");
+    return formatString(string, 20) + (string.length > 20 ? "..." : "");
 }
 
 // used in chat room conversation
@@ -149,7 +149,7 @@ function renderConversationInList(conversationData) {
 
     var conversation_title = document.createElement("div");
     conversation_title.classList.add("title-text");
-    conversation_title.innerHTML = formatConversationTitle(conversationData.id);
+    conversation_title.innerHTML = formatConversationTitle(conversationData.conversationName);
     var conversation_data = document.createElement("div"); // last message data
     conversation_data.classList.add("created-date");
     conversation_data.innerHTML = "";
@@ -192,8 +192,17 @@ function addConversationInList(conversationData) {
         let conversations_list = [];
     }
 
-    if (conversations_list.includes(conversationData)) {
-        alert("conversation already there");
+    let containsObject = false;
+
+    for (var i = 0; i < conversations_list.length; i++) {
+        if (conversations_list[i].id === conversationData.id) {
+            containsObject = true;
+            break;
+        }
+    }
+
+    if (containsObject) {
+        //alert("conversation already there");
         return;
     }
 
@@ -204,7 +213,7 @@ function addConversationInList(conversationData) {
 
 // conversation search results
 
-function showConversationSearchResults() {
+function showConversationSearchResults(no_clear) {
     let conversations_list_container = document.getElementById("conversation-list");
     if (conversations_list_container == null) {
         alert("conversations list container not found");
@@ -215,14 +224,14 @@ function showConversationSearchResults() {
         let conversations_search_result = []; // then we create another list
         return;
     }
-
-    conversations_list_container.innerHTML = "";
-
+    alert("before");
+    if (no_clear == null) conversations_list_container.innerHTML = "";
+    alert("after");
     let backButton = createConversationWarningBlock("");
 
     conversations_list_container.appendChild(backButton);
 
-    let conversationsListHeader = createNewConversationsHeader("Conversations ");
+    let conversationsListHeader = createNewConversationsHeader("Conversations");
 
     conversations_list_container.appendChild(conversationsListHeader);
 
@@ -367,6 +376,96 @@ function hideLoadingConversationsList() {
     conversations_loading_container.parentNode.removeChild(conversations_loading_container);
 }
 
+// contacts found
+function addContactsToSearchResults(found_contacts_list) {
+    if (contacts_search_result == null) {
+        let contacts_search_result = [];
+    } else {
+        contacts_search_result = [];
+    }
+
+    if (found_contacts_list == null || found_contacts_list.length < 1) return null;
+    
+    for (var i = 0; i < found_contacts_list.length; i++) {
+        addContactToSearchResults(found_contacts_list[i]);
+    }
+}
+
+function addContactToSearchResults(contact) {
+    if (contacts_search_result == null) {
+        let contacts_search_result = [];
+    }
+
+    if (contact != null && !contacts_search_result.includes(contact)) {
+        contacts_search_result.push(contact);
+    }
+}
+
+function showContactsSearchResults() {
+    let conversations_list_container = document.getElementById("conversation-list");
+    if (conversations_list_container == null) {
+        alert("conversations list container not found");
+        return;
+    }
+
+    if (contacts_search_result == null) {
+        let contacts_search_result = []; // then we create another list
+        return;
+    }
+
+    if (no_clear == null) {
+        conversations_list_container.innerHTML = "";
+    }
+
+    let backButton = createConversationWarningBlock("");
+
+    conversations_list_container.appendChild(backButton);
+
+    let contactsListHeader = createNewConversationsHeader("Contacts");
+
+    conversations_list_container.appendChild(contactsListHeader);
+
+    for (let i = 0; i < contacts_search_result.length; i++) {
+        showContactsSearchResults(contacts_search_result[i]);
+    }
+}
+
+function showContactsSearchResults(contact) {
+    var conversations_list_container = document.getElementById("conversation-list");
+    if (conversations_list_container == null) {
+        alert("conversations list container not found");
+        return;
+    }
+
+    var conversation_block = document.createElement("div");
+    conversation_block.classList.add("conversation");
+    conversation_block.addEventListener("click", function (event) {
+        requestConversation(contact.id);
+    })
+    var conversation_image = document.createElement("img");
+
+    conversation_image.src = window.location.protocol + "//" + window.location.host + "/images/user2.png";
+    conversation_image.width = "40";
+    conversation_image.height = "40";
+
+    var conversation_title = document.createElement("div");
+    conversation_title.classList.add("title-text");
+    conversation_title.innerHTML = formatConversationTitle(contact.conversationName);
+    var conversation_data = document.createElement("div"); // last message data
+    conversation_data.classList.add("created-date");
+    conversation_data.innerHTML = "";
+    var conversation_message = document.createElement("div"); // an excerpt from the last message
+    conversation_message.classList.add("conversation-message");
+    conversation_message.innerHTML = formatConversationLastMessage("");
+
+    conversation_block.appendChild(conversation_image);
+    conversation_block.appendChild(conversation_title);
+    conversation_block.appendChild(conversation_data);
+    conversation_block.appendChild(conversation_message);
+
+    conversations_list_container.appendChild(conversation_block);
+}
+
 // chat room conversations
 function requestConversation(id) {
     connection.invoke("OpenConversation", id);
@@ -378,7 +477,7 @@ function enterConversation(data) {
     }
     
     if (conversationId === data.id) {
-        alert(conversationId + " " + data.conversationName);
+        /*alert(conversationId + " " + data.conversationName);*/
         // then we are already there
         return;
     }
@@ -521,14 +620,12 @@ connection.on("SendMessage", function (conversation_Id, message) {
 });
 
 connection.on("EnterConversation", function (conversation_data) {
-    //alert("conversation id is: " + JSON.stringify(conversation_data));
     enterConversation(conversation_data);
-
-    //addConversationInList(conversation_data);
+    
+    addConversationInList(conversation_data);
 });
 
 connection.on("ListConversations", function (new_conversations_list) {
-
     var conversations_list_container = document.getElementById("conversation-list");
     if (conversations_list_container == null) {
         alert("conversation list container not found");
@@ -541,9 +638,9 @@ connection.on("ListConversations", function (new_conversations_list) {
 });
 
 // list all of the conversations found after the search conversation request
-connection.on("ListFoundConversations", function (found_conversations_list) {
+connection.on("ListFoundConversations", function (found_conversations_list, found_contacts_list) {
     hideLoadingConversationsList();
-    if (addConversationsToSearchResults(found_conversations_list) == null) {
+    if (addConversationsToSearchResults(found_conversations_list) == null && (found_contacts_list == null || found_contacts_list.length == 0)) {
         var conversations_list_container = document.getElementById("conversation-list");
         if (conversations_list_container == null) {
             alert("conversations list container not found");
@@ -556,8 +653,13 @@ connection.on("ListFoundConversations", function (found_conversations_list) {
 
         return;
     }
-    
-    showConversationSearchResults();
+    //alert(found_conversations_list);
+    //alert(found_contacts_list);
+    addContactsToSearchResults(found_contacts_list);
+
+    showContactsSearchResults();
+
+    //showConversationSearchResults(true);
 });
 
 connection.on("alert", function (message) {
@@ -596,7 +698,7 @@ connection.start().then(function () {
         });
     });
 
-    // Search conversation part
+    // Search contact & conversation part
 
     var search_conversation_container = document.getElementById("search-container");
 
@@ -668,12 +770,21 @@ connection.start().then(function () {
         return;
     }
 
+    new_conversation_button.style.cursor = "pointer";
+
     new_conversation_button.addEventListener("click", function (event) {
         // open the new conversation menu
         connection.invoke("CreateNewConversation").catch(function (err) {
             return console.error(err.toString());
         });
     });
+
+    // new contact part
+        // ToDo
+    // user settings part
+        // ToDo
+    // status part
+        // ToDo
 
     // conversations list
     var conversations_list_container = document.getElementById("conversation-list");
