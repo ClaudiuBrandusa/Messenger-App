@@ -113,7 +113,7 @@
 #chat-container {
     display: grid;
     grid: 'search-container chat-title' 6.75vh 'conversation-list chat-message-list' 1fr 'new-message-container chat-form' 78px / 275px 1fr;
-    min-width: 800px;
+    min-width: 8d00px;
     max-width: 1000px;
     min-width: 800px;
     height: 85vh;
@@ -201,7 +201,7 @@
 
 .conversation.active,
 .conversation:hover {
-    background: dimgray;
+    background-color: dimgrey;
     width: 275px;
     margin-top: 0;
 }
@@ -481,3 +481,15 @@
     margin-top: -7.2%;
     margin-left: 86%;
 }
+
+.new-message-conversation
+{
+    width:auto;
+    height:15px;
+    border-radius:15px;
+    background-color: gold;
+    color: black;
+    font-weight:bold;
+    font-size:14px;
+}
+
