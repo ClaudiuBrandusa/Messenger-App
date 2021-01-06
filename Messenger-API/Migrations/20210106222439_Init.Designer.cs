@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Messenger_API.Migrations.MessagesDB
+namespace Messenger_API.Migrations
 {
     [DbContext(typeof(MessageContext))]
-    [Migration("20201223140058_Update")]
-    partial class Update
+    [Migration("20210106222439_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace Messenger_API.Migrations.MessagesDB
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Messenger_API.Models.Conversation", b =>
+            modelBuilder.Entity("Messenger_API.Entities.ConversationMember", b =>
                 {
                     b.Property<string>("ConversationId")
                         .HasColumnType("nvarchar(450)");
@@ -36,7 +36,33 @@ namespace Messenger_API.Migrations.MessagesDB
 
                     b.HasIndex("UserId");
 
+                    b.ToTable("ConversationMembers");
+                });
+
+            modelBuilder.Entity("Messenger_API.Models.Conversation", b =>
+                {
+                    b.Property<string>("ConversationId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ConversationId");
+
                     b.ToTable("Conversations");
+                });
+
+            modelBuilder.Entity("Messenger_API.Models.ConversationDetail", b =>
+                {
+                    b.Property<string>("ConversationId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConversationName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isGroup")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ConversationId");
+
+                    b.ToTable("ConversationDetails");
                 });
 
             modelBuilder.Entity("Messenger_API.Models.Friend", b =>
@@ -70,12 +96,23 @@ namespace Messenger_API.Migrations.MessagesDB
                     b.ToTable("FriendNames");
                 });
 
+            modelBuilder.Entity("Messenger_API.Models.ImageProfile", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<byte[]>("Image")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("ImageProfiles");
+                });
+
             modelBuilder.Entity("Messenger_API.Models.MessageContent", b =>
                 {
-                    b.Property<int>("MessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("MessageId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
@@ -95,10 +132,8 @@ namespace Messenger_API.Migrations.MessagesDB
 
             modelBuilder.Entity("Messenger_API.Models.Packet", b =>
                 {
-                    b.Property<int>("PacketId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("PacketId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConversationId")
                         .HasColumnType("nvarchar(450)");
@@ -115,11 +150,11 @@ namespace Messenger_API.Migrations.MessagesDB
 
             modelBuilder.Entity("Messenger_API.Models.PacketContent", b =>
                 {
-                    b.Property<int>("MessageId")
-                        .HasColumnType("int");
+                    b.Property<string>("MessageId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("PacketId")
-                        .HasColumnType("int");
+                    b.Property<string>("PacketId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("MessageId");
 
@@ -141,11 +176,20 @@ namespace Messenger_API.Migrations.MessagesDB
                     b.ToTable("SmallUsers");
                 });
 
-            modelBuilder.Entity("Messenger_API.Models.Conversation", b =>
+            modelBuilder.Entity("Messenger_API.Entities.ConversationMember", b =>
                 {
                     b.HasOne("Messenger_API.Models.SmallUser", "SmallUser")
                         .WithMany("Conversations")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Messenger_API.Models.ConversationDetail", b =>
+                {
+                    b.HasOne("Messenger_API.Models.Conversation", "Conversation")
+                        .WithOne("ConversationDetail")
+                        .HasForeignKey("Messenger_API.Models.ConversationDetail", "ConversationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
@@ -165,6 +209,15 @@ namespace Messenger_API.Migrations.MessagesDB
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Messenger_API.Models.ImageProfile", b =>
+                {
+                    b.HasOne("Messenger_API.Models.SmallUser", "SmallUser")
+                        .WithOne("ImageProfile")
+                        .HasForeignKey("Messenger_API.Models.ImageProfile", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Messenger_API.Models.MessageContent", b =>
                 {
                     b.HasOne("Messenger_API.Models.SmallUser", "SmallUser")
@@ -178,7 +231,6 @@ namespace Messenger_API.Migrations.MessagesDB
                     b.HasOne("Messenger_API.Models.Conversation", "Conversation")
                         .WithMany("Packets")
                         .HasForeignKey("ConversationId")
-                        .HasPrincipalKey("ConversationId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -193,8 +245,7 @@ namespace Messenger_API.Migrations.MessagesDB
                     b.HasOne("Messenger_API.Models.Packet", "Packet")
                         .WithMany("PacketContents")
                         .HasForeignKey("PacketId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

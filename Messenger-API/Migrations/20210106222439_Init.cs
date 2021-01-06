@@ -1,12 +1,23 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Messenger_API.Migrations.MessagesDB
+namespace Messenger_API.Migrations
 {
-    public partial class Update : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Conversations",
+                columns: table => new
+                {
+                    ConversationId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Conversations", x => x.ConversationId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Friends",
                 columns: table => new
@@ -33,7 +44,45 @@ namespace Messenger_API.Migrations.MessagesDB
                 });
 
             migrationBuilder.CreateTable(
-                name: "Conversations",
+                name: "ConversationDetails",
+                columns: table => new
+                {
+                    ConversationId = table.Column<string>(nullable: false),
+                    ConversationName = table.Column<string>(nullable: true),
+                    isGroup = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConversationDetails", x => x.ConversationId);
+                    table.ForeignKey(
+                        name: "FK_ConversationDetails_Conversations_ConversationId",
+                        column: x => x.ConversationId,
+                        principalTable: "Conversations",
+                        principalColumn: "ConversationId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Packets",
+                columns: table => new
+                {
+                    PacketId = table.Column<string>(nullable: false),
+                    ConversationId = table.Column<string>(nullable: true),
+                    PacketNumber = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Packets", x => x.PacketId);
+                    table.ForeignKey(
+                        name: "FK_Packets_Conversations_ConversationId",
+                        column: x => x.ConversationId,
+                        principalTable: "Conversations",
+                        principalColumn: "ConversationId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConversationMembers",
                 columns: table => new
                 {
                     ConversationId = table.Column<string>(nullable: false),
@@ -42,14 +91,13 @@ namespace Messenger_API.Migrations.MessagesDB
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Conversations", x => new { x.ConversationId, x.UserId });
-                    table.UniqueConstraint("AK_Conversations_ConversationId", x => x.ConversationId);
+                    table.PrimaryKey("PK_ConversationMembers", x => new { x.ConversationId, x.UserId });
                     table.ForeignKey(
-                        name: "FK_Conversations_SmallUsers_UserId",
+                        name: "FK_ConversationMembers_SmallUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "SmallUsers",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -77,11 +125,28 @@ namespace Messenger_API.Migrations.MessagesDB
                 });
 
             migrationBuilder.CreateTable(
+                name: "ImageProfiles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(nullable: false),
+                    Image = table.Column<byte[]>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ImageProfiles", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_ImageProfiles_SmallUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "SmallUsers",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MessageContents",
                 columns: table => new
                 {
-                    MessageId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MessageId = table.Column<string>(nullable: false),
                     Content = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: true),
                     SentDate = table.Column<DateTime>(nullable: false)
@@ -98,31 +163,11 @@ namespace Messenger_API.Migrations.MessagesDB
                 });
 
             migrationBuilder.CreateTable(
-                name: "Packets",
-                columns: table => new
-                {
-                    PacketId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ConversationId = table.Column<string>(nullable: true),
-                    PacketNumber = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Packets", x => x.PacketId);
-                    table.ForeignKey(
-                        name: "FK_Packets_Conversations_ConversationId",
-                        column: x => x.ConversationId,
-                        principalTable: "Conversations",
-                        principalColumn: "ConversationId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PacketContents",
                 columns: table => new
                 {
-                    MessageId = table.Column<int>(nullable: false),
-                    PacketId = table.Column<int>(nullable: false)
+                    MessageId = table.Column<string>(nullable: false),
+                    PacketId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -142,8 +187,8 @@ namespace Messenger_API.Migrations.MessagesDB
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Conversations_UserId",
-                table: "Conversations",
+                name: "IX_ConversationMembers_UserId",
+                table: "ConversationMembers",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -170,7 +215,16 @@ namespace Messenger_API.Migrations.MessagesDB
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ConversationDetails");
+
+            migrationBuilder.DropTable(
+                name: "ConversationMembers");
+
+            migrationBuilder.DropTable(
                 name: "FriendNames");
+
+            migrationBuilder.DropTable(
+                name: "ImageProfiles");
 
             migrationBuilder.DropTable(
                 name: "PacketContents");
@@ -185,10 +239,10 @@ namespace Messenger_API.Migrations.MessagesDB
                 name: "Packets");
 
             migrationBuilder.DropTable(
-                name: "Conversations");
+                name: "SmallUsers");
 
             migrationBuilder.DropTable(
-                name: "SmallUsers");
+                name: "Conversations");
         }
     }
 }

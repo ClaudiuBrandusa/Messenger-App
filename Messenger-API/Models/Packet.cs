@@ -8,7 +8,7 @@ namespace Messenger_API.Models
 {
     public class Packet
     {   
-        public int PacketId { get; set; }
+        public string PacketId { get; set; }
         public string ConversationId { get; set; }
         public int PacketNumber { get; set; }
         

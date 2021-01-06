@@ -1,5 +1,6 @@
 ﻿using Messenger_API.Authentication;
 using Messenger_API.Data;
+using Messenger_API.Entities;
 using Messenger_API.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -140,8 +141,11 @@ namespace Messenger_API.Hubs
                 return;
             }
 
-            var foundConversations = Conversations.Values.Where(conversation => conversation.First().UserId.Equals(userId) && conversation.First().ConversationId.Contains(conversationName))
-                .Select(c => new HubConversation { ConversationName = c.First().ConversationId, Id = c.First().ConversationId }).ToList();
+            var foundConversations = (from m in messageContext.ConversationMembers
+                                      where m.UserId.Equals(userId) && GetConversationName(m.ConversationId).StartsWith(conversationName)
+                                      select m).Select(c => new HubConversation { ConversationName = GetConversationName(c.ConversationId), Id = c.ConversationId}).ToList();
+                //Conversations.Values.Where(conversation => conversation.First().UserId.Equals(userId) && conversation.First().ConversationId.Contains(conversationName))
+            //    .Select(c => new HubConversation { ConversationName = c.First().ConversationId, Id = c.First().ConversationId }).ToList();
             Console.WriteLine(foundConversations.Count);
             await Clients.Caller.SendAsync("ListFoundConversations", foundConversations);
         }
@@ -176,24 +180,23 @@ namespace Messenger_API.Hubs
             if (conversations == null) return null;
 
             var hubConversations = conversations
-                .Select(c => new HubConversation { ConversationName = GetConversationName(c.First().ConversationId), 
-                    Id = c.First().ConversationId})
+                .Select(c => new HubConversation { ConversationName = GetConversationName(c.ConversationId), 
+                    Id = c.ConversationId})
                 .ToList();
 
             return hubConversations;
         }
 
-        List<List<Conversation>> GetAllConversations(string userId)
+        List<ConversationMember> GetAllConversations(string userId)
         {
             if(string.IsNullOrEmpty(userId))
             {
                 return null;
             }
 
-            var conversations = (from c in Conversations
-                                 where c.Value.FirstOrDefault(
-                                     m => m.UserId.Equals(userId))
-                                 != default select c.Value).ToList();
+            var conversations = (from c in messageContext.ConversationMembers
+                                 where c.UserId.Equals(userId)
+                                 != default select c).ToList();
 
             if (conversations.Count == 0) return null;
 
@@ -202,7 +205,9 @@ namespace Messenger_API.Hubs
 
         void LoadConversationsForUser(string userId)
         {
-            if(string.IsNullOrEmpty(userId))
+            // Disabled
+
+            /*if(string.IsNullOrEmpty(userId))
             {
                 return;
             }
@@ -220,7 +225,7 @@ namespace Messenger_API.Hubs
             foreach(var id in conversationsId)
             {
                 LoadConversation(id);
-            }
+            }*/
         }
 
         void UnloadConversationsForUser(string userId) // unloading all conversations wher the user is the only one member
@@ -252,20 +257,38 @@ namespace Messenger_API.Hubs
         void AddUserToConversation(string userId, string conversationId)
         {
             if (!IsConversationIdValid(conversationId)) return;
-            if (Conversations[conversationId].FirstOrDefault(m => m.UserId.Equals(userId)) != default) return;
+            if (messageContext.ConversationMembers.FirstOrDefault(m => m.UserId.Equals(userId) && m.ConversationId.Equals(conversationId)) != default) return;
 
-            var member = new Conversation { UserId = userId, ConversationId = conversationId };
+            var member = new ConversationMember { UserId = userId, ConversationId = conversationId };
 
             try
             { 
                 // we might get an error if we already got an object with the same values
-                messageContext.Conversations.Add(member);
+                messageContext.ConversationMembers.Add(member);
+                messageContext.SaveChanges();
             }catch
             {
                 // then the object is already there
             }
+        }
 
-            Conversations[conversationId].Add(member);
+        bool AddUserToConversation(ConversationMember member)
+        {
+            if (member == null || member == default) return false;
+            if (!IsConversationIdValid(member.ConversationId)) return false;
+            if (messageContext.ConversationMembers.FirstOrDefault(m => m.UserId.Equals(member.UserId) && m.ConversationId.Equals(member.ConversationId)) != default) return false;
+
+            try
+            {
+                // we might get an error if we already got an object with the same values
+                messageContext.ConversationMembers.Add(member);
+                messageContext.SaveChanges();
+            }
+            catch
+            {
+                // then the object is already there
+            }
+            return true;
         }
 
         void AddConversation(List<Conversation> conversation) // Keep in mind that one conversation object is an entity for one member of the conversation, such as a list of conversation objects will make a conversation group
@@ -276,7 +299,7 @@ namespace Messenger_API.Hubs
             Conversations.Add(conversation[0].ConversationId, conversation);
         }
 
-        List<Conversation> GetConversationWithUser(string userId)
+        List<ConversationMember> GetConversationWithUser(string userId)
         {
             var caller = messageContext.SmallUsers.FirstOrDefault(u => u.UserName.Equals(Context.User.Identity.Name));
 
@@ -284,29 +307,29 @@ namespace Messenger_API.Hubs
 
             if (userId.Equals("")) return null;
 
-            var conversations = (from e in messageContext.Conversations
+            var possibleConversations = (from e in messageContext.ConversationMembers
                                  where e.UserId.Equals(callerId)
                                  || e.UserId.Equals(userId)
                                  select e).ToList();
 
-            if (conversations.Count < 2) // then the userId is invalid or the callerId was wrong
+            if (possibleConversations.Count < 2) // then the userId is invalid or the callerId was wrong
             {
                 return null;
-            }else if(conversations.Count == 2 && conversations[0].ConversationId.Equals(conversations[1].ConversationId))
+            }else if(possibleConversations.Count == 2 && possibleConversations[0].ConversationId.Equals(possibleConversations[1].ConversationId))
             {
-                return conversations;
+                return possibleConversations;
             }
             
-            Dictionary<string, List<Conversation>> possibleConversationIds = new Dictionary<string, List<Conversation>>();
+            Dictionary<string, List<ConversationMember>> possibleConversationIds = new Dictionary<string, List<ConversationMember>>();
 
-            foreach(var member in conversations)
+            foreach(var member in possibleConversations)
             {
                 if(possibleConversationIds.ContainsKey(member.ConversationId))
                 {
                     possibleConversationIds[member.ConversationId].Add(member);
                 }else
                 {
-                    possibleConversationIds.Add(member.ConversationId, new List<Conversation> { member });
+                    possibleConversationIds.Add(member.ConversationId, new List<ConversationMember> { member });
                 }
             }
 
@@ -380,7 +403,9 @@ namespace Messenger_API.Hubs
                 return null;
             }
 
-            List<Conversation> conversation = GetConversation(conversationId);
+            List<ConversationMember> conversation = (from m in messageContext.ConversationMembers
+                                                     where m.ConversationId.Equals(conversationId)
+                                                     select m).ToList();
 
             if (conversation == null || conversation.Count == 0)
             {
@@ -418,9 +443,11 @@ namespace Messenger_API.Hubs
 
         bool AddConversationToContext(Conversation conversation)
         {
-            if (messageContext.Conversations.Find(conversation.ConversationId, conversation.UserId) == null)
+            //if (messageContext.Conversations.Find(conversation.ConversationId, conversation.UserId) == null)
+            if (messageContext.Conversations.Find(conversation.ConversationId) == null)
             {
                 messageContext.Conversations.Add(conversation);
+
                 messageContext.SaveChanges();
                 return true;
             }
@@ -442,7 +469,12 @@ namespace Messenger_API.Hubs
                 conversationId = GenerateConversationId();
             }
 
-            var member = new Conversation
+            var conversation = new Conversation
+            {
+                ConversationId = conversationId
+            };
+
+            var member = new ConversationMember
             {
                 ConversationId = conversationId,
                 UserId = userId,
@@ -450,12 +482,37 @@ namespace Messenger_API.Hubs
                 SmallUser = user
             };
 
-            if (!AddConversationToContext(member))
+            if (!AddConversationToContext(conversation))
+            {
+                return null;
+            }
+
+            if(!AddUserToConversation(member))
             {
                 return null;
             }
 
             SetConversationName(conversationId, "new conversation");
+
+            return conversation;
+        }
+
+        // Conversation member
+
+        bool IsUserMemberInConversation(string conversationId, string userId)
+        {
+            return GetConversationMemberData(conversationId, userId) != null;
+        }
+
+        // null means that either the user is not a member of the conversation or the conversation was not found
+        ConversationMember GetConversationMemberData(string conversationId, string userId)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return null;
+            if (string.IsNullOrEmpty(userId)) return null;
+
+            var member = messageContext.ConversationMembers.Find(conversationId, userId);
+
+            if (member == null) return null; // member not found
 
             return member;
         }

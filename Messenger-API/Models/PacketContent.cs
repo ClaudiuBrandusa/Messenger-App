@@ -8,8 +8,8 @@ namespace Messenger_API.Models
 {
     public class PacketContent
     { 
-        public int PacketId { get; set; }
-        public int MessageId { get; set; }
+        public string PacketId { get; set; }
+        public string MessageId { get; set; }
 
         public MessageContent MessageContent { get; set; }
         public Packet Packet { get; set; }

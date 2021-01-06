@@ -1,4 +1,5 @@
-﻿using Messenger_API.Models;
+﻿using Messenger_API.Entities;
+using Messenger_API.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@ namespace Messenger_API.Data
         }
 
         public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<ConversationMember> ConversationMembers { get; set; }
         public DbSet<Friend> Friends { get; set; }
         public DbSet<FriendName> FriendNames { get; set; }
         public DbSet<MessageContent> MessageContents { get; set; }
@@ -83,22 +85,32 @@ namespace Messenger_API.Data
                 .HasForeignKey(p => p.PacketId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //SmallUser & Conversation (many to one)
-            modelBuilder.Entity<Conversation>()
-                .HasKey(p => new { p.ConversationId, p.UserId });
+            //SmallUser & ConversationMember (one to many)
+
+            modelBuilder.Entity<ConversationMember>()
+                .HasOne(c => c.SmallUser)
+                .WithMany(u => u.Conversations)
+                .HasForeignKey(c => c.UserId);
+
+            modelBuilder.Entity<ConversationMember>()
+                .HasKey(m => new { m.ConversationId, m.UserId });
+
+            // Conversation
 
             modelBuilder.Entity<Conversation>()
-                .HasOne(s => s.SmallUser)
-                .WithMany(c => c.Conversations)
-                .HasForeignKey(s => s.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasKey(p => p.ConversationId);
+
+            modelBuilder.Entity<Conversation>()
+                .HasMany(p => p.Packets)
+                .WithOne(c => c.Conversation)
+                .HasForeignKey(p => p.ConversationId);
 
             //Conversation & Packet (many to one)
             modelBuilder.Entity<Packet>()
                 .HasOne(c => c.Conversation)
                 .WithMany(p => p.Packets)
                 .HasForeignKey(c => c.ConversationId)
-                .HasPrincipalKey(c => c.ConversationId)
+                //.HasPrincipalKey(c => c.ConversationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             //Profile & SmallUser (one to one)
@@ -119,7 +131,7 @@ namespace Messenger_API.Data
                 .HasOne(s => s.ConversationDetail)
                 .WithOne(p => p.Conversation)
                 .HasForeignKey<ConversationDetail>(m => m.ConversationId)
-                .HasPrincipalKey<Conversation>(m => m.ConversationId)
+                //.HasPrincipalKey<Conversation>(m => m.ConversationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
 
