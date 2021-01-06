@@ -82,6 +82,8 @@ namespace Messenger_API.Hubs
 
             var ownConnectionsId = GetConnectionsId(GetUserId(username));
 
+            StoreMessage(conversationId, message);
+
             foreach(var connection in ownConnectionsId)
             {
                 await Clients.Client(connection).SendAsync("SendMessage", conversationId, message);
@@ -119,7 +121,7 @@ namespace Messenger_API.Hubs
                 return;
             }
 
-            var data = new HubChatroomConversation { Id = conversationId };
+            var data = new HubChatroomConversation { Id = conversationId, Messages = GetMessageHistory(conversationId) };
 
             data.ConversationName = GetConversationName(conversationId);
             
@@ -527,13 +529,48 @@ namespace Messenger_API.Hubs
 
         // Messages
         
-        void StoreMessage(string conversationId, string message)
+        void StoreMessage(string conversationId, string content)
         {
-            if (string.IsNullOrEmpty(conversationId)) return;
-            if (string.IsNullOrEmpty(message)) return;
+            if (string.IsNullOrEmpty(conversationId) || !IsConversationIdValid(conversationId)) return;
+            if (string.IsNullOrEmpty(content)) return;
 
+            string userId = GetUserId(Context.User.Identity.Name);
 
+            if (string.IsNullOrEmpty(userId)) return;
+
+            MessageContent message = new MessageContent
+            {
+                /* MessageId = GenerateMessageId(),*/
+                UserId = userId,
+                Content = content,
+                SmallUser = messageContext.SmallUsers.Find(userId)
+            };
+
+            if (Messages.ContainsKey(conversationId))
+            {
+                Messages[conversationId].Add(message);
+                return;
+            }
+
+            Messages.Add(conversationId, new List<MessageContent>{ message });
         }
+
+        List<HubMessage> GetMessageHistory(string conversationId)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return null;
+            
+            if(Messages.ContainsKey(conversationId))
+            {
+                return Messages[conversationId].Select(m => new HubMessage { Sender = GetUsername(m.UserId).Equals(Context.User.Identity.Name)? "": GetUsername(m.UserId), Content = m.Content, SentData = DateTime.Now }).ToList();
+            }
+
+            return null;
+        }
+
+        /*MessageContent GetMessageContent(*//*string messageId, *//*string conversationId,)
+        {
+
+        }*/
 
         string GetUsername(string userId)
         {
@@ -604,6 +641,11 @@ namespace Messenger_API.Hubs
             return GenerateId(400);
         }
 
+        string GenerateMessageId()
+        {
+            return GenerateId(300);
+        }
+
         string GenerateId(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -627,6 +669,8 @@ namespace Messenger_API.Hubs
         class HubChatroomConversation : HubConversation
         {
             public List<string> Members { get; set; }
+            // We are leaving it here for now
+            public List<HubMessage> Messages { get; set; }
         }
 
         class HubMessagePacket
@@ -639,6 +683,7 @@ namespace Messenger_API.Hubs
 
         class HubMessage
         {
+            public string Content { get; set; }
             public string Sender { get; set; }
             public DateTime SentData { get; set; }
         }

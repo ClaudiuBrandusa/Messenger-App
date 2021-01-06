@@ -99,6 +99,63 @@ function notifyNewMessage(conversation_Id, message) {
     // play the notification sound
 }
 
+// Messages
+function renderMessages(messages) {
+    for (var i = 0; i < messages.length; i++) {
+        renderMessage(messages[i]);
+    }
+}
+
+function renderMessage(message) {
+    if (message == null) return;
+
+    if (message.sender === "") { // then it's a sent message
+        renderSentMessage(message.content);
+    } else {
+
+    }
+}
+
+function renderSentMessage(message) {
+    // finding the message place
+    var messages = document.getElementById("chat-message-list");
+    if (messages == null) {
+        alert("null");
+        return;
+    }
+
+    var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    // creating the message html object
+    var message = document.createElement("div");
+    message.classList.add("message-row");
+    message.classList.add("you-message");
+
+    var message_content = document.createElement("div");
+    message_content.classList.add("message-content");
+    var message_content_text = document.createElement("div");
+    message_content_text.classList.add("message-text");
+
+    message_content_text.textContent = msg;
+
+    message_content.appendChild(message_content_text);
+
+    var message_content_date = document.createElement("div");
+    message_content_date.classList.add("message-time");
+    // we will leave the date hard coded for now
+    message_content_date.textContent = "Now";
+
+    message_content.appendChild(message_content_date);
+
+    message.appendChild(message_content);
+
+    messages.appendChild(message);
+
+    // scrolling down to the last message
+    messages.scrollTop = message.offsetTop;
+}
+
+
 // SignalR Client data
 let conversationId = "";
 let conversations_list = [];
@@ -500,6 +557,10 @@ function enterConversation(data) {
     }
 
     chat_message_list.innerHTML = "";
+
+    if (data.messages != null) {
+        renderMessages(data.messages);
+    }
 }
 
 // keep in mind that the connection url is hard coded for now
@@ -581,42 +642,7 @@ connection.on("SendMessage", function (conversation_Id, message) {
         return; // then we are not in the current conversation room, might happen if we are connected on multiple accounts
     }
 
-    // finding the message place
-    var messages = document.getElementById("chat-message-list");
-    if (messages == null) {
-        alert("null");
-        return;
-    }
-
-    var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    
-    // creating the message html object
-    var message = document.createElement("div");
-    message.classList.add("message-row");
-    message.classList.add("you-message");
-
-    var message_content = document.createElement("div");
-    message_content.classList.add("message-content");
-    var message_content_text = document.createElement("div");
-    message_content_text.classList.add("message-text");
-
-    message_content_text.textContent = msg;
-    
-    message_content.appendChild(message_content_text);
-    
-    var message_content_date = document.createElement("div");
-    message_content_date.classList.add("message-time");
-    // we will leave the date hard coded for now
-    message_content_date.textContent = "Now";
-
-    message_content.appendChild(message_content_date);
-
-    message.appendChild(message_content);
-
-    messages.appendChild(message);
-
-    // scrolling down to the last message
-    messages.scrollTop = message.offsetTop;
+    renderSentMessage(message);
 });
 
 connection.on("EnterConversation", function (conversation_data) {
