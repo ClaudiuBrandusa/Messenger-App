@@ -59,6 +59,8 @@ namespace Messenger_API.Controllers
             if (userExist != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User could not be created" });
 
+            if(!string.IsNullOrEmpty(userRepository.GetIdByUsername(model.UserName))) return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Username already in use, please choose another username." });
+
             ApplicationUser user = new ApplicationUser()
             {
                 Email = model.Email,

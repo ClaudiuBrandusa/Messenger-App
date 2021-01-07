@@ -71,7 +71,11 @@ namespace Messenger_API.Services
 
         public string GetIdByUsername(string username)
         {
-            return _context.Users.FirstOrDefault(u => u.UserName.Equals(username)).Id;
+            var result = _context.Users.FirstOrDefault(u => u.UserName.Equals(username));
+
+            if (result == default) return "";
+
+            return result.Id;
         }
 
         public RefreshToken GetRefreshToken(string userId)

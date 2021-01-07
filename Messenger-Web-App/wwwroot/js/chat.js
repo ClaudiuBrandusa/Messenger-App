@@ -48,6 +48,7 @@ function formatConversationLastMessage(string) {
 
 function createConversationWarningBlock(message) {
     let block = document.createElement("div");
+    block.id = "conversation-list-back-button";
     block.classList.add("warning");
     block.addEventListener("click", function (event) {
         hideConversationSearchResults();
@@ -262,7 +263,7 @@ function addConversationInList(conversationData) {
         //alert("conversation already there");
         return;
     }
-
+    alert(JSON.stringify(conversationData));
     conversations_list.push(conversationData);
 
     renderConversationsList();
@@ -270,7 +271,7 @@ function addConversationInList(conversationData) {
 
 // conversation search results
 
-function showConversationSearchResults(no_clear) {
+function showConversationSearchResults(no_clear=false, no_back_button) {
     let conversations_list_container = document.getElementById("conversation-list");
     if (conversations_list_container == null) {
         alert("conversations list container not found");
@@ -281,16 +282,20 @@ function showConversationSearchResults(no_clear) {
         let conversations_search_result = []; // then we create another list
         return;
     }
-    alert("before");
-    if (no_clear == null) conversations_list_container.innerHTML = "";
-    alert("after");
-    let backButton = createConversationWarningBlock("");
 
-    conversations_list_container.appendChild(backButton);
+    if (no_clear == null || no_clear == false) conversations_list_container.innerHTML = "";
+
+    if (!no_back_button) {
+        let backButton = createConversationWarningBlock("");
+
+        conversations_list_container.appendChild(backButton);
+    }
+
+    if (conversations_search_result.length == 0) return;
 
     let conversationsListHeader = createNewConversationsHeader("Conversations");
-
     conversations_list_container.appendChild(conversationsListHeader);
+
 
     for (let i = 0; i < conversations_search_result.length; i++) {
         renderConversationSearchResult(conversations_search_result[i]);
@@ -464,30 +469,27 @@ function showContactsSearchResults() {
         alert("conversations list container not found");
         return;
     }
-
+    
     if (contacts_search_result == null) {
         let contacts_search_result = []; // then we create another list
         return;
     }
-
-    if (no_clear == null) {
-        conversations_list_container.innerHTML = "";
-    }
-
     let backButton = createConversationWarningBlock("");
 
     conversations_list_container.appendChild(backButton);
 
+    if (contacts_search_result.length == 0) return;
+    
     let contactsListHeader = createNewConversationsHeader("Contacts");
 
     conversations_list_container.appendChild(contactsListHeader);
 
     for (let i = 0; i < contacts_search_result.length; i++) {
-        showContactsSearchResults(contacts_search_result[i]);
+        showContactSearchResult(contacts_search_result[i]);
     }
 }
 
-function showContactsSearchResults(contact) {
+function showContactSearchResult(contact) {
     var conversations_list_container = document.getElementById("conversation-list");
     if (conversations_list_container == null) {
         alert("conversations list container not found");
@@ -645,10 +647,14 @@ connection.on("SendMessage", function (conversation_Id, message) {
     renderSentMessage(message);
 });
 
+connection.on("AddConversationInList", function (conversation_data) {
+    addConversationInList(conversation_data);
+});
+
 connection.on("EnterConversation", function (conversation_data) {
     enterConversation(conversation_data);
     
-    addConversationInList(conversation_data);
+    /*addConversationInList(conversation_data);*/
 });
 
 connection.on("ListConversations", function (new_conversations_list) {
@@ -679,13 +685,12 @@ connection.on("ListFoundConversations", function (found_conversations_list, foun
 
         return;
     }
-    //alert(found_conversations_list);
-    //alert(found_contacts_list);
+
     addContactsToSearchResults(found_contacts_list);
-
+    
     showContactsSearchResults();
-
-    //showConversationSearchResults(true);
+    
+    showConversationSearchResults(true, true);
 });
 
 connection.on("alert", function (message) {
