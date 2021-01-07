@@ -665,8 +665,9 @@ connection.on("AddConversationInList", function (conversation_data) {
     addConversationInList(conversation_data, true);
 });
 
-connection.on("EnterConversation", function (conversation_data) {
+connection.on("EnterConversation", function (conversation_data, enlist=false) {
     enterConversation(conversation_data);
+    addConversationInList(conversation_data, enlist);
 });
 
 connection.on("ListConversations", function (new_conversations_list) {

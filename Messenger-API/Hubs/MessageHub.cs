@@ -234,11 +234,11 @@ namespace Messenger_API.Hubs
 
             if (userId.Equals("")) return;
 
-            Conversation member = GenerateEmptyConversation(userId);
+            Conversation member = GenerateEmptyConversation(userId, true);
 
             AddConversation(new List<Conversation>() { member });
 
-            await Clients.Caller.SendAsync("EnterConversation", new HubChatroomConversation { Id = member.ConversationId, ConversationName = GetConversationName(member.ConversationId)});
+            await Clients.Caller.SendAsync("EnterConversation", new HubChatroomConversation { Id = member.ConversationId, ConversationName = "New conversation"}, true);
         }
 
         // Helper methods
@@ -273,7 +273,7 @@ namespace Messenger_API.Hubs
 
             if (!allowEmptyOnes)
             {
-                conversations = conversations.Where(c => !IsConversationEmpty(c.ConversationId)).ToList();
+                conversations = conversations.Where(c => !IsConversationEmpty(c.ConversationId) || IsGroupConversation(c.ConversationId)).ToList();
             }
 
             if (conversations.Count == 0) return null;
@@ -350,6 +350,24 @@ namespace Messenger_API.Hubs
             }
         }
 
+        bool AddConversationDetailsToContext(ConversationDetail conversationDetail)
+        {
+            if (conversationDetail == null || conversationDetail == default) return false;
+            if (!IsConversationIdValid(conversationDetail.ConversationId)) return false;
+            if (messageContext.ConversationDetails.FirstOrDefault(d => d.ConversationId.Equals(conversationDetail.ConversationId)) != default) return false;
+
+            try
+            {
+                messageContext.ConversationDetails.Add(conversationDetail);
+                messageContext.SaveChanges();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
         bool AddUserToConversation(ConversationMember member)
         {
             if (member == null || member == default) return false;
@@ -365,6 +383,7 @@ namespace Messenger_API.Hubs
             catch
             {
                 // then the object is already there
+                return false;
             }
             return true;
         }
@@ -574,6 +593,14 @@ namespace Messenger_API.Hubs
                 ConversationId = conversationId
             };
 
+            var conversationDetails = new ConversationDetail
+            {
+                ConversationId = conversationId,
+                isGroup = isGroup,
+                Conversation = conversation,
+                ConversationName = isGroup ? "new conversation" : ""
+            };
+
             var member = new ConversationMember
             {
                 ConversationId = conversationId,
@@ -588,6 +615,11 @@ namespace Messenger_API.Hubs
             }
 
             if(!AddUserToConversation(member))
+            {
+                return null;
+            }
+
+            if(!AddConversationDetailsToContext(conversationDetails))
             {
                 return null;
             }
