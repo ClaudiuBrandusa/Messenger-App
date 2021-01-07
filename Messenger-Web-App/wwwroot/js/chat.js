@@ -78,6 +78,13 @@ function createNewConversationsHeader(title) {
     return block;
 }
 
+// if we aren't searching something then the following function will return true
+function isConversationListFree() {
+    let back_button = document.getElementById("conversation-list-back-button");
+
+    return back_button == null;
+}
+
 // new message notification
 function notifyNewMessage(conversation_Id, message) {
     if (conversations_list == null) {
@@ -113,8 +120,58 @@ function renderMessage(message) {
     if (message.sender === "") { // then it's a sent message
         renderSentMessage(message.content);
     } else {
-
+        renderReceivedMessage(message.content);
     }
+}
+
+function renderReceivedMessage(message) {
+    // finding the message place
+    var messages = document.getElementById("chat-message-list");
+    if (messages == null) {
+        alert("null");
+        return;
+    }
+
+    var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    // we are not using the user variable for now
+
+    // creating the message html object
+    var message = document.createElement("div");
+    message.classList.add("message-row");
+    message.classList.add("other-message");
+
+    var message_content = document.createElement("div");
+    message_content.classList.add("message-content");
+
+    var image = document.createElement("img");
+
+    // image source will be hard coded for now
+    image.src = window.location.protocol + "//" + window.location.host + "/images/user2.png";
+    image.width = "40";
+    image.height = "40";
+
+    message_content.appendChild(image);
+
+    var message_content_text = document.createElement("div");
+    message_content_text.classList.add("message-text");
+
+    message_content_text.textContent = msg;
+
+    message_content.appendChild(message_content_text);
+
+    var message_content_date = document.createElement("div");
+    message_content_date.classList.add("message-time");
+    // we will leave the date hard coded for now
+    message_content_date.textContent = "Now";
+
+    message_content.appendChild(message_content_date);
+
+    message.appendChild(message_content);
+
+    messages.appendChild(message);
+
+    // scrolling down to the last message
+    messages.scrollTop = message.offsetTop;
 }
 
 function renderSentMessage(message) {
@@ -204,7 +261,6 @@ function renderConversationInList(conversationData) {
     conversation_image.src = window.location.protocol + "//" + window.location.host + "/images/user2.png";
     conversation_image.width = "40";
     conversation_image.height = "40";
-
     var conversation_title = document.createElement("div");
     conversation_title.classList.add("title-text");
     conversation_title.innerHTML = formatConversationTitle(conversationData.conversationName);
@@ -245,7 +301,8 @@ function addConversationsList(conversationList) {
     }
 }
 
-function addConversationInList(conversationData) {
+function addConversationInList(conversationData, render = true) {
+    
     if (conversations_list == null) {
         let conversations_list = [];
     }
@@ -263,10 +320,13 @@ function addConversationInList(conversationData) {
         //alert("conversation already there");
         return;
     }
-    alert(JSON.stringify(conversationData));
-    conversations_list.push(conversationData);
 
-    renderConversationsList();
+    conversations_list.push(conversationData);
+    
+    if (render && isConversationListFree()) {
+        renderConversationsList();
+    }
+    
 }
 
 // conversation search results
@@ -584,53 +644,7 @@ connection.on("ReceiveMessage", function (conversation_Id, message) {
         return;
     } // else we are on the current conversation
 
-    // finding the message place
-    var messages = document.getElementById("chat-message-list");
-    if (messages == null) {
-        alert("null");
-        return;
-    }
-
-    var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    // we are not using the user variable for now
-
-    // creating the message html object
-    var message = document.createElement("div");
-    message.classList.add("message-row");
-    message.classList.add("other-message");
-
-    var message_content = document.createElement("div");
-    message_content.classList.add("message-content");
-
-    var image = document.createElement("img");
-
-    // image source will be hard coded for now
-    image.src = window.location.protocol + "//" + window.location.host + "/images/user2.png";
-    image.width = "40";
-    image.height = "40";
-
-    message_content.appendChild(image);
-
-    var message_content_text = document.createElement("div");
-    message_content_text.classList.add("message-text");
-
-    message_content_text.textContent = msg;
-
-    message_content.appendChild(message_content_text);
-
-    var message_content_date = document.createElement("div");
-    message_content_date.classList.add("message-time");
-    // we will leave the date hard coded for now
-    message_content_date.textContent = "Now";
-
-    message_content.appendChild(message_content_date);
-
-    message.appendChild(message_content);
-
-    messages.appendChild(message);
-
-    // scrolling down to the last message
-    messages.scrollTop = message.offsetTop;
+    renderReceivedMessage(message);
 });
 
 connection.on("SendMessage", function (conversation_Id, message) {
@@ -648,13 +662,11 @@ connection.on("SendMessage", function (conversation_Id, message) {
 });
 
 connection.on("AddConversationInList", function (conversation_data) {
-    addConversationInList(conversation_data);
+    addConversationInList(conversation_data, true);
 });
 
 connection.on("EnterConversation", function (conversation_data) {
     enterConversation(conversation_data);
-    
-    /*addConversationInList(conversation_data);*/
 });
 
 connection.on("ListConversations", function (new_conversations_list) {
