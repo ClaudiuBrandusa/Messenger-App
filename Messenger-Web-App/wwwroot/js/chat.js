@@ -11,6 +11,13 @@ function getCookie(name) {
     return null;
 }
 
+function getMonthName(id) {
+    let  monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    return monthNames[id];
+}
+
 function formatString(string, length_limit) {
     if (string == null) {
         return "";
@@ -19,6 +26,26 @@ function formatString(string, length_limit) {
         return string;
     }
     return string.length > length_limit ? string.substring(0, length_limit) : string;
+}
+
+function formatConversationLastMessageData(data) {
+    let date = new Date(Date.parse(data));
+
+    let result = "";
+
+    //if (Date().getDay() - date.getDay() > 7) {
+        result += date.getDate() + " ";
+    //}
+
+    //if (date.getMonth() != new Date().getMonth()) {
+        result += getMonthName(date.getMonth()) + " ";
+    //}
+
+    //if (date.getFullYear() != new Date().getFullYear()) {
+        result += date.getFullYear() + " ";
+    //}
+
+    return result;
 }
 
 function getPacketNumberFromString(string) {
@@ -62,11 +89,11 @@ function formatConversationRoomTitle(string) {
     return formatString(string, 20) + (string.length > 20 ? "..." : "");
 }
 
-function formatConversationLastMessage(string) {
+function formatConversationLastMessage(string, sender="") {
     if (string == null) {
         return;
     }
-    return formatString(string, 20) + (string.length > 20 ? "..." : "");
+    return (sender !== ""?sender+": ":"")+formatString(string, 20) + (string.length > 20 ? "..." : "");
 }
 
 // warning block
@@ -298,15 +325,15 @@ function renderConversationInList(conversationData) {
     conversation_title.innerHTML = formatConversationTitle(conversationData.conversationName);
     var conversation_data = document.createElement("div"); // last message data
     conversation_data.classList.add("created-date");
-    conversation_data.innerHTML = "";
+    conversation_data.innerHTML = formatConversationLastMessageData(conversationData.lastMessage.sentData);
     var conversation_message = document.createElement("div"); // an excerpt from the last message
     conversation_message.classList.add("conversation-message");
-    conversation_message.innerHTML = formatConversationLastMessage("");
+    conversation_message.innerHTML = formatConversationLastMessage(conversationData.lastMessage.content, conversationData.lastMessage.sender);
 
     conversation_block.appendChild(conversation_image);
     conversation_block.appendChild(conversation_title);
-    conversation_block.appendChild(conversation_data);
     conversation_block.appendChild(conversation_message);
+    conversation_block.appendChild(conversation_data);
 
     conversations_list_container.appendChild(conversation_block);
 }
@@ -443,16 +470,24 @@ function renderConversationSearchResult(result) {
     conversation_title.classList.add("title-text");
     conversation_title.innerHTML = formatConversationTitle(result.conversationName);
     var conversation_data = document.createElement("div"); // last message data
+    if (result.lastMessage != null) {
+        conversation_data.innerHTML = formatConversationLastMessageData(result.lastMessage.sentData);
+    } else {
+        conversation_data.innerHTML = "";
+    }
     conversation_data.classList.add("created-date");
-    conversation_data.innerHTML = "";
     var conversation_message = document.createElement("div"); // an excerpt from the last message
     conversation_message.classList.add("conversation-message");
-    conversation_message.innerHTML = formatConversationLastMessage("");
-
+    if (result.lastMessage != null) {
+        conversation_message.innerHTML = formatConversationLastMessage(result.lastMessage.content, result.lastMessage.sender);
+    } else {
+        conversation_message.innerHTML = "";
+    }
+    
     conversation_block.appendChild(conversation_image);
     conversation_block.appendChild(conversation_title);
-    conversation_block.appendChild(conversation_data);
     conversation_block.appendChild(conversation_message);
+    conversation_block.appendChild(conversation_data);
 
     conversations_list_container.appendChild(conversation_block);
 }

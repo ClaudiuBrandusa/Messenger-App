@@ -140,7 +140,7 @@ namespace Messenger_API.Hubs
             if (list == null) return;
 
             // here we will order by the last sent message date
-            //list = list.OrderBy(x => x.ConversationName).ToList();
+            list = list.OrderBy(x => x.LastMessage.SentData).ToList();
             
             await Clients.Caller.SendAsync("ListConversations", list);
         }
@@ -179,7 +179,7 @@ namespace Messenger_API.Hubs
             var possibleConversationIds = messageContext.ConversationMembers.Where(m =>
                 m.UserId.Equals(userId)).Select(m => m.ConversationId).ToList();
 
-            List<HubConversation> conversationResults = new List<HubConversation>();
+            List<HubListConversation> conversationResults = new List<HubListConversation>();
 
             foreach (var id in possibleConversationIds)
             {
@@ -187,14 +187,14 @@ namespace Messenger_API.Hubs
                 
                 if (!name.ToLower().StartsWith(conversationName)) continue;
 
-                conversationResults.Add(new HubConversation { ConversationName = name, Id = id });
+                conversationResults.Add(new HubListConversation { ConversationName = name, Id = id, LastMessage = GetLastMessage(id) });
             }
 
             // finding contacts
 
             var contacts = messageContext.SmallUsers.Where(u => u.UserName.ToLower().StartsWith(conversationName)).ToList();
 
-            var contactsConversations = new List<HubConversation>();
+            var contactsConversations = new List<HubListConversation>();
 
             foreach(var contact in contacts)
             {
@@ -233,11 +233,15 @@ namespace Messenger_API.Hubs
                 }
                 else
                 {
-                    contactsConversations.Add(new HubConversation { ConversationName = GetUsername(contact.UserId), Id = conversation.First().ConversationId });
+                    var aux = GetLastMessage(conversation.First().ConversationId);
+                    //if (aux == null) aux = new HubMessage();
+                    contactsConversations.Add(new HubListConversation { ConversationName = GetUsername(contact.UserId), Id = conversation.First().ConversationId, LastMessage = aux });
                     continue;
                 }
 
-                contactsConversations.Add(new HubConversation { ConversationName = GetUsername(contact.UserId), Id = tmp.ConversationId });
+                var lastMessage = GetLastMessage(tmp.ConversationId);
+                //if (lastMessage == null) lastMessage = new HubMessage();
+                contactsConversations.Add(new HubListConversation { ConversationName = GetUsername(contact.UserId), Id = tmp.ConversationId, LastMessage = lastMessage });
             }
 
             await Clients.Caller.SendAsync("ListFoundConversations", conversationResults, contactsConversations);
@@ -274,7 +278,8 @@ namespace Messenger_API.Hubs
 
             var hubConversations = conversations
                 .Select(c => new HubListConversation { ConversationName = GetConversationName(c.ConversationId), 
-                    Id = c.ConversationId})
+                    Id = c.ConversationId,
+                    LastMessage = GetLastMessage(c.ConversationId)})
                 .ToList();
 
             return hubConversations;
@@ -1004,6 +1009,26 @@ namespace Messenger_API.Hubs
             }
 
             return new_packets;
+        }
+
+        HubMessage GetLastMessage(string conversationId)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return null;
+            if (!IsConversationIdValid(conversationId)) return null;
+
+            var lastPacket = GetPacket(conversationId, -1);
+
+            if (lastPacket == null) return null;
+
+            var packetContent = messageContext.PacketContents.FirstOrDefault(p => p.PacketId.Equals(lastPacket.PacketId));
+
+            if (packetContent == default) return null;
+
+            var content = messageContext.MessageContents.FirstOrDefault(m => m.MessageId.Equals(packetContent.MessageId));
+
+            if (content == default) return null;
+
+            return new HubMessage { Content = content.Content, Sender = IsCurrentUsersId(content.UserId)?"You":GetUsername(content.UserId), SentData = content.SentDate };
         }
 
         /*MessageContent GetMessageContent(*//*string messageId, *//*string conversationId,)

@@ -216,6 +216,7 @@
     border-radius: 100%;
     margin-left: -5px;
     margin-top: 5px;
+    background-color: white; 
 }
 
 #conversations-loading-container {
@@ -250,12 +251,15 @@
 }
 
 .created-date {
+    grid-column: span 3;
+    grid-row: span 2;
     color: #ddd;
     font-size: 1rem;
-    margin-left: -15px;
+    /*margin-left: -30px;*/
 }
 
 .conversation-message {
+    grid-column: span 2;
     grid-column: span 2;
     white-space: nowrap;
     overflow-x: hidden;
