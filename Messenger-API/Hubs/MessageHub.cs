@@ -18,6 +18,8 @@ namespace Messenger_API.Hubs
         MessageContext messageContext;
         UserManager<ApplicationUser> userManager;
 
+        static readonly int PacketMaxMessages = 10;
+
         static Random Random = new Random();
 
         static Dictionary<string, List<string>> CurrentUsers = new Dictionary<string, List<string>>();
@@ -84,8 +86,16 @@ namespace Messenger_API.Hubs
             var ownConnectionsId = GetConnectionsId(GetUserId(username));
 
             bool firstInteraction = IsConversationEmpty(conversationId);
-
+            int before = GetNextPacketNumber(conversationId);
             StoreMessage(conversationId, message);
+            int after = GetNextPacketNumber(conversationId);
+
+            int packetNumber = before > -1 ? before - 1 : -1;
+
+            if(before != after) // then it means that we stored the message in a new packet
+            {
+                packetNumber++;
+            }
 
             var data = new HubListConversation
             {
@@ -93,11 +103,9 @@ namespace Messenger_API.Hubs
                 ConversationName = GetConversationName(conversationId)
             };
 
-            Console.WriteLine(data.ConversationName);
-
             foreach(var connection in ownConnectionsId)
             {
-                await Clients.Client(connection).SendAsync("SendMessage", conversationId, message);
+                await Clients.Client(connection).SendAsync("SendMessage", conversationId, message, packetNumber);
                 if (firstInteraction) await Clients.Client(connection).SendAsync("AddConversationInList", data);
             }
 
@@ -107,7 +115,7 @@ namespace Messenger_API.Hubs
             {
                 if(CurrentUsers.ContainsKey(receiver) && !receiver.Equals(GetUserId(username)))
                 {
-                    await Clients.Group(receiver).SendAsync("ReceiveMessage", conversationId, message);
+                    await Clients.Group(receiver).SendAsync("ReceiveMessage", conversationId, message, packetNumber);
                     if (firstInteraction)
                     {
                         data.ConversationName = GetConversationName(conversationId, receiver);
@@ -146,7 +154,7 @@ namespace Messenger_API.Hubs
                 return;
             }
 
-            var data = new HubChatroomConversation { Id = conversationId, ConversationName = GetConversationName(conversationId), Messages = GetMessageHistory(conversationId) };
+            var data = new HubChatroomConversation { Id = conversationId, ConversationName = GetConversationName(conversationId), Packets = GetMessageHistory(conversationId), Members = GetConversationMembersIds(conversationId) };
 
             data.ConversationName = GetConversationName(conversationId);
             
@@ -191,6 +199,16 @@ namespace Messenger_API.Hubs
             foreach(var contact in contacts)
             {
                 var conversation = GetConversationWithUser(contact.UserId, false); // false means that we are not looking for group conversations
+
+                if(conversation != null)
+                {
+                    foreach (var con in conversation)
+                    {
+                        if (IsGroupConversation(con.ConversationId)) continue;
+                        conversation = new List<ConversationMember>() {con};
+                        break;
+                    }
+                }
 
                 if(contact.UserId.Equals(userId) && conversation != null)
                 {
@@ -243,7 +261,7 @@ namespace Messenger_API.Hubs
 
         // Helper methods
 
-        List<HubConversation> GetAllHubConversations(string userId, bool empty=false)
+        List<HubListConversation> GetAllHubConversations(string userId, bool empty=false)
         {
             if(string.IsNullOrEmpty(userId))
             {
@@ -255,7 +273,7 @@ namespace Messenger_API.Hubs
             if (conversations == null) return null;
 
             var hubConversations = conversations
-                .Select(c => new HubConversation { ConversationName = GetConversationName(c.ConversationId), 
+                .Select(c => new HubListConversation { ConversationName = GetConversationName(c.ConversationId), 
                     Id = c.ConversationId})
                 .ToList();
 
@@ -485,6 +503,8 @@ namespace Messenger_API.Hubs
 
             var possibleConversations = messageContext.ConversationMembers.Where(m => m.UserId.Equals(userId)).ToList();
 
+            possibleConversations = possibleConversations.Where(c => !IsGroupConversation(c.ConversationId)).ToList();
+
             if (possibleConversations.Count == 0) return null;
 
             foreach(var conversation in possibleConversations)
@@ -538,7 +558,7 @@ namespace Messenger_API.Hubs
 
         bool IsConversationEmpty(string conversationId)
         {
-            return !Messages.ContainsKey(conversationId) || Messages[conversationId].Count == 0;
+            return messageContext.Packets.FirstOrDefault(c => c.ConversationId.Equals(conversationId)) == default; //!Messages.ContainsKey(conversationId) || Messages[conversationId].Count == 0;
         }
 
         List<Conversation> LoadConversationFromContext(string conversationId)
@@ -726,17 +746,121 @@ namespace Messenger_API.Hubs
 
         // (Message) Packets
 
-        void AddMessageToPacket(string packetId, string message)
+        bool AddMessageToPacket(string packetId, string conversationId, MessageContent message)
         {
-            if (string.IsNullOrEmpty(packetId)) return;
-            if (string.IsNullOrEmpty(message)) return;
+            if (string.IsNullOrEmpty(packetId)) return false;
+            if (string.IsNullOrEmpty(conversationId)) return false;
+            if (message == null || message == default) return false;
 
-            
+            if (messageContext.PacketContents.Count(m => m.PacketId.Equals(packetId)) >= PacketMaxMessages) return false;
+
+            Packet packet = GetPacket(packetId, conversationId);
+
+            PacketContent packetContent = null;
+
+            if (packet != null)
+            {
+                // then we found a packet
+                packetContent = GetPacketContent(message, packetId, false);
+            }
+            else // otherwise we are creating another packet
+            {
+                packet = GeneratePacket(packetId, conversationId);
+                try
+                {
+                    messageContext.Packets.Add(packet);
+                    messageContext.SaveChanges();
+                }catch
+                {
+                    return false;
+                }
+                if (packet == null) return false;
+                packetContent = GetPacketContent(message, packetId, false);
+            }
+
+            if (packetContent == null) return false; // then something went wrong
+
+            packetContent.Packet = packet;
+
+            try
+            {
+                messageContext.PacketContents.Add(packetContent);
+                messageContext.SaveChanges();
+            }
+            catch(Exception exception)
+            {
+                Console.WriteLine(exception.StackTrace);
+                return false;
+            }
+            return true;
         }
 
+        Packet GeneratePacket(string packetId, string conversationId)
+        {
+            if (string.IsNullOrEmpty(packetId)) return null;
+            if (string.IsNullOrEmpty(conversationId)) return null;
+            if (IsPacketIdUsed(packetId)) return null;
+            int packetNumber = GetNextPacketNumber(conversationId);
+            Packet packet = new Packet
+            {
+                PacketId = packetId,
+                ConversationId = conversationId,
+                Conversation = GetConversation(conversationId).First(),
+                PacketNumber = packetNumber == -1 ? 0 : packetNumber
+            };
+            return packet;
+        }
+
+        Packet GetPacket(string conversationId, int packetNumber=-1)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return null;
+            if (packetNumber != -1 && (packetNumber < -1 || packetNumber > GetNextPacketNumber(conversationId) - 1)) return null;
+
+
+            var packet = messageContext.Packets.FirstOrDefault(p => p.ConversationId.Equals(conversationId) && p.PacketNumber == (packetNumber == -1 ? GetNextPacketNumber(conversationId) - 1 : packetNumber));
+
+            if (packet == default) return null;
+
+            return packet;
+        }
+
+        Packet GetPacket(string packetId, string conversationId)
+        {
+            if (string.IsNullOrEmpty(packetId)) return null;
+            if (string.IsNullOrEmpty(conversationId)) return null;
+            var packet = messageContext.Packets.FirstOrDefault(p => p.PacketId.Equals(packetId) && p.ConversationId.Equals(conversationId));
+            if (packet == default) return null;
+            return packet;
+        }
+
+        int GetPacketCount(Packet packet)
+        {
+            if (packet == null || packet == default) return PacketMaxMessages;
+            return messageContext.PacketContents.Count(m => m.PacketId.Equals(packet.PacketId));
+        }
+
+        int GetPacketCount(string packetId)
+        {
+            if (string.IsNullOrEmpty(packetId)) return -1;
+            return messageContext.PacketContents.Count(m => m.PacketId.Equals(packetId));
+        }
+
+        bool IsPacketIdValid(string packetId)
+        {
+            if (string.IsNullOrEmpty(packetId)) return false;
+            return true;
+        }
+
+        bool IsPacketIdUsed(string packetId)
+        {
+            if (IsPacketIdValid(packetId) && messageContext.Packets.FirstOrDefault(p => p.PacketId.Equals(packetId)) != default) return true;
+            return false;
+        }
+
+        // Disabled
         void AddPacketToContext(string packetId, string conversationId)
         {
-            if (string.IsNullOrEmpty(packetId)) return;
+            /*if (string.IsNullOrEmpty(packetId)) return;
             if (string.IsNullOrEmpty(conversationId)) return;
 
             if (!Packets.ContainsKey(conversationId)) return;
@@ -749,11 +873,61 @@ namespace Messenger_API.Hubs
             {
                 // then we 
 
+            }*/
+        }
+
+        int GetNextPacketNumber(string conversationId)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return -1;
+            var seq = messageContext.Packets.Where(p => p.ConversationId.Equals(conversationId));
+            if (!seq.Any()) return -1;
+            return seq.Max(p => p.PacketNumber) + 1;
+        }
+
+        string GetCurrentPacketId(string conversationId)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return "";
+            var currentPacket = messageContext.Packets.FirstOrDefault(p => p.ConversationId.Equals(conversationId) && p.PacketNumber == GetNextPacketNumber(conversationId)-1);
+            if (currentPacket == default) return "";
+            if (GetPacketCount(currentPacket) >= PacketMaxMessages) return "";
+            return currentPacket.PacketId;
+        }
+
+        // Packet Content
+
+        PacketContent GetPacketContent(MessageContent message, string packetId, bool save=true)
+        {
+            if (string.IsNullOrEmpty(packetId)) return null;
+            if (!IsPacketIdValid(packetId)) return null;
+            if (message == null || message == default) return null;
+            PacketContent content = new PacketContent
+            {
+                PacketId = packetId,
+                MessageId = message.MessageId,
+                MessageContent = message,
+                Packet = null
+            };
+
+            message.PacketContent = content;
+            if(save)
+            {
+                try
+                {
+                    messageContext.PacketContents.Add(content);
+                    messageContext.SaveChanges();
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception.StackTrace);
+                    return null;
+                }
             }
+
+            return content;
         }
 
         // Messages
-        
+
         void StoreMessage(string conversationId, string content)
         {
             if (string.IsNullOrEmpty(conversationId) || !IsConversationIdValid(conversationId)) return;
@@ -768,34 +942,80 @@ namespace Messenger_API.Hubs
                 MessageId = GenerateMessageId(),
                 UserId = userId,
                 Content = content,
-                SmallUser = messageContext.SmallUsers.Find(userId)
+                SmallUser = messageContext.SmallUsers.Find(userId),
+                SentDate = DateTime.Now
             };
 
-            if (Messages.ContainsKey(conversationId))
+            string packetId = GetCurrentPacketId(conversationId);
+            
+            if(string.IsNullOrEmpty(packetId))
             {
-                Messages[conversationId].Add(message);
-                return;
+                packetId = GeneratePacketId();
+                while (IsPacketIdUsed(packetId)) packetId = GeneratePacketId();
             }
 
-            Messages.Add(conversationId, new List<MessageContent>{ message });
+            if (!AddMessageToPacket(packetId, conversationId, message))
+            {
+                while (IsPacketIdUsed(packetId)) packetId = GeneratePacketId();
+                if(!AddMessageToPacket(packetId, conversationId, message)) return; // no it should get added successfully, otherwise something went wrong
+            }
         }
 
-        List<HubMessage> GetMessageHistory(string conversationId)
+        List<HubMessagePacket> GetMessageHistory(string conversationId)
         {
             if (string.IsNullOrEmpty(conversationId)) return null;
-            
-            if(Messages.ContainsKey(conversationId))
+            if (!IsConversationIdValid(conversationId)) return null;
+
+            var lastPacket = GetPacket(conversationId, -1);
+
+            if (lastPacket == null) return null;
+
+            var packets = new List<Packet>() { lastPacket };
+
+            if(lastPacket.PacketNumber != 0)
             {
-                return Messages[conversationId].Select(m => new HubMessage { Sender = GetUsername(m.UserId).Equals(Context.User.Identity.Name)? "": GetUsername(m.UserId), Content = m.Content, SentData = DateTime.Now }).ToList();
+                if(GetPacketCount(lastPacket) < 5)
+                {
+                    // then we load another one
+                    packets.Add(GetPacket(conversationId, lastPacket.PacketNumber - 1));
+                }
             }
 
-            return null;
+            var new_packets = packets.Select(p => 
+                new HubMessagePacket
+                {
+                    Messages = messageContext.PacketContents.Where(pc => pc.PacketId.Equals(p.PacketId)).Select(m =>
+                    new HubMessage 
+                    { 
+                        Sender = messageContext.MessageContents.Where(mc => mc.MessageId.Equals(m.MessageId)).Select(mc => mc.UserId).FirstOrDefault(), 
+                        SentData = messageContext.MessageContents.Where(mc => mc.MessageId.Equals(m.MessageId)).Select(mc => mc.SentDate).FirstOrDefault(), 
+                        Content = messageContext.MessageContents.Where(mc => mc.MessageId.Equals(m.MessageId)).Select(mc => mc.Content).FirstOrDefault()
+                    }).ToList().OrderBy(e => e.SentData).ToList(),
+                    PacketId = p.PacketId,
+                    PacketNumber = p.PacketNumber
+                }).ToList();
+
+            foreach(var p in new_packets)
+            {
+                foreach(var m in p.Messages)
+                {
+                    if (IsCurrentUsersId(m.Sender)) m.Sender = "";
+                }
+            }
+
+            return new_packets;
         }
 
         /*MessageContent GetMessageContent(*//*string messageId, *//*string conversationId,)
         {
 
         }*/
+
+        bool IsCurrentUsersId(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return false;
+            return GetUsername(id).Equals(Context.User.Identity.Name);
+        }
 
         string GetUsername(string userId)
         {
@@ -861,6 +1081,11 @@ namespace Messenger_API.Hubs
 
         // Generators
 
+        string GeneratePacketId()
+        {
+            return GenerateId(350);
+        }
+
         string GenerateConversationId()
         {
             return GenerateId(400);
@@ -895,7 +1120,7 @@ namespace Messenger_API.Hubs
         {
             public List<string> Members { get; set; }
             // We are leaving it here for now
-            public List<HubMessage> Messages { get; set; }
+            public List<HubMessagePacket> Packets { get; set; }
         }
 
         class HubMessagePacket

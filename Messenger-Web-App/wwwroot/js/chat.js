@@ -21,6 +21,31 @@ function formatString(string, length_limit) {
     return string.length > length_limit ? string.substring(0, length_limit) : string;
 }
 
+function getPacketNumberFromString(string) {
+    if (string.includes("#")) {
+        let list = string.split("#");
+        if (list.length == 2) return list[1];
+    }
+    return "";
+}
+
+function getPacketNumberFromClass(class_list) {
+    if (class_list != null) {
+        let res = "";
+        for (let i = 0; i < class_list.length; i++) {
+            res = getPacketNumberFromString(class_list[i]);
+            if (res !== "") return res;
+        }
+    }
+}
+
+function getPacketNumberFromObject(object) {
+    if (object != null) {
+        return getPacketNumberFromClass(object.classList);
+    }
+    return "";
+}
+
 // used in the conversations list
 function formatConversationTitle(string) {
     if (string == null) {
@@ -108,23 +133,24 @@ function notifyNewMessage(conversation_Id, message) {
 }
 
 // Messages
-function renderMessages(messages) {
+function renderMessages(messages, packetNumber) {
+
     for (var i = 0; i < messages.length; i++) {
-        renderMessage(messages[i]);
+        renderMessage(messages[i], packetNumber);
     }
 }
 
-function renderMessage(message) {
+function renderMessage(message, packetNumber) {
     if (message == null) return;
-
+    
     if (message.sender === "") { // then it's a sent message
-        renderSentMessage(message.content);
+        renderSentMessage(message.content, packetNumber);
     } else {
-        renderReceivedMessage(message.content);
+        renderReceivedMessage(message.content, packetNumber);
     }
 }
 
-function renderReceivedMessage(message) {
+function renderReceivedMessage(message, packetNumber) {
     // finding the message place
     var messages = document.getElementById("chat-message-list");
     if (messages == null) {
@@ -139,6 +165,9 @@ function renderReceivedMessage(message) {
     var message = document.createElement("div");
     message.classList.add("message-row");
     message.classList.add("other-message");
+
+    // packet number
+    message.classList.add("packet_number#" + packetNumber);
 
     var message_content = document.createElement("div");
     message_content.classList.add("message-content");
@@ -174,7 +203,7 @@ function renderReceivedMessage(message) {
     messages.scrollTop = message.offsetTop;
 }
 
-function renderSentMessage(message) {
+function renderSentMessage(message, packetNumber) {
     // finding the message place
     var messages = document.getElementById("chat-message-list");
     if (messages == null) {
@@ -188,6 +217,9 @@ function renderSentMessage(message) {
     var message = document.createElement("div");
     message.classList.add("message-row");
     message.classList.add("you-message");
+
+    // packet number
+    message.classList.add("packet_number#" + packetNumber);
 
     var message_content = document.createElement("div");
     message_content.classList.add("message-content");
@@ -620,8 +652,18 @@ function enterConversation(data) {
 
     chat_message_list.innerHTML = "";
 
-    if (data.messages != null) {
-        renderMessages(data.messages);
+    chat_message_list.addEventListener("scroll", function (e) {
+        if (chat_message_list.scrollTop == 0 && chat_message_list.offsetHeight <= chat_message_list.scrollHeight) {
+            // we reached the top of the conversation's messages list
+            //requestNextPacket(data.);
+            alert(getPacketNumberFromObject(chat_message_list.children[0]));
+        }
+    });
+
+    if (data.packets != null) {
+        for (let i = data.packets.length-1; i >= 0; i--) {
+            renderMessages(data.packets[i].messages, data.packets[i].packetNumber);
+        }
     }
 }
 
@@ -631,7 +673,7 @@ var connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:49
 }).build();
 
 
-connection.on("ReceiveMessage", function (conversation_Id, message) {
+connection.on("ReceiveMessage", function (conversation_Id, message, packetNumber) {
     // checking the conversation's id
     if (conversationId == null) {
         let conversationId = "";
@@ -644,10 +686,10 @@ connection.on("ReceiveMessage", function (conversation_Id, message) {
         return;
     } // else we are on the current conversation
 
-    renderReceivedMessage(message);
+    renderReceivedMessage(message, packetNumber);
 });
 
-connection.on("SendMessage", function (conversation_Id, message) {
+connection.on("SendMessage", function (conversation_Id, message, packetNumber) {
     // checking the conversation's id
     if (conversationId == null) {
         let conversationId = "";
@@ -658,7 +700,7 @@ connection.on("SendMessage", function (conversation_Id, message) {
         return; // then we are not in the current conversation room, might happen if we are connected on multiple accounts
     }
 
-    renderSentMessage(message);
+    renderSentMessage(message, packetNumber);
 });
 
 connection.on("AddConversationInList", function (conversation_data) {
