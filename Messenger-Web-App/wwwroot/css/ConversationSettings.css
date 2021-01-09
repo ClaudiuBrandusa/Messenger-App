@@ -1,6 +1,8 @@
 ﻿.settings-container {
-    width: 320px;
-    height: 320px;
+    width: 40%;
+    height: 40%;
+    min-height: 320px;
+    min-width: 320px;
     background: #2a363b;
     color: #fff;
     top: 50%;
@@ -12,6 +14,7 @@
     border-radius: 20px;
     font-weight: bold;
     border: 5px solid #2c437d;
+    z-index: 11;
 }
 
 .settings-container h1
@@ -20,29 +23,36 @@
     font-weight: bold;
     color: snow;
     text-align: center;
-    margin-top: -15%;
+    margin-top: -10%;
 }
 
-.settings-container button
-{
-    width: 125px;
-    height: 30px;
+.btn-list div {
+    min-width: 185px;
+    min-height: 30px;
+    width: 55%;
     background-color: lawngreen;
     border-radius: 10px;
     color: black;
     text-align: center;
     font-weight: bold;
     border: 2px solid snow;
+    user-select: none;
+    margin-top: 2.5%;
+    display: block;
+    align-content: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.settings-container button:hover
-{
+.btn-list div:hover {
     background-color: goldenrod;
+    cursor: pointer;
 }
 
 .btn-list {
     position: relative;
-    height: 100%;
+    height: 100%;/*
+    align-content: center;*/
 }
 
 

@@ -100,22 +100,27 @@ namespace Messenger_API.Hubs
             var data = new HubListConversation
             {
                 Id = conversationId,
-                ConversationName = GetConversationName(conversationId)
+                ConversationName = GetConversationName(conversationId),
+                LastMessage = GetLastMessage(conversationId)
             };
+
+            HubMessage hubMessage = new HubMessage { Content = message, SentData = DateTime.Now, Sender = "You" };
 
             foreach(var connection in ownConnectionsId)
             {
-                await Clients.Client(connection).SendAsync("SendMessage", conversationId, message, packetNumber);
+                await Clients.Client(connection).SendAsync("SendMessage", conversationId, hubMessage, packetNumber);
                 if (firstInteraction) await Clients.Client(connection).SendAsync("AddConversationInList", data);
             }
 
             List<string> receiverIds = GetConversationMembersIds(conversationId);
 
+            hubMessage.Sender = Context.User.Identity.Name;
+
             foreach(var receiver in receiverIds)
             {
                 if(CurrentUsers.ContainsKey(receiver) && !receiver.Equals(GetUserId(username)))
                 {
-                    await Clients.Group(receiver).SendAsync("ReceiveMessage", conversationId, message, packetNumber);
+                    await Clients.Group(receiver).SendAsync("ReceiveMessage", conversationId, hubMessage, packetNumber);
                     if (firstInteraction)
                     {
                         data.ConversationName = GetConversationName(conversationId, receiver);
@@ -140,7 +145,7 @@ namespace Messenger_API.Hubs
             if (list == null) return;
 
             // here we will order by the last sent message date
-            list = list.OrderBy(x => x.LastMessage.SentData).ToList();
+            list = list.Where(x => x.LastMessage != null && x.LastMessage.SentData != null).OrderBy(x => x.LastMessage.SentData).ToList();
             
             await Clients.Caller.SendAsync("ListConversations", list);
         }
@@ -154,12 +159,14 @@ namespace Messenger_API.Hubs
                 return;
             }
 
-            var data = new HubChatroomConversation { Id = conversationId, ConversationName = GetConversationName(conversationId), Packets = GetMessageHistory(conversationId), Members = GetConversationMembersIds(conversationId) };
+            var data = new HubChatroomConversation { Id = conversationId, ConversationName = GetConversationName(conversationId), Packets = GetMessageHistory(conversationId), Members = GetConversationMembersIds(conversationId), IsGroup = IsGroupConversation(conversationId) };
 
             data.ConversationName = GetConversationName(conversationId);
-            
+
+            var dataList = new HubListConversation { ConversationName = data.ConversationName, LastMessage = GetLastMessage(conversationId), Id = conversationId };
+
             await Clients.Caller.SendAsync("EnterConversation", data);
-            if (!IsConversationEmpty(conversationId)) await Clients.Caller.SendAsync("AddConversationInList", data);
+            if (!IsConversationEmpty(conversationId)) await Clients.Caller.SendAsync("AddConversationInList", dataList);
         }
 
         [Authorize]
@@ -234,13 +241,13 @@ namespace Messenger_API.Hubs
                 else
                 {
                     var aux = GetLastMessage(conversation.First().ConversationId);
-                    //if (aux == null) aux = new HubMessage();
+                    if (aux == null) aux = new HubMessage();
                     contactsConversations.Add(new HubListConversation { ConversationName = GetUsername(contact.UserId), Id = conversation.First().ConversationId, LastMessage = aux });
                     continue;
                 }
 
                 var lastMessage = GetLastMessage(tmp.ConversationId);
-                //if (lastMessage == null) lastMessage = new HubMessage();
+                if (lastMessage == null) lastMessage = new HubMessage();
                 contactsConversations.Add(new HubListConversation { ConversationName = GetUsername(contact.UserId), Id = tmp.ConversationId, LastMessage = lastMessage });
             }
 
@@ -260,7 +267,7 @@ namespace Messenger_API.Hubs
 
             AddConversation(new List<Conversation>() { member });
 
-            await Clients.Caller.SendAsync("EnterConversation", new HubChatroomConversation { Id = member.ConversationId, ConversationName = "New conversation"}, true);
+            await Clients.Caller.SendAsync("EnterConversation", new HubChatroomConversation { Id = member.ConversationId, ConversationName = "New conversation", IsGroup = true}, true);
         }
 
         // Helper methods
@@ -1146,6 +1153,7 @@ namespace Messenger_API.Hubs
             public List<string> Members { get; set; }
             // We are leaving it here for now
             public List<HubMessagePacket> Packets { get; set; }
+            public bool IsGroup { get; set; }
         }
 
         class HubMessagePacket

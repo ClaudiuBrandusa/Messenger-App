@@ -45,6 +45,14 @@ function formatConversationLastMessageData(data) {
         result += date.getFullYear() + " ";
     //}
 
+    result += date.getHours();
+
+    let minutes = date.getMinutes();
+
+    if (minutes < 10) minutes = "0" + minutes;
+    minutes = ":" + minutes;
+    result += minutes + " ";
+
     return result;
 }
 
@@ -71,6 +79,116 @@ function getPacketNumberFromObject(object) {
         return getPacketNumberFromClass(object.classList);
     }
     return "";
+}
+
+// overlay layer
+
+function hideOverlayLayer() {
+    let layer = document.getElementById("overlay-layer");
+    if (layer != null) {
+        layer.parentNode.removeChild(layer);
+        return true;
+    }
+    return false;
+}
+
+function showOverlayLayer() {
+    let layer = document.getElementById("overlay-layer");
+    if (layer == null) {
+        layer = document.createElement("div");
+        layer.id = "overlay-layer";
+        document.body.appendChild(layer);
+        return true;
+    }
+    return false;
+}
+
+// settings menu
+
+function showConversationSettingsMenu(isGroup) {
+    if (showOverlayLayer()) {
+        let settings_container = document.getElementById("conversation-settings-container");
+        if (settings_container == null) {
+            settings_container = document.createElement("div");
+            settings_container.id = "conversation-settings-container";
+            settings_container.classList.add("settings-container");
+
+            // title
+
+            let settings_container_title = document.createElement("h1");
+            settings_container_title.innerText = "Conversation Settings";
+
+            settings_container.appendChild(settings_container_title);
+
+            // button list
+
+            let button_list = document.createElement("div");
+            button_list.classList.add("btn-list");
+
+            // buttons
+            if (isGroup) {
+                // groups
+
+                // change conversation's name button 
+
+                let change_conversation_name_button = document.createElement("div");
+                change_conversation_name_button.innerText = "Change Conversation Name";
+
+                button_list.appendChild(change_conversation_name_button);
+
+                // list members button 
+
+                let list_members_button = document.createElement("div");
+                list_members_button.innerText = "See Members";
+
+                button_list.appendChild(list_members_button);
+
+                // add member button 
+
+                let add_member_button = document.createElement("div");
+                add_member_button.innerText = "Add Member";
+
+                button_list.appendChild(add_member_button);
+
+                // remove member button 
+
+                let remove_member_button = document.createElement("div");
+                remove_member_button.innerText = "Remove Member";
+
+                button_list.appendChild(remove_member_button);
+
+            } else {
+                // contact conversation
+
+                let block_contact = document.createElement("div");
+                block_contact.innerText = "Block Contact";
+
+                button_list.appendChild(block_contact);
+            }
+
+            
+
+            // back button
+            let back_button = document.createElement("div");
+            back_button.innerText = "Back";
+            back_button.addEventListener("click", function (e) {
+                hideConversationSettingsMenu();
+            });
+
+            button_list.appendChild(back_button);
+
+            settings_container.appendChild(button_list);
+
+            let layer = document.getElementById("overlay-layer");
+            layer.appendChild(settings_container);
+        }
+    } // else something went wrong
+}
+
+function hideConversationSettingsMenu() {
+    if (hideOverlayLayer()) {
+
+    } // else something went wrong
 }
 
 // used in the conversations list
@@ -161,7 +279,6 @@ function notifyNewMessage(conversation_Id, message) {
 
 // Messages
 function renderMessages(messages, packetNumber) {
-
     for (var i = 0; i < messages.length; i++) {
         renderMessage(messages[i], packetNumber);
     }
@@ -171,13 +288,13 @@ function renderMessage(message, packetNumber) {
     if (message == null) return;
     
     if (message.sender === "") { // then it's a sent message
-        renderSentMessage(message.content, packetNumber);
+        renderSentMessage(message, packetNumber);
     } else {
-        renderReceivedMessage(message.content, packetNumber);
+        renderReceivedMessage(message, packetNumber);
     }
 }
 
-function renderReceivedMessage(message, packetNumber) {
+function renderReceivedMessage(messageData, packetNumber) {
     // finding the message place
     var messages = document.getElementById("chat-message-list");
     if (messages == null) {
@@ -185,7 +302,9 @@ function renderReceivedMessage(message, packetNumber) {
         return;
     }
 
-    var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    if (messageData.content == null) return;
+
+    var msg = messageData.content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     // we are not using the user variable for now
 
     // creating the message html object
@@ -218,7 +337,7 @@ function renderReceivedMessage(message, packetNumber) {
     var message_content_date = document.createElement("div");
     message_content_date.classList.add("message-time");
     // we will leave the date hard coded for now
-    message_content_date.textContent = "Now";
+    message_content_date.textContent = formatConversationLastMessageData(messageData.sentData);
 
     message_content.appendChild(message_content_date);
 
@@ -230,7 +349,7 @@ function renderReceivedMessage(message, packetNumber) {
     messages.scrollTop = message.offsetTop;
 }
 
-function renderSentMessage(message, packetNumber) {
+function renderSentMessage(messageData, packetNumber) {
     // finding the message place
     var messages = document.getElementById("chat-message-list");
     if (messages == null) {
@@ -238,7 +357,9 @@ function renderSentMessage(message, packetNumber) {
         return;
     }
 
-    var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    if (messageData.content == null) return;
+
+    var msg = messageData.content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
     // creating the message html object
     var message = document.createElement("div");
@@ -260,7 +381,7 @@ function renderSentMessage(message, packetNumber) {
     var message_content_date = document.createElement("div");
     message_content_date.classList.add("message-time");
     // we will leave the date hard coded for now
-    message_content_date.textContent = "Now";
+    message_content_date.textContent = formatConversationLastMessageData(messageData.sentData);
 
     message_content.appendChild(message_content_date);
 
@@ -329,13 +450,17 @@ function renderConversationInList(conversationData) {
     var conversation_message = document.createElement("div"); // an excerpt from the last message
     conversation_message.classList.add("conversation-message");
     conversation_message.innerHTML = formatConversationLastMessage(conversationData.lastMessage.content, conversationData.lastMessage.sender);
-
+    
     conversation_block.appendChild(conversation_image);
     conversation_block.appendChild(conversation_title);
     conversation_block.appendChild(conversation_message);
     conversation_block.appendChild(conversation_data);
 
-    conversations_list_container.appendChild(conversation_block);
+    if (conversations_list_container.firstChild == null) {
+        conversations_list_container.appendChild(conversation_block);
+    } else {
+        conversations_list_container.insertBefore(conversation_block, conversations_list_container.firstChild);
+    }
 }
 
 function hideConversationsList() {
@@ -669,7 +794,14 @@ function enterConversation(data) {
     }
 
     conversationId = data.id;
-    
+
+    let chat_title_container = document.getElementById("chat-title-container");
+
+    if (chat_title_container == null) {
+        alert("chat title container not found");
+        return;
+    }
+
     // set conversation title
     var conversation_title = document.getElementById("chat-title");
     if (conversation_title == null) {
@@ -677,6 +809,95 @@ function enterConversation(data) {
         return;
     }
     conversation_title.innerText = formatConversationRoomTitle(data.conversationName);
+
+    // conversation settings part
+
+    let conversation_settings_button = document.getElementById("conversation-settings-button");
+    if (conversation_settings_button == null) {
+        conversation_settings_button = document.createElement("i");
+        conversation_settings_button.classList.add("fas");
+        conversation_settings_button.classList.add("fa-cog");
+        conversation_settings_button.id = "conversation-settings-button";
+        chat_title_container.appendChild(conversation_settings_button);
+    } else {
+        let c_s_b_clone = conversation_settings_button.cloneNode(true);
+        conversation_settings_button.parentNode.replaceChild(c_s_b_clone, conversation_settings_button);
+        conversation_settings_button = c_s_b_clone;
+    }
+    
+    if (data.isGroup != null) {
+        conversation_settings_button.addEventListener("click", function (e) {
+            showConversationSettingsMenu(data.isGroup);
+        });
+    }
+
+    // send message part
+
+    let chat_form = document.getElementById("chat-form");
+
+    if (chat_form == null) {
+        alert("chat form not found");
+        return;
+    }
+
+    // input
+
+    let input = document.getElementById("message_input");
+    if (input == null) {
+        // then we generate it
+        input = document.createElement("input");
+        input.id = "message_input";
+        input.classList.add("col-md-10");
+        input.type = "text";
+        input.placeholder = "type a message";
+        chat_form.appendChild(input);
+    }
+
+    // button container
+
+    let send_btn_container = document.getElementById("send-btn-container");
+    if (send_btn_container == null) {
+        send_btn_container = document.createElement("div");
+        send_btn_container.classList.add("container_send-btn");
+        send_btn_container.id = "send-btn-container";
+        chat_form.appendChild(send_btn_container);
+    }
+
+    // button
+
+    let send_btn = document.getElementById("send_btn");
+    if (send_btn == null) {
+        send_btn = document.createElement("button");
+        send_btn.id = "send_btn";
+        send_btn.classList.add("btn-send");
+        send_btn.type = "button";
+        send_btn.innerText = "Send";
+        send_btn_container.appendChild(send_btn);
+    }
+
+    send_btn.addEventListener("click", function (event) {
+
+        // checking if we had typed something
+        var input = document.getElementById("message_input");
+        if (input == null) {
+            return; // then we have nothing to send
+        }
+
+        // checking for empty message
+        if (input.value.length == 0) {
+            return; // then we have nothing to send
+        }
+
+        if (conversationId == null) { let conversationId = ""; }
+
+        var message = input.value;
+
+        input.value = "";
+
+        connection.invoke("SendMessage", conversationId, message).catch(function (err) {
+            return console.error(err.toString());
+        });
+    });
 
     // clear conversation message history
     var chat_message_list = document.getElementById("chat-message-list");
@@ -700,6 +921,15 @@ function enterConversation(data) {
             renderMessages(data.packets[i].messages, data.packets[i].packetNumber);
         }
     }
+
+    // keydown events
+    document.addEventListener("keydown", function (event) {
+        if (event.keyCode === 13 && event.shiftKey) {
+            // here we should add a new line
+        } else if (event.keyCode === 13) {
+            send_btn.click();
+        }
+    });
 }
 
 // keep in mind that the connection url is hard coded for now
@@ -744,7 +974,10 @@ connection.on("AddConversationInList", function (conversation_data) {
 
 connection.on("EnterConversation", function (conversation_data, enlist=false) {
     enterConversation(conversation_data);
-    addConversationInList(conversation_data, enlist);
+    if (conversation_data.lastMessage != null) {
+        addConversationInList(conversation_data, enlist);
+    } // otherwise the conversation is empty
+    
 });
 
 connection.on("ListConversations", function (new_conversations_list) {
@@ -789,35 +1022,10 @@ connection.on("alert", function (message) {
 
 connection.start().then(function () {
     // there goes the init
-    var send_btn = document.getElementById("send_btn");
-    if (send_btn == null) {
-        alert("send button not found!");
-        return;
+    var chat_form = document.getElementById("chat-form");
+    if (chat_form != null) {
+        chat_form.innerHTML = "";
     }
-
-    send_btn.addEventListener("click", function (event) {
-
-        // checking if we had typed something
-        var input = document.getElementById("message_input");
-        if (input == null) {
-            return; // then we have nothing to send
-        }
-
-        // checking for empty message
-        if (input.value.length == 0) {
-            return; // then we have nothing to send
-        }
-
-        if (conversationId == null) { let conversationId = ""; }
-
-        var message = input.value;
-
-        input.value = "";
-
-        connection.invoke("SendMessage", conversationId, message).catch(function (err) {
-            return console.error(err.toString());
-        });
-    });
 
     // Search contact & conversation part
 
@@ -902,7 +1110,11 @@ connection.start().then(function () {
 
     // new contact part
         // ToDo
-    // user settings part
+
+    let conversation_settings_button = document.getElementById("conversation-settings-button");
+    if (conversation_settings_button != null);
+    conversation_settings_button.parentNode.removeChild(conversation_settings_button);
+
         // ToDo
     // status part
         // ToDo
@@ -921,41 +1133,6 @@ connection.start().then(function () {
     }
 
     connection.invoke("ListConversations");
-
-    // keydown events
-    document.addEventListener("keydown", function (event) {
-        if (event.keyCode === 13 && event.shiftKey) {
-            // here we should add a new line
-        } else if (event.keyCode === 13) {
-            send_btn.click();
-        }
-    });
-
-    /*document.getElementById("conversation-list").addEventListener("click", function (event) {
-        if (clickedOnConversationsList == null) {
-            let clickedOnConversationsList = false;
-        }
-        clickedOnConversationsList = true;
-    });*/
-
-    /*search_conversation_input.addEventListener("blur", function (event) {
-        if (clickedOnConversationsList == null) {
-            let clickedOnConversationsList = false;
-        } else if (clickedOnConversationsList) {
-            clickedOnConversationsList = false;
-            return;
-        }
-        if (hasSearchedConversation == null) {
-            let hasSearchedConversation = false;
-        }
-        if (hasSearchedConversation) {
-            renderConversationsList();
-            hasSearchedConversation = false;
-            if (search_conversation_input != null) {
-                search_conversation_input.value = "";
-            }
-        }
-    });*/
 
 }).catch(function (err) {
     return console.error(err.toString());
