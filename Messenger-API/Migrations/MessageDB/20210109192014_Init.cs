@@ -82,6 +82,30 @@ namespace Messenger_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BlockedContact",
+                columns: table => new
+                {
+                    ConversationId = table.Column<string>(nullable: false),
+                    UserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlockedContact", x => x.ConversationId);
+                    table.ForeignKey(
+                        name: "FK_BlockedContact_Conversations_ConversationId",
+                        column: x => x.ConversationId,
+                        principalTable: "Conversations",
+                        principalColumn: "ConversationId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BlockedContact_SmallUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "SmallUsers",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ConversationMembers",
                 columns: table => new
                 {
@@ -187,6 +211,11 @@ namespace Messenger_API.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_BlockedContact_UserId",
+                table: "BlockedContact",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ConversationMembers_UserId",
                 table: "ConversationMembers",
                 column: "UserId");
@@ -214,6 +243,9 @@ namespace Messenger_API.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "BlockedContact");
+
             migrationBuilder.DropTable(
                 name: "ConversationDetails");
 

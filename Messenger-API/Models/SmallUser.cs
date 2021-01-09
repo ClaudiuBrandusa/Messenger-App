@@ -14,6 +14,7 @@ namespace Messenger_API.Models
         public ICollection<FriendName> FriendNames { get; set; }
         public ICollection<MessageContent> MessageContents { get; set; }
         public ICollection<ConversationMember> Conversations { get; set; }
+        public ICollection<BlockedContact> BlockedContacts { get; set; }
         public ImageProfile ImageProfile { get; set; }
     }
 }

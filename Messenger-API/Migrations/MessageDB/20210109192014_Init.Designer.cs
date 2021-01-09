@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Messenger_API.Migrations
 {
     [DbContext(typeof(MessageContext))]
-    [Migration("20210106222439_Init")]
+    [Migration("20210109192014_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,21 @@ namespace Messenger_API.Migrations
                 .HasAnnotation("ProductVersion", "3.1.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Messenger_API.Entities.BlockedContact", b =>
+                {
+                    b.Property<string>("ConversationId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ConversationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BlockedContact");
+                });
 
             modelBuilder.Entity("Messenger_API.Entities.ConversationMember", b =>
                 {
@@ -174,6 +189,19 @@ namespace Messenger_API.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("SmallUsers");
+                });
+
+            modelBuilder.Entity("Messenger_API.Entities.BlockedContact", b =>
+                {
+                    b.HasOne("Messenger_API.Models.Conversation", "Conversation")
+                        .WithOne("BlockedContact")
+                        .HasForeignKey("Messenger_API.Entities.BlockedContact", "ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Messenger_API.Models.SmallUser", "User")
+                        .WithMany("BlockedContacts")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Messenger_API.Entities.ConversationMember", b =>

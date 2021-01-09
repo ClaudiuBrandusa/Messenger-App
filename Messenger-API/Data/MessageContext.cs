@@ -131,27 +131,25 @@ namespace Messenger_API.Data
                 .HasOne(s => s.ConversationDetail)
                 .WithOne(p => p.Conversation)
                 .HasForeignKey<ConversationDetail>(m => m.ConversationId)
-                //.HasPrincipalKey<Conversation>(m => m.ConversationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // BlockedContact
 
-            /*
-            //SmallUser & ConversationAdmin (many to one)
-            modelBuilder.Entity<ConversationAdmin>()
-                .HasKey(p => new { p.ConversationId, p.UserId });
+            modelBuilder.Entity<BlockedContact>()
+                .HasKey(b => b.ConversationId);
+    
+            //Conversation & Blocked Contact
+            modelBuilder.Entity<Conversation>()
+                .HasOne(b => b.BlockedContact)
+                .WithOne(c => c.Conversation)
+                .HasForeignKey<BlockedContact>(b => b.ConversationId);
 
-            modelBuilder.Entity<ConversationAdmin>()
-                .HasOne(s => s.SmallUser)
-                .WithMany(a => a.ConversationAdmins)
-                .HasForeignKey(s => s.UserId)
-                .OnDelete(DeleteBehavior.Restrict);*/
+            //SmallUser & Blocked Contact (many to one)
 
-            /*//Conversation & ConversationAdmin (many to one)
-            modelBuilder.Entity<ConversationAdmin>()
-                .HasOne(c => c.Conversation)
-                .WithMany(a => a.ConversationAdmins)
-                .HasForeignKey(c => c.ConversationId)
-                .OnDelete(DeleteBehavior.Restrict);*/
+            modelBuilder.Entity<SmallUser>()
+                .HasMany(u => u.BlockedContacts)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId);
         }
     }
 }
