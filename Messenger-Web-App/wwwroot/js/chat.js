@@ -105,7 +105,11 @@ function showOverlayLayer() {
 
 // settings menu
 
-function showConversationSettingsMenu(isGroup) {
+function requestConversationDataForSettings(conversationId) {
+    connection.invoke("RefreshSettingsData", conversationId);
+}
+
+function showConversationSettingsMenu(data) {
     if (showOverlayLayer()) {
         let settings_container = document.getElementById("conversation-settings-container");
         if (settings_container == null) {
@@ -126,7 +130,7 @@ function showConversationSettingsMenu(isGroup) {
             button_list.classList.add("btn-list");
 
             // buttons
-            if (isGroup) {
+            if (data.isGroup) {
                 // groups
 
                 // change conversation's name button 
@@ -159,11 +163,28 @@ function showConversationSettingsMenu(isGroup) {
 
             } else {
                 // contact conversation
+                if (data.members.length != 1) {
+                    let block_contact = document.createElement("div");
+                    block_contact.id = "block-contact-button";
 
-                let block_contact = document.createElement("div");
-                block_contact.innerText = "Block Contact";
+                    if (data.status == 0) {
 
-                button_list.appendChild(block_contact);
+                        block_contact.innerText = "Block Contact";
+
+                        block_contact.addEventListener("click", function (e) {
+                            connection.invoke("BlockContact", data.id);
+                        });
+                    } else {
+                        block_contact.innerText = "Unblock Contact";
+
+                        block_contact.addEventListener("click", function (e) {
+                            connection.invoke("UnblockContact", data.id);
+                        });
+                    }
+                    
+
+                    button_list.appendChild(block_contact);
+                }
             }
 
             
@@ -824,10 +845,10 @@ function enterConversation(data) {
         conversation_settings_button.parentNode.replaceChild(c_s_b_clone, conversation_settings_button);
         conversation_settings_button = c_s_b_clone;
     }
-    
+
     if (data.isGroup != null) {
         conversation_settings_button.addEventListener("click", function (e) {
-            showConversationSettingsMenu(data.isGroup);
+            requestConversationDataForSettings(data.id);
         });
     }
 
@@ -840,64 +861,101 @@ function enterConversation(data) {
         return;
     }
 
-    // input
+    // checking if the conversation is blocked
 
-    let input = document.getElementById("message_input");
-    if (input == null) {
-        // then we generate it
-        input = document.createElement("input");
-        input.id = "message_input";
-        input.classList.add("col-md-10");
-        input.type = "text";
-        input.placeholder = "type a message";
-        chat_form.appendChild(input);
-    }
+    if (data.status != 0) {
+        //alert("conversation blocked");
 
-    // button container
+        chat_form.innerHTML = "";
 
-    let send_btn_container = document.getElementById("send-btn-container");
-    if (send_btn_container == null) {
-        send_btn_container = document.createElement("div");
-        send_btn_container.classList.add("container_send-btn");
-        send_btn_container.id = "send-btn-container";
-        chat_form.appendChild(send_btn_container);
-    }
+        let block_status_warning = document.createElement("div");
+        block_status_warning.id = "block-status-warning";
+        // if conversation is blocked by us
+        if (data.status == 2) {
+            block_status_warning.innerText = "This conversation has been blocked by you.";
 
-    // button
+            let unblock_button = document.createElement("div");
+            unblock_button.id = "block-status-warning-unblock-btn";
+            unblock_button.innerText = "Unblock conversation";
 
-    let send_btn = document.getElementById("send_btn");
-    if (send_btn == null) {
-        send_btn = document.createElement("button");
-        send_btn.id = "send_btn";
-        send_btn.classList.add("btn-send");
-        send_btn.type = "button";
-        send_btn.innerText = "Send";
-        send_btn_container.appendChild(send_btn);
-    }
+            unblock_button.addEventListener("click", function (e) {
+                connection.invoke("UnblockContact", data.id);
+            });
 
-    send_btn.addEventListener("click", function (event) {
+            block_status_warning.appendChild(unblock_button);
+        // or it's blocked by others
+        } else if (data.status == 1) {
+            block_status_warning.innerText = "This conversation has been blocked.";
+        }
 
-        // checking if we had typed something
-        var input = document.getElementById("message_input");
+        chat_form.appendChild(block_status_warning);
+    } else {
+
+        let warning_element = document.getElementById("block-status-warning");
+
+        if (warning_element != null) {
+            warning_element.parentNode.removeChild(warning_element);
+        }
+
+        // input
+
+        let input = document.getElementById("message_input");
         if (input == null) {
-            return; // then we have nothing to send
+            // then we generate it
+            input = document.createElement("input");
+            input.id = "message_input";
+            input.classList.add("col-md-10");
+            input.type = "text";
+            input.placeholder = "type a message";
+            chat_form.appendChild(input);
         }
 
-        // checking for empty message
-        if (input.value.length == 0) {
-            return; // then we have nothing to send
+        // button container
+
+        let send_btn_container = document.getElementById("send-btn-container");
+        if (send_btn_container == null) {
+            send_btn_container = document.createElement("div");
+            send_btn_container.classList.add("container_send-btn");
+            send_btn_container.id = "send-btn-container";
+            chat_form.appendChild(send_btn_container);
         }
 
-        if (conversationId == null) { let conversationId = ""; }
+        // button
 
-        var message = input.value;
+        let send_btn = document.getElementById("send_btn");
+        if (send_btn == null) {
+            send_btn = document.createElement("button");
+            send_btn.id = "send_btn";
+            send_btn.classList.add("btn-send");
+            send_btn.type = "button";
+            send_btn.innerText = "Send";
+            send_btn_container.appendChild(send_btn);
+        }
 
-        input.value = "";
+        send_btn.addEventListener("click", function (event) {
 
-        connection.invoke("SendMessage", conversationId, message).catch(function (err) {
-            return console.error(err.toString());
+            // checking if we had typed something
+            var input = document.getElementById("message_input");
+            if (input == null) {
+                return; // then we have nothing to send
+            }
+
+            // checking for empty message
+            if (input.value.length == 0) {
+                return; // then we have nothing to send
+            }
+
+            if (conversationId == null) { let conversationId = ""; }
+
+            var message = input.value;
+
+            input.value = "";
+
+            connection.invoke("SendMessage", conversationId, message).catch(function (err) {
+                return console.error(err.toString());
+            });
         });
-    });
+    }
 
     // clear conversation message history
     var chat_message_list = document.getElementById("chat-message-list");
@@ -1014,6 +1072,145 @@ connection.on("ListFoundConversations", function (found_conversations_list, foun
     showContactsSearchResults();
     
     showConversationSearchResults(true, true);
+});
+
+connection.on("BlockConversation", function (conversationId) {
+    let block_contact_button = document.getElementById("block-contact-button");
+    if (block_contact_button != null) {
+        block_contact_button.innerText = "Unblock Contact";
+        let b_c_b_clone = block_contact_button.cloneNode(true);
+        block_contact_button.parentNode.replaceChild(b_c_b_clone, block_contact_button);
+        block_contact_button = b_c_b_clone;
+        block_contact_button.addEventListener("click", function (e) {
+            connection.invoke("UnblockContact", conversationId);
+        });
+    }
+
+    let chat_form = document.getElementById("chat-form");
+
+    if (chat_form != null) {
+        let warning = document.getElementById("block-status-warning");
+        if (warning == null) {
+            chat_form.innerHTML = "";
+
+            let block_status_warning = document.createElement("div");
+            block_status_warning.id = "block-status-warning";
+            block_status_warning.innerText = "This conversation has been blocked by you.";
+
+            let unblock_button = document.createElement("div");
+            unblock_button.id = "block-status-warning-unblock-btn";
+            unblock_button.innerText = "Unblock conversation";
+
+            unblock_button.addEventListener("click", function (e) {
+                connection.invoke("UnblockContact", conversationId);
+            });
+
+            block_status_warning.appendChild(unblock_button);
+            chat_form.appendChild(block_status_warning);
+        }
+    }
+    //alert("You have blocked the conversation with id " + conversationId);
+});
+
+connection.on("NoticeConversationBlocked", function (conversationId) {
+    //alert("The conversation with id " + conversationId + " has been blocked");
+});
+
+connection.on("UnblockConversation", function (conversationId) {
+    let block_contact_button = document.getElementById("block-contact-button");
+    if (block_contact_button != null) {
+        block_contact_button.innerText = "Block Contact";
+        let b_c_b_clone = block_contact_button.cloneNode(true);
+        block_contact_button.parentNode.replaceChild(b_c_b_clone, block_contact_button);
+        block_contact_button = b_c_b_clone;
+        block_contact_button.addEventListener("click", function (e) {
+            connection.invoke("BlockContact", conversationId);
+        });
+    }
+
+    let chat_form = document.getElementById("chat-form");
+
+    if (chat_form != null) {
+        let warning = document.getElementById("block-status-warning");
+        if (warning != null) {
+            warning.parentNode.removeChild(warning);
+
+            let warning_element = document.getElementById("block-status-warning");
+
+            if (warning_element != null) {
+                warning_element.parentNode.removeChild(warning_element);
+            }
+
+            // input
+
+            let input = document.getElementById("message_input");
+            if (input == null) {
+                // then we generate it
+                input = document.createElement("input");
+                input.id = "message_input";
+                input.classList.add("col-md-10");
+                input.type = "text";
+                input.placeholder = "type a message";
+                chat_form.appendChild(input);
+            }
+
+            // button container
+
+            let send_btn_container = document.getElementById("send-btn-container");
+            if (send_btn_container == null) {
+                send_btn_container = document.createElement("div");
+                send_btn_container.classList.add("container_send-btn");
+                send_btn_container.id = "send-btn-container";
+                chat_form.appendChild(send_btn_container);
+            }
+
+            // button
+
+            let send_btn = document.getElementById("send_btn");
+            if (send_btn == null) {
+                send_btn = document.createElement("button");
+                send_btn.id = "send_btn";
+                send_btn.classList.add("btn-send");
+                send_btn.type = "button";
+                send_btn.innerText = "Send";
+                send_btn_container.appendChild(send_btn);
+            }
+
+            send_btn.addEventListener("click", function (event) {
+
+                // checking if we had typed something
+                var input = document.getElementById("message_input");
+                if (input == null) {
+                    return; // then we have nothing to send
+                }
+
+                // checking for empty message
+                if (input.value.length == 0) {
+                    return; // then we have nothing to send
+                }
+
+                if (conversationId == null) { let conversationId = ""; }
+
+                var message = input.value;
+
+                input.value = "";
+
+                connection.invoke("SendMessage", conversationId, message).catch(function (err) {
+                    return console.error(err.toString());
+                });
+            });
+        }
+    }
+
+    //alert("You have unblocked the conversation with id " + conversationId);
+});
+
+connection.on("NoticeConversationUnblocked", function (conversationId) {
+    //alert("The conversation with id " + conversationId + " has been unblocked");
+});
+
+connection.on("OpenConversationSettings", function (data) {
+    showConversationSettingsMenu(data);
 });
 
 connection.on("alert", function (message) {

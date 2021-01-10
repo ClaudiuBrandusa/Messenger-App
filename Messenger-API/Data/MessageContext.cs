@@ -29,7 +29,7 @@ namespace Messenger_API.Data
         public DbSet<SmallUser> SmallUsers { get; set; }
         public DbSet<ImageProfile> ImageProfiles { get; set; }
         public DbSet<ConversationDetail> ConversationDetails { get; set; }
-
+        public DbSet<BlockedContact> BlockedContact { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

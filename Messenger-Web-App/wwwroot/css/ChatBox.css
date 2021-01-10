@@ -450,6 +450,21 @@
     font-weight: 500;
 }
 
+#block-status-warning {
+    text-align: center;
+}
+
+#block-status-warning-unblock-btn {
+    background-color: #0048AA;
+    cursor: pointer;
+    width: 30%;
+    user-select: none;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 1vh;
+    color: snow;
+}
+
 .chat-navbar {
     display: block;
     width: 100%;

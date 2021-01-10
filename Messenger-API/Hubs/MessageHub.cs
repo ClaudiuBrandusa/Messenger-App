@@ -25,7 +25,7 @@ namespace Messenger_API.Hubs
         static Dictionary<string, List<string>> CurrentUsers = new Dictionary<string, List<string>>();
 
         static Dictionary<string, List<Conversation>> Conversations = new Dictionary<string, List<Conversation>>();
-        
+
         static Dictionary<string, List<Packet>> Packets = new Dictionary<string, List<Packet>>();
 
         static Dictionary<string, List<MessageContent>> Messages = new Dictionary<string, List<MessageContent>>();
@@ -41,7 +41,7 @@ namespace Messenger_API.Hubs
         {
             string username = Context.GetHttpContext().User.Identity.Name;
 
-            if(string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(username))
             {
                 Console.WriteLine("joined with null username");
                 return;
@@ -77,6 +77,8 @@ namespace Messenger_API.Hubs
         {
             if (string.IsNullOrEmpty(conversationId)) return;
 
+            if (IsConversationBlocked(conversationId)) return;
+
             if (string.IsNullOrEmpty(message)) return;
 
             var username = Context.User.Identity.Name;
@@ -92,7 +94,7 @@ namespace Messenger_API.Hubs
 
             int packetNumber = before > -1 ? before - 1 : -1;
 
-            if(before != after) // then it means that we stored the message in a new packet
+            if (before != after) // then it means that we stored the message in a new packet
             {
                 packetNumber++;
             }
@@ -106,7 +108,7 @@ namespace Messenger_API.Hubs
 
             HubMessage hubMessage = new HubMessage { Content = message, SentData = DateTime.Now, Sender = "You" };
 
-            foreach(var connection in ownConnectionsId)
+            foreach (var connection in ownConnectionsId)
             {
                 await Clients.Client(connection).SendAsync("SendMessage", conversationId, hubMessage, packetNumber);
                 if (firstInteraction) await Clients.Client(connection).SendAsync("AddConversationInList", data);
@@ -116,9 +118,9 @@ namespace Messenger_API.Hubs
 
             hubMessage.Sender = Context.User.Identity.Name;
 
-            foreach(var receiver in receiverIds)
+            foreach (var receiver in receiverIds)
             {
-                if(CurrentUsers.ContainsKey(receiver) && !receiver.Equals(GetUserId(username)))
+                if (CurrentUsers.ContainsKey(receiver) && !receiver.Equals(GetUserId(username)))
                 {
                     await Clients.Group(receiver).SendAsync("ReceiveMessage", conversationId, hubMessage, packetNumber);
                     if (firstInteraction)
@@ -146,7 +148,7 @@ namespace Messenger_API.Hubs
 
             // here we will order by the last sent message date
             list = list.Where(x => x.LastMessage != null && x.LastMessage.SentData != null).OrderBy(x => x.LastMessage.SentData).ToList();
-            
+
             await Clients.Caller.SendAsync("ListConversations", list);
         }
 
@@ -154,14 +156,27 @@ namespace Messenger_API.Hubs
         public async Task OpenConversation(string conversationId)
         {
             List<Conversation> conversation = GetConversation(conversationId);
-            if(conversation == null)
+            if (conversation == null)
             {
                 return;
             }
 
-            var data = new HubChatroomConversation { Id = conversationId, ConversationName = GetConversationName(conversationId), Packets = GetMessageHistory(conversationId), Members = GetConversationMembersIds(conversationId), IsGroup = IsGroupConversation(conversationId) };
+            var data = new HubChatroomConversation { Id = conversationId, ConversationName = GetConversationName(conversationId), Packets = GetMessageHistory(conversationId), Members = GetConversationMembersIds(conversationId), IsGroup = IsGroupConversation(conversationId)};
 
             data.ConversationName = GetConversationName(conversationId);
+
+            if (IsConversationBlockedBy(conversationId, GetUserId(Context.User.Identity.Name)))
+            {
+                data.Status = 2;
+            }
+            else if (IsConversationBlocked(conversationId))
+            {
+                data.Status = 1; // it is block but not by you
+            }
+            else // else the conversation is not blocked
+            {
+                data.Status = 0;
+            }
 
             var dataList = new HubListConversation { ConversationName = data.ConversationName, LastMessage = GetLastMessage(conversationId), Id = conversationId };
 
@@ -176,11 +191,11 @@ namespace Messenger_API.Hubs
 
             var userId = GetUserId(Context.User.Identity.Name);
 
-            if(string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId))
             {
                 return;
             }
-            
+
             // finding conversations
 
             var possibleConversationIds = messageContext.ConversationMembers.Where(m =>
@@ -191,7 +206,7 @@ namespace Messenger_API.Hubs
             foreach (var id in possibleConversationIds)
             {
                 string name = GetConversationName(id);
-                
+
                 if (!name.ToLower().StartsWith(conversationName)) continue;
 
                 conversationResults.Add(new HubListConversation { ConversationName = name, Id = id, LastMessage = GetLastMessage(id) });
@@ -203,28 +218,28 @@ namespace Messenger_API.Hubs
 
             var contactsConversations = new List<HubListConversation>();
 
-            foreach(var contact in contacts)
+            foreach (var contact in contacts)
             {
                 var conversation = GetConversationWithUser(contact.UserId, false); // false means that we are not looking for group conversations
 
-                if(conversation != null)
+                if (conversation != null)
                 {
                     foreach (var con in conversation)
                     {
                         if (IsGroupConversation(con.ConversationId)) continue;
-                        conversation = new List<ConversationMember>() {con};
+                        conversation = new List<ConversationMember>() { con };
                         break;
                     }
                 }
 
-                if(contact.UserId.Equals(userId) && conversation != null)
+                if (contact.UserId.Equals(userId) && conversation != null)
                 {
                     var aux = GetSelfConversation(userId);
                     if (aux == null)
                     {
                         conversation = null;
                     }
-                    else 
+                    else
                     {
                         conversation = new List<ConversationMember>() { aux };
                     }
@@ -236,7 +251,7 @@ namespace Messenger_API.Hubs
                 {
                     tmp = GenerateEmptyConversation(userId);
                     if (tmp == null) continue;
-                    if(!contact.UserId.Equals(userId)) AddUserToConversation(contact.UserId, tmp.ConversationId);
+                    if (!contact.UserId.Equals(userId)) AddUserToConversation(contact.UserId, tmp.ConversationId);
                 }
                 else
                 {
@@ -267,7 +282,81 @@ namespace Messenger_API.Hubs
 
             AddConversation(new List<Conversation>() { member });
 
-            await Clients.Caller.SendAsync("EnterConversation", new HubChatroomConversation { Id = member.ConversationId, ConversationName = "New conversation", IsGroup = true}, true);
+            await Clients.Caller.SendAsync("EnterConversation", new HubChatroomConversation { Id = member.ConversationId, ConversationName = "New conversation", IsGroup = true, Members = GetConversationMembersIds(member.ConversationId) }, true);
+        }
+
+        // Settings part
+
+        [Authorize]
+        public async Task BlockContact(string conversationId)
+        {
+            if (!IsConversationIdValid(conversationId)) return;
+            if (!IsUserMemberInConversation(conversationId, GetUserId(Context.User.Identity.Name))) return;
+
+            if (BlockConversation(conversationId))
+            {
+                await Clients.Caller.SendAsync("BlockConversation", conversationId);
+                // notify to every conversation member
+                foreach(var userId in GetConversationMembersIds(conversationId))
+                {
+                    if (GetUsername(userId).Equals(Context.User.Identity.Name)) continue;
+                    var connectionIds = GetConnectionsId(userId);
+                    if (connectionIds == null) continue;
+                    foreach (var connectionId in connectionIds)
+                    {
+                        await Clients.Client(connectionId).SendAsync("NoticeConversationBlocked", conversationId);
+                    }
+                }
+            }
+        }
+
+        [Authorize]
+        public async Task UnblockContact(string conversationId)
+        {
+            if (!IsConversationIdValid(conversationId)) return;
+            if (!IsConversationBlocked(conversationId)) return;
+            if (!IsConversationBlockedBy(conversationId, GetUserId(Context.User.Identity.Name))) return;
+
+            if(UnblockConversation(conversationId))
+            {
+                await Clients.Caller.SendAsync("UnblockConversation", conversationId);
+                // notify to every conversation member
+                foreach (var userId in GetConversationMembersIds(conversationId))
+                {
+                    if (GetUsername(userId).Equals(Context.User.Identity.Name)) continue;
+                    var connectionIds = GetConnectionsId(userId);
+                    if (connectionIds == null) continue;
+                    foreach (var connectionId in connectionIds)
+                    {
+                        await Clients.Client(connectionId).SendAsync("NoticeConversationUnblocked", conversationId);
+                    }
+                }
+            }
+        }
+
+        [Authorize]
+        public async Task RefreshSettingsData(string conversationId)
+        {
+            if (!IsConversationIdValid(conversationId)) return;
+
+            var data = new HubChatroomConversation { Id = conversationId, ConversationName = GetConversationName(conversationId), Packets = GetMessageHistory(conversationId), Members = GetConversationMembersIds(conversationId), IsGroup = IsGroupConversation(conversationId) };
+            
+            data.ConversationName = GetConversationName(conversationId);
+
+            if (IsConversationBlockedBy(conversationId, GetUserId(Context.User.Identity.Name)))
+            {
+                data.Status = 2;
+            }
+            else if (IsConversationBlocked(conversationId))
+            {
+                data.Status = 1; // it is block but not by you
+            }
+            else // else the conversation is not blocked
+            {
+                data.Status = 0;
+            }
+
+            await Clients.Caller.SendAsync("OpenConversationSettings", data);
         }
 
         // Helper methods
@@ -695,6 +784,78 @@ namespace Messenger_API.Hubs
             if (conversation == default) return false;
 
             return conversation.isGroup;
+        }
+
+        bool IsSelfConversation(string conversationId)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return false;
+            if (IsGroupConversation(conversationId)) return false;
+            var conversationMembers = messageContext.ConversationMembers.Where(c => c.ConversationId.Equals(conversationId));
+            if (conversationMembers.ToList().Count != 1) return false;
+            return true;
+        }
+
+        // Block Contact
+
+        bool BlockConversation(string conversationId)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return false;
+            if (IsConversationBlocked(conversationId)) return false;
+            if (IsGroupConversation(conversationId)) return false;
+            if (IsSelfConversation(conversationId)) return false;
+
+            try
+            {
+                messageContext.BlockedContact.Add(new BlockedContact { ConversationId = conversationId, UserId = GetUserId(Context.User.Identity.Name) });
+                messageContext.SaveChanges();
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        bool UnblockConversation(string conversationId)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return false;
+            if (!IsConversationBlocked(conversationId)) return false;
+            if (IsGroupConversation(conversationId)) return false;
+            if (IsSelfConversation(conversationId)) return false;
+
+            var blocked = messageContext.BlockedContact.FirstOrDefault(b => b.ConversationId.Equals(conversationId));
+
+            if (blocked == default) return false;
+
+            try
+            {
+                messageContext.BlockedContact.Remove(blocked);
+                messageContext.SaveChanges();
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        bool IsConversationBlocked(string conversationId)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return false;
+            var conversationBlockStatus = messageContext.BlockedContact.Find(conversationId);
+            return conversationBlockStatus != null;
+        }
+
+        bool IsConversationBlockedBy(string conversationId, string userId)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return false;
+            if (string.IsNullOrEmpty(userId)) return false;
+            var conversationBlockStatus = messageContext.BlockedContact.Find(conversationId);
+            if (conversationBlockStatus == null) return false;
+            if (!conversationBlockStatus.UserId.Equals(userId)) return false;
+            return true;
         }
 
         // Conversation name
@@ -1154,6 +1315,7 @@ namespace Messenger_API.Hubs
             // We are leaving it here for now
             public List<HubMessagePacket> Packets { get; set; }
             public bool IsGroup { get; set; }
+            public int Status { get; set; } // 0 - fine; 1 - blocked; 2 - blocked by you
         }
 
         class HubMessagePacket
