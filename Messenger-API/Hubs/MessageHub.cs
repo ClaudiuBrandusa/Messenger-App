@@ -285,6 +285,56 @@ namespace Messenger_API.Hubs
             await Clients.Caller.SendAsync("EnterConversation", new HubChatroomConversation { Id = member.ConversationId, ConversationName = "New conversation", IsGroup = true, Members = GetConversationMembersIds(member.ConversationId) }, true);
         }
 
+        [Authorize]
+        public async Task GetPacketByNumber(string conversationId, string packetNumber)
+        {
+            int packetNumberInt = -2;
+
+            Int32.TryParse(packetNumber, out packetNumberInt);
+
+            if (packetNumberInt == -2) return;
+
+            packetNumberInt--;
+
+            if (string.IsNullOrEmpty(conversationId)) return;
+            if (!IsConversationIdValid(conversationId)) return;
+            if (packetNumberInt < 0 || packetNumberInt + 1 > GetLastPacketNumber(conversationId)) return;
+
+            string packetId = GetPacketId(conversationId, packetNumberInt);
+            
+            var packet = GetPacket(packetId, conversationId, packetNumberInt);
+
+            if (packet == null) return;
+
+            var result = new HubMessagePacket
+                {
+                    PacketId = packetId,
+                    ConversationId = conversationId,
+                    PacketNumber = packetNumberInt,
+                    Messages = messageContext.PacketContents.Where(p => p.PacketId.Equals(packetId)).Select(m =>
+                    new HubMessage
+                    {
+                        Sender = messageContext.MessageContents.Where(mc => mc.MessageId.Equals(m.MessageId)).Select(mc => mc.UserId).FirstOrDefault(),
+                        SentData = messageContext.MessageContents.Where(mc => mc.MessageId.Equals(m.MessageId)).Select(mc => mc.SentDate).FirstOrDefault(),
+                        Content = messageContext.MessageContents.Where(mc => mc.MessageId.Equals(m.MessageId)).Select(mc => mc.Content).FirstOrDefault()
+                    }).ToList().OrderBy(e => e.SentData).ToList()
+            };
+
+            // change the caller's message sender value to "" in order to know which are the sent messages
+            foreach(var message in result.Messages)
+            {
+                if(message.Sender.Equals(GetUserId(Context.User.Identity.Name)))
+                {
+                    message.Sender = "";
+                }
+            }
+
+            // and put the new messages upper than the last messages
+            
+
+            await Clients.Caller.SendAsync("SendPacket", conversationId, result);
+        }
+
         // Settings part
 
         [Authorize]
@@ -968,6 +1018,22 @@ namespace Messenger_API.Hubs
             return true;
         }
 
+        Packet GetPacket(string packetId, string conversationId, int packetNumber)
+        {
+            if (string.IsNullOrEmpty(packetId)) return null;
+            if (string.IsNullOrEmpty(conversationId)) return null;
+            var test = GetNextPacketNumber(conversationId);
+            if (packetNumber != -1 && (packetNumber < -1 || packetNumber > GetNextPacketNumber(conversationId) - 1)) return null;
+            
+            if (!IsPacketIdUsed(packetId)) return null;
+
+            var packet = messageContext.Packets.FirstOrDefault(p => p.ConversationId.Equals(conversationId) && p.PacketNumber == (packetNumber == -1 ? GetNextPacketNumber(conversationId) - 1 : packetNumber));
+
+            if (packet == default) return null;
+
+            return packet;
+        }
+
         Packet GeneratePacket(string packetId, string conversationId)
         {
             if (string.IsNullOrEmpty(packetId)) return null;
@@ -981,19 +1047,6 @@ namespace Messenger_API.Hubs
                 Conversation = GetConversation(conversationId).First(),
                 PacketNumber = packetNumber == -1 ? 0 : packetNumber
             };
-            return packet;
-        }
-
-        Packet GetPacket(string conversationId, int packetNumber=-1)
-        {
-            if (string.IsNullOrEmpty(conversationId)) return null;
-            if (packetNumber != -1 && (packetNumber < -1 || packetNumber > GetNextPacketNumber(conversationId) - 1)) return null;
-
-
-            var packet = messageContext.Packets.FirstOrDefault(p => p.ConversationId.Equals(conversationId) && p.PacketNumber == (packetNumber == -1 ? GetNextPacketNumber(conversationId) - 1 : packetNumber));
-
-            if (packet == default) return null;
-
             return packet;
         }
 
@@ -1049,6 +1102,12 @@ namespace Messenger_API.Hubs
             }*/
         }
 
+        int GetLastPacketNumber(string conversationId)
+        {
+            int val = GetNextPacketNumber(conversationId);
+            return val == -1 ? 0 : val - 1 ;
+        }
+
         int GetNextPacketNumber(string conversationId)
         {
             if (string.IsNullOrEmpty(conversationId)) return -1;
@@ -1063,6 +1122,14 @@ namespace Messenger_API.Hubs
             var currentPacket = messageContext.Packets.FirstOrDefault(p => p.ConversationId.Equals(conversationId) && p.PacketNumber == GetNextPacketNumber(conversationId)-1);
             if (currentPacket == default) return "";
             if (GetPacketCount(currentPacket) >= PacketMaxMessages) return "";
+            return currentPacket.PacketId;
+        }
+
+        string GetPacketId(string conversationId, int packetNumber)
+        {
+            if (string.IsNullOrEmpty(conversationId)) return "";
+            var currentPacket = messageContext.Packets.FirstOrDefault(p => p.ConversationId.Equals(conversationId) && p.PacketNumber == packetNumber);
+            if (currentPacket == default) return "";
             return currentPacket.PacketId;
         }
 
@@ -1139,7 +1206,11 @@ namespace Messenger_API.Hubs
             if (string.IsNullOrEmpty(conversationId)) return null;
             if (!IsConversationIdValid(conversationId)) return null;
 
-            var lastPacket = GetPacket(conversationId, -1);
+            int lastPacketNumber = GetLastPacketNumber(conversationId);
+
+            string packetId = GetPacketId(conversationId, lastPacketNumber);
+
+            var lastPacket = GetPacket(packetId, conversationId, -1);
 
             if (lastPacket == null) return null;
 
@@ -1150,7 +1221,10 @@ namespace Messenger_API.Hubs
                 if(GetPacketCount(lastPacket) < 5)
                 {
                     // then we load another one
-                    packets.Add(GetPacket(conversationId, lastPacket.PacketNumber - 1));
+                    if(lastPacketNumber > 0)
+                    {
+                        packets.Add(GetPacket(packetId, conversationId, lastPacketNumber - 1));
+                    }
                 }
             }
 
@@ -1184,7 +1258,13 @@ namespace Messenger_API.Hubs
             if (string.IsNullOrEmpty(conversationId)) return null;
             if (!IsConversationIdValid(conversationId)) return null;
 
-            var lastPacket = GetPacket(conversationId, -1);
+            int packetNumber = GetLastPacketNumber(conversationId);
+
+            string packetId = GetPacketId(conversationId, packetNumber);
+
+            if (string.IsNullOrEmpty(packetId)) return null;
+
+            var lastPacket = GetPacket(packetId, conversationId, packetNumber);
 
             if (lastPacket == null) return null;
 
@@ -1198,11 +1278,6 @@ namespace Messenger_API.Hubs
 
             return new HubMessage { Content = content.Content, Sender = IsCurrentUsersId(content.UserId)?"You":GetUsername(content.UserId), SentData = content.SentDate };
         }
-
-        /*MessageContent GetMessageContent(*//*string messageId, *//*string conversationId,)
-        {
-
-        }*/
 
         bool IsCurrentUsersId(string id)
         {

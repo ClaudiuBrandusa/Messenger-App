@@ -33,17 +33,11 @@ function formatConversationLastMessageData(data) {
 
     let result = "";
 
-    //if (Date().getDay() - date.getDay() > 7) {
-        result += date.getDate() + " ";
-    //}
+    result += date.getDate() + " ";
 
-    //if (date.getMonth() != new Date().getMonth()) {
-        result += getMonthName(date.getMonth()) + " ";
-    //}
+    result += getMonthName(date.getMonth()) + " ";
 
-    //if (date.getFullYear() != new Date().getFullYear()) {
-        result += date.getFullYear() + " ";
-    //}
+    result += date.getFullYear() + " ";
 
     result += date.getHours();
 
@@ -79,6 +73,13 @@ function getPacketNumberFromObject(object) {
         return getPacketNumberFromClass(object.classList);
     }
     return "";
+}
+
+function requestNextPacket(conversationId, packetNumber) {
+    if (packetNumber == -1) {
+        return;
+    }
+    connection.invoke("GetPacketByNumber", conversationId, packetNumber);
 }
 
 // overlay layer
@@ -130,8 +131,9 @@ function showConversationSettingsMenu(data) {
             button_list.classList.add("btn-list");
 
             // buttons
+
+            // groups
             if (data.isGroup) {
-                // groups
 
                 // change conversation's name button 
 
@@ -161,8 +163,8 @@ function showConversationSettingsMenu(data) {
 
                 button_list.appendChild(remove_member_button);
 
-            } else {
-                // contact conversation
+            } else { // contact conversation
+                
                 if (data.members.length != 1) {
                     let block_contact = document.createElement("div");
                     block_contact.id = "block-contact-button";
@@ -182,14 +184,12 @@ function showConversationSettingsMenu(data) {
                         });
                     }
                     
-
                     button_list.appendChild(block_contact);
                 }
             }
 
-            
-
             // back button
+
             let back_button = document.createElement("div");
             back_button.innerText = "Back";
             back_button.addEventListener("click", function (e) {
@@ -299,23 +299,30 @@ function notifyNewMessage(conversation_Id, message) {
 }
 
 // Messages
-function renderMessages(messages, packetNumber) {
-    for (var i = 0; i < messages.length; i++) {
-        renderMessage(messages[i], packetNumber);
+function renderMessages(messages, packetNumber, first=false) {
+    if (first) {
+        for (var i = messages.length-1; i >= 0; i--) {
+            renderMessage(messages[i], packetNumber, first);
+        }
+    } else {
+        for (var i = 0; i < messages.length; i++) {
+            renderMessage(messages[i], packetNumber);
+        }
     }
+    
 }
 
-function renderMessage(message, packetNumber) {
+function renderMessage(message, packetNumber, first=false) {
     if (message == null) return;
     
     if (message.sender === "") { // then it's a sent message
-        renderSentMessage(message, packetNumber);
+        renderSentMessage(message, packetNumber, first);
     } else {
-        renderReceivedMessage(message, packetNumber);
+        renderReceivedMessage(message, packetNumber, first);
     }
 }
 
-function renderReceivedMessage(messageData, packetNumber) {
+function renderReceivedMessage(messageData, packetNumber, first=false) {
     // finding the message place
     var messages = document.getElementById("chat-message-list");
     if (messages == null) {
@@ -363,14 +370,23 @@ function renderReceivedMessage(messageData, packetNumber) {
     message_content.appendChild(message_content_date);
 
     message.appendChild(message_content);
+    
+    if (first) {
+        let firstMessage = messages.firstChild;
 
-    messages.appendChild(message);
-
+        if (firstMessage != null) {
+            messages.insertBefore(message, firstMessage);
+        } else {
+            messages.appendChild(message);
+        }
+    } else {
+        messages.appendChild(message);
+    }
     // scrolling down to the last message
     messages.scrollTop = message.offsetTop;
 }
 
-function renderSentMessage(messageData, packetNumber) {
+function renderSentMessage(messageData, packetNumber, first = false) {
     // finding the message place
     var messages = document.getElementById("chat-message-list");
     if (messages == null) {
@@ -408,7 +424,17 @@ function renderSentMessage(messageData, packetNumber) {
 
     message.appendChild(message_content);
 
-    messages.appendChild(message);
+    if (first) {
+        let firstMessage = messages.firstChild;
+
+        if (firstMessage != null) {
+            messages.insertBefore(message, firstMessage);
+        } else {
+            messages.appendChild(message);
+        }
+    } else {
+        messages.appendChild(message);
+    }
 
     // scrolling down to the last message
     messages.scrollTop = message.offsetTop;
@@ -809,8 +835,6 @@ function enterConversation(data) {
     }
     
     if (conversationId === data.id) {
-        /*alert(conversationId + " " + data.conversationName);*/
-        // then we are already there
         return;
     }
 
@@ -966,11 +990,16 @@ function enterConversation(data) {
 
     chat_message_list.innerHTML = "";
 
+    let c_m_l_clone = chat_message_list.cloneNode(true);
+
+    chat_message_list.parentNode.replaceChild(c_m_l_clone, chat_message_list);
+
+    chat_message_list = c_m_l_clone;
+
     chat_message_list.addEventListener("scroll", function (e) {
         if (chat_message_list.scrollTop == 0 && chat_message_list.offsetHeight <= chat_message_list.scrollHeight) {
             // we reached the top of the conversation's messages list
-            //requestNextPacket(data.);
-            alert(getPacketNumberFromObject(chat_message_list.children[0]));
+            requestNextPacket(data.id, getPacketNumberFromObject(chat_message_list.children[0], chat_message_list.lastChild));
         }
     });
 
@@ -1211,6 +1240,20 @@ connection.on("NoticeConversationUnblocked", function (conversationId) {
 
 connection.on("OpenConversationSettings", function (data) {
     showConversationSettingsMenu(data);
+});
+
+connection.on("SendPacket", function (conversation_id, packet) {
+    let message_list = document.getElementById("chat-message-list");
+
+    if (conversationId != conversation_id) {
+        return;
+    }
+
+    if (message_list != null) {
+        if (packet != null) {
+            renderMessages(packet.messages, packet.packetNumber, true);
+        }
+    }
 });
 
 connection.on("alert", function (message) {
